@@ -310,15 +310,25 @@ class API(object):
             print ('*' * 100)
 
 
-VERBOSE = True
+class Application(object):
+
+    VERBOSE = True
+
+    def log(self, message, *args, **kwargs):
+        """ If VERBOSE = True, prints message. """
+        if self.VERBOSE:
+            print(message, *args, **kwargs)
+        return
+
+    def run(self):
+        pass
 
 
-def log(message, *args, **kwargs):
-    """ If VERBOSE = True, prints message. """
-    if VERBOSE:
-        print(message, *args, **kwargs)
+def main():
+    app = Application()
+    app.run()
     return
 
 if __name__ == "__main__":
 
-    pass
+    main()
