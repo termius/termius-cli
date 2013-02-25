@@ -9,16 +9,22 @@
 Verbose description. Verbose description. Verbose description.
 Verbose description. Verbose description. Verbose description.
 Verbose description.
+
+http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
+http://stackoverflow.com/questions/1240275/how-to-negate-specific-word-in-regex
+http://www.freebsd.org/cgi/man.cgi?query=sysexits&sektion=3
 """
 
 
 from __future__ import print_function, with_statement
 
 import base64
-import fnmatch
+import fnmatch  # we should replace it
 import getpass
 import os
 import pprint
+import re
+import socket
 import sys
 import urllib2
 
@@ -32,38 +38,36 @@ except ImportError:
         exit(1)
 
 
-#  paramiko.config.SSHConfig
-import re
-import socket
+# based on paramiko.config.SSHConfig
 
-SSH_PORT = 22
 proxy_re = re.compile(r"^(proxycommand)\s*=*\s*(.*)", re.I)
 
 
-class SSHConfig (object):
+class SSHConfig(object):
     """
-Representation of config information as stored in the format used by
-OpenSSH. Queries can be made via L{lookup}. The format is described in
-OpenSSH's C{ssh_config} man page. This class is provided primarily as a
-convenience to posix users (since the OpenSSH format is a de-facto
-standard on posix) but should work fine on Windows too.
+    Representation of config information as stored in the format used by
+    OpenSSH. Queries can be made via L{lookup}. The format is described in
+    OpenSSH's C{ssh_config} man page. This class is provided primarily as a
+    convenience to posix users (since the OpenSSH format is a de-facto
+    standard on posix) but should work fine on Windows too.
 
-@since: 1.6
-"""
+    @since: 1.6
+    """
+    SSH_PORT = 22
 
     def __init__(self):
         """
-Create a new OpenSSH config object.
-"""
-        self._config = [ { 'host': '*' } ]
+        Create a new OpenSSH config object.
+        """
+        self._config = [{'host': '*'}]
 
     def parse(self, file_obj):
         """
-Read an OpenSSH config from the given file object.
+        Read an OpenSSH config from the given file object.
 
-@param file_obj: a file-like object to read the config file from
-@type file_obj: file
-"""
+        @param file_obj: a file-like object to read the config file from
+        @type file_obj: file
+        """
         configs = [self._config[0]]
         for line in file_obj:
             line = line.rstrip('\n').lstrip()
@@ -105,23 +109,23 @@ Read an OpenSSH config from the given file object.
 
     def lookup(self, hostname):
         """
-Return a dict of config options for a given hostname.
+        Return a dict of config options for a given hostname.
 
-The host-matching rules of OpenSSH's C{ssh_config} man page are used,
-which means that all configuration options from matching host
-specifications are merged, with more specific hostmasks taking
-precedence. In other words, if C{"Port"} is set under C{"Host *"}
-and also C{"Host *.example.com"}, and the lookup is for
-C{"ssh.example.com"}, then the port entry for C{"Host *.example.com"}
-will win out.
+        The host-matching rules of OpenSSH's C{ssh_config} man page are used,
+        which means that all configuration options from matching host
+        specifications are merged, with more specific hostmasks taking
+        precedence. In other words, if C{"Port"} is set under C{"Host *"}
+        and also C{"Host *.example.com"}, and the lookup is for
+        C{"ssh.example.com"}, then the port entry for C{"Host *.example.com"}
+        will win out.
 
-The keys in the returned dict are all normalized to lowercase (look for
-C{"port"}, not C{"Port"}. No other processing is done to the keys or
-values.
+        The keys in the returned dict are all normalized to lowercase (look for
+        C{"port"}, not C{"Port"}. No other processing is done to the keys or
+        values.
 
-@param hostname: the hostname to lookup
-@type hostname: str
-"""
+        @param hostname: the hostname to lookup
+        @type hostname: str
+        """
         matches = [x for x in self._config if fnmatch.fnmatch(hostname, x['host'])]
         # Move * to the end
         _star = matches.pop(0)
@@ -137,17 +141,17 @@ values.
 
     def _expand_variables(self, config, hostname ):
         """
-Return a dict of config options with expanded substitutions
-for a given hostname.
+        Return a dict of config options with expanded substitutions
+        for a given hostname.
 
-Please refer to man ssh_config(5) for the parameters that
-are replaced.
+        Please refer to man ssh_config(5) for the parameters that
+        are replaced.
 
-@param config: the config for the hostname
-@type hostname: dict
-@param hostname: the hostname that the config belongs to
-@type hostname: str
-"""
+        @param config: the config for the hostname
+        @type hostname: dict
+        @param hostname: the hostname that the config belongs to
+        @type hostname: str
+        """
 
         if 'hostname' in config:
             config['hostname'] = config['hostname'].replace('%h',hostname)
@@ -157,7 +161,7 @@ are replaced.
         if 'port' in config:
             port = config['port']
         else:
-            port = SSH_PORT
+            port = self.SSH_PORT
 
         user = os.getenv('USER')
         if 'user' in config:
@@ -197,6 +201,167 @@ are replaced.
                 for find, replace in replacements[k]:
                     config[k] = config[k].replace(find, str(replace))
         return config
+
+
+class NewSSHConfig(object):
+
+    USER_CONFIG_PATH = os.path.expanduser('~/.ssh/config')
+    SYSTEM_CONFIG_PATH = '/etc/ssh/ssh_config'
+    SETTINGS_REGEX = re.compile(r'(\w+)(\s*=\s*|\s+)(.+)')
+    SSH_PORT = '22'
+
+    def __init__(self):
+        self._config = [{'host': ['*']}]
+        self._parse_files()
+
+    def _parse_files(self):
+
+        def is_file(path):
+            return os.path.exists(path) and not os.path.isdir(path) and os.access(path, os.R_OK)
+
+        for path in (self.USER_CONFIG_PATH, self.SYSTEM_CONFIG_PATH):
+            if is_file(path):
+                self._parse_file(path)
+        return
+
+    def _parse_file(self, path):
+        with open(path) as f:
+            raw_settings = f.readlines()
+
+        current_config = self._config[0]
+        for line in raw_settings:
+            line = line.strip()
+            if (line == '') or (line[0] == '#'):
+                continue
+
+            match = re.match(self.SETTINGS_REGEX, line)
+            if not match:
+                raise Exception("Unparsable line %s" % line)
+            key = match.group(1).lower()
+            value = match.group(3)
+
+            if key == 'host':
+                self._config.append({})
+                current_config = self._config[-1]
+                current_config['host'] = value.split()
+            else:
+                current_config[key] = value
+
+        return
+
+    def get_complete_host(self):
+
+        def is_complete(conf):
+            host = conf['host']
+            return len(host) == 1 and '*' not in host and '?' not in host
+
+        return [self.get_host(conf['host'][0]) for conf in self._config if is_complete(conf)]
+
+    def get_host(self, host, substitute=False):
+
+        def is_match(patterns):
+            positive = []
+            negative = []
+            for pattern in patterns:
+                is_negative = pattern.startswith('!')
+                name = pattern.lstrip('!').replace('*', '.+').replace('?', '.')
+                name += '$'
+                match = re.match(name, host)
+                if is_negative:
+                    negative.append(match)
+                else:
+                    positive.append(match)
+
+            return any(positive) and not any(negative)
+
+        matches = [h for h in self._config if is_match(h['host'])]
+        settings = {'host': host}
+        for m in matches:
+            for k, v in m.items():
+                if k not in settings:
+                    settings[k] = v
+
+        if substitute:
+            return self._substitute_variables(settings)
+        return settings
+
+    def _substitute_variables(self, settings):
+
+        def is_file(path):
+            return os.path.exists(path) and not os.path.isdir(path) and os.access(path, os.R_OK)
+
+        if 'hostname' in settings:
+            settings['hostname'] = settings['hostname'].replace('%h', settings['host'])
+        else:
+            settings['hostname'] = settings['host']
+
+        if 'port' in settings:
+            port = settings['port']
+        else:
+            port = self.SSH_PORT
+
+        user = getpass.getuser()
+        if 'user' not in settings:
+            settings['user'] = user
+
+        home_dir = os.path.expanduser('~')
+
+        host = socket.gethostname().split('.')[0]
+        fqdn = socket.getfqdn()
+
+        replacements = {
+            'controlpath': [
+                ('%h', settings['hostname']),
+                ('%l', fqdn),
+                ('%L', host),
+                ('%n', settings['host']),
+                ('%p', port),
+                ('%r', settings['user']),
+                ('%u', user)
+            ],
+            'loaclcommand': [
+                ('%d', home_dir),
+                ('%h', settings['hostname']),
+                ('%l', fqdn),
+                ('%n', settings['host']),
+                ('%p', port),
+                ('%r', settings['user']),
+                ('%u', user)
+            ],
+            'identityfile': [
+                ('~', home_dir),
+                ('%d', home_dir),
+                ('%h', settings['hostname']),
+                ('%l', fqdn),
+                ('%u', user),
+                ('%r', settings['user'])
+            ],
+            'proxycommand': [
+                ('%h', settings['hostname']),
+                ('%p', port),
+            ],
+        }
+        for k in settings:
+            if k in replacements:
+                for find, replace in replacements[k]:
+                    settings[k] = settings[k].replace(find, replace)
+
+        if 'identityfile' in settings:
+            if is_file(settings['identityfile']):
+                with open(settings['identityfile']) as f:
+                    settings['identityfile'] = f.read()
+            #else:
+            #    raise Exception('Can not read IdentityFile %s' % settings['identityfile'])
+
+        return settings
+
+
+def new_main():
+    config = NewSSHConfig()
+    config.get_complete_host()
+    hosts = []
+    hosts = [config.get_host(h, True) for h in hosts]
+
 
 VERBOSE = True
 API_URL = 'http://dev.serverauditor.com/api/v1/'
@@ -375,5 +540,11 @@ def main():
 
 if __name__ == "__main__":
 
-    main()
+    #main()
+
+    t = NewSSHConfig()
+    #print(dir(t))
+    #t._parse_file(USER_CONFIG_PATH)
+    pprint.pprint(t._config)
+    pprint.pprint(t.get_complete_host())
 
