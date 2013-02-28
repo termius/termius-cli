@@ -10,13 +10,15 @@ Verbose description. Verbose description. Verbose description.
 Verbose description. Verbose description. Verbose description.
 Verbose description.
 
+Useful links:
 http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
-http://stackoverflow.com/questions/1240275/how-to-negate-specific-word-in-regex
 http://www.freebsd.org/cgi/man.cgi?query=sysexits&sektion=3
 
-TODO: Tests.
-TODO: Exceptions.
-TODO: Pythons 2.5-7, 3.0-3.
+TODO: Create tests.
+TODO: Create and handle exceptions.
+TODO: Check on python 2.5-7, 3.0-4.
+TODO: Check existing keys and connection.
+TODO: Crypto.
 """
 
 
@@ -29,6 +31,7 @@ import pprint
 import re
 import socket
 import sys
+import time
 import urllib2
 
 try:
@@ -37,8 +40,8 @@ except ImportError:
     try:
         import simplejson as json
     except ImportError:
-        print('Error! There is no any json library on your python!', file=sys.stderr)
-        exit(1)
+        print('There is no any json library installed on your python!', file=sys.stderr)
+        sys.exit(1)
 
 
 class SSHConfig(object):
@@ -59,34 +62,37 @@ class SSHConfig(object):
     def parse(self):
         """ Parses configuration files.
 
-        Firstly, parser uses file which locates in USER_CONFIG_PATH.
+        Firstly, parser uses file which is located in USER_CONFIG_PATH.
         Then, file SYSTEM_CONFIG_PATH is used.
         """
 
         def is_file(path):
             """ Checks that file exists, and user have permissions for read it.
 
-            :param path: path where file locates.
+            :param path: path where file is located.
             :return: True or False.
             """
             return os.path.exists(path) and not os.path.isdir(path) and os.access(path, os.R_OK)
 
-        for path in (self.USER_CONFIG_PATH, self.SYSTEM_CONFIG_PATH):
-            if is_file(path):
-                self._parse_file(path)
-        return
+        is_parsed = False
 
-    def _parse_file(self, path):
+        for path in (self.USER_CONFIG_PATH, ):#self.SYSTEM_CONFIG_PATH):
+            if is_file(path):
+                is_parsed = True
+                with open(path) as f:
+                    self._parse_file(f)
+
+        return is_parsed
+
+    def _parse_file(self, file_object):
         """ Parses separated file.
 
         :raises Exception: if there is any unparsable line in file.
-        :param path: path where file locates.
+        :param file_object: file.
         """
-        with open(path) as f:
-            raw_settings = f.readlines()
 
         current_config = self._config[0]
-        for line in raw_settings:
+        for line in file_object:
             line = line.strip()
             if (line == '') or (line[0] == '#'):
                 continue
@@ -108,21 +114,24 @@ class SSHConfig(object):
 
         return
 
-    def get_complete_host(self):
+    def get_complete_hosts(self):
         """ Returns complete hosts.
 
         :return: list of hosts which names don't have masks.
         """
 
-        def is_complete(host):
+        def is_complete(conf):
             """ Checks that host is complete.
 
-            :param host: list of host's patterns.
+            :param conf: config.
             :return: True or False
             """
-            return len(host) == 1 and '*' not in host and '?' not in host
+            host = conf['host']
+            is_full_name = len(host) == 1 and '*' not in host and '?' not in host
+            is_key = 'identityfile' in conf
+            return is_full_name and is_key
 
-        return [self.get_host(conf['host'][0]) for conf in self._config if is_complete(conf['host'])]
+        return [conf['host'][0] for conf in self._config if is_complete(conf)]
 
     def get_host(self, host, substitute=False):
         """ Returns config fot host.
@@ -245,89 +254,153 @@ class API(object):
 
     API_URL = 'http://dev.serverauditor.com/api/v1/'
 
-    def get_user_key(self):
-        """ Asks username and password and then gets user's key token.
-
-        Returns tuple (username, key).
-        """
-        username = raw_input('User: ')
-        password = getpass.getpass()
+    def get_key(self, username, password):
+        """ Returns user's key token. """
 
         request = urllib2.Request(self.API_URL + "token/auth/")
         base64string = base64.encodestring('%s:%s' % (username, password)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
-        try:
-            result = urllib2.urlopen(request)
-        except:
-            print('What a shame!')
-            return
-        return username, json.load(result)['key']
+        result = urllib2.urlopen(request)
 
-    def create_keys_and_connections(self, settings, username, key):
-        """ Creates keys and connections using settings.
+        return json.load(result)['key']
+
+    def create_keys_and_connections(self, hosts, username, key):
+        """ Creates keys and connections using hosts' configs.
 
         Sends request for creation keys and connections using username and key.
         """
-        for k, v in settings.items():
+        for host in hosts:
             ssh_key = {
-                'label': k,
-                'passphrase': "what a pity!",
-                'value': v['identityfile'],
+                'label': host['host'],
+                'passphrase': "...",
+                'value': host['identityfile'],
                 'type': 'private'
             }
             request = urllib2.Request(self.API_URL + "terminal/ssh_key/")
             request.add_header("Authorization", "ApiKey %s:%s" % (username, key))
             request.add_header("Content-Type", "application/json")
-            try:
-                result = urllib2.urlopen(request, json.dumps(ssh_key))
-            except Exception, exc:
-                print('What a shame!', exc)
-                return
-
-            print(result.info())
+            result = urllib2.urlopen(request, json.dumps(ssh_key))
 
             key_number = int(result.headers['Location'].rstrip('/').rsplit('/', 1)[-1])
-
             connection = {
-                "hostname": v['hostname'],
-                "label": k,
+                "hostname": host['hostname'],
+                "label": host['host'],
                 "ssh_key": key_number,
                 "ssh_password": '',
-                "ssh_username": v['user'],
-                }
-
+                "ssh_username": host['user'],
+            }
             request = urllib2.Request(self.API_URL + "terminal/connection/")
             request.add_header("Authorization", "ApiKey %s:%s" % (username, key))
             request.add_header("Content-Type", "application/json")
-            try:
-                result = urllib2.urlopen(request, json.dumps(connection))
-            except Exception, exc:
-                print('What a shame!', exc)
-                return
+            result = urllib2.urlopen(request, json.dumps(connection))
 
-            print(result.info())
-
-            print ('*' * 100)
+        return
 
 
 class Application(object):
 
     VERBOSE = True
 
-    def log(self, message, *args, **kwargs):
-        """ If VERBOSE = True, prints message. """
-        if self.VERBOSE:
-            print(message, *args, **kwargs)
-        return
+    def __init__(self):
+        self._config = SSHConfig()
+        self._api = API()
+        self._hosts = None
+        self._full_hosts = None
+        self._sa_username = None
+        self._sa_key = None
 
     def run(self):
+        self._parse_config()
+        self._get_hosts()
+        self._get_full_hosts()
+        self._get_sa_user()
+        self._crypto()
+        self._create_keys_and_connections()
+
+    def _log(self, message, is_pprint=False, color=None, *args, **kwargs):
+        if self.VERBOSE:
+            if is_pprint:
+                pprint.pprint(message, *args, **kwargs)
+            else:
+                print(message, *args, **kwargs)
+            time.sleep(0.5)
+        return
+
+    def _parse_config(self):
+        self._log("Parsing...")
+        is_parsed = self._config.parse()
+        if not is_parsed:
+            self._log("There is no local ssh config on your computer! "
+                      "This file must be located in '%s'!" % self._config.USER_CONFIG_PATH, file=sys.stderr)
+            sys.exit(1)
+        self._hosts = self._config.get_complete_hosts()
+
+    def _get_hosts(self):
+        self._log("The following hosts have been founded in your ssh config:")
+        self._log(self._hosts)
+        number = None
+        while number != '0':
+            number = raw_input("You may confirm this list (press '0'), "
+                               "add new host (press '1') or "
+                               "remove host (press '2'): ").strip()
+            if number == '1':
+                host = raw_input("Adding host: ")
+                conf = self._config.get_host(host)
+                if conf.keys() == ['host']:
+                    self._log("There is no config for host %s!" % host, file=sys.stderr)
+                else:
+                    self._hosts.append(host)
+            elif number == '2':
+                host = raw_input("Deleting host: ")
+                self._hosts = filter(lambda x: x != host, self._hosts)
+
+            self._log("Hosts: %s" % self._hosts)
+
+        self._log("Ok!")
+
+        return
+
+    def _get_full_hosts(self):
+        self._full_hosts = [self._config.get_host(h, substitute=True) for h in self._hosts]
+        #self._log("Full configs for your hosts:")
+        #self._log(self._full_hosts, is_pprint=True)
+        return
+
+    def _get_sa_user(self):
+        self._sa_username = raw_input("Enter your Server Auditor's username: ").strip()
+        password = getpass.getpass("Enter your Server Auditor's password: ")
+        try:
+            self._sa_key = self._api.get_key(self._sa_username, password)
+        except Exception as exc:
+            self._log("Error! %s" % exc, file=sys.stderr)
+        else:
+            self._log("Success!")
+        return
+
+    def _crypto(self):
         pass
+
+    def _create_keys_and_connections(self):
+        self._log("Creating keys and connections...")
+        try:
+            self._api.create_keys_and_connections(self._full_hosts, self._sa_username, self._sa_key)
+        except Exception as exc:
+            self._log("Error! %s" % exc, file=sys.stderr)
+        else:
+            self._log("Success!")
+
+        return
 
 
 def main():
     app = Application()
-    app.run()
+    try:
+        app.run()
+    except KeyboardInterrupt:
+        pass
+    print("Bye!")
     return
+
 
 if __name__ == "__main__":
 
