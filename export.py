@@ -16,9 +16,10 @@ http://www.freebsd.org/cgi/man.cgi?query=sysexits&sektion=3
 
 TODO: Create tests.
 TODO: Create and handle exceptions.
-TODO: Check on python 2.5-7, 3.0-4.
+TODO: Check on python 2.5-7, 3.0-4. (see tox)
 TODO: Check existing keys and connection.
-TODO: Crypto.
+TODO: Add crypto.
+TODO: ...
 """
 
 
@@ -258,11 +259,30 @@ class API(object):
         """ Returns user's key token. """
 
         request = urllib2.Request(self.API_URL + "token/auth/")
-        base64string = base64.encodestring('%s:%s' % (username, password)).replace('\n', '')
-        request.add_header("Authorization", "Basic %s" % base64string)
+        auth = base64.encodestring('%s:%s' % (username, password)).replace('\n', '')
+        request.add_header("Authorization", "Basic %s" % auth)
         result = urllib2.urlopen(request)
 
         return json.load(result)['key']
+
+    def get_keys_and_connections(self, username, key):
+        """ Gets current keys and connections.
+
+        Sends request for getting keys and connections using username and key.
+        """
+        request = urllib2.Request(self.API_URL + "terminal/ssh_key/?limit=100")
+        request.add_header("Authorization", "ApiKey %s:%s" % (username, key))
+        request.add_header("Content-Type", "application/json")
+        response = urllib2.urlopen(request)
+        keys = json.loads(response.read())['objects']
+
+        request = urllib2.Request(self.API_URL + "terminal/connection/?limit=100")
+        request.add_header("Authorization", "ApiKey %s:%s" % (username, key))
+        request.add_header("Content-Type", "application/json")
+        response = urllib2.urlopen(request)
+        connections = json.loads(response.read())['objects']
+
+        return keys, connections
 
     def create_keys_and_connections(self, hosts, username, key):
         """ Creates keys and connections using hosts' configs.
@@ -272,16 +292,16 @@ class API(object):
         for host in hosts:
             ssh_key = {
                 'label': host['host'],
-                'passphrase': "...",
+                'passphrase': ".",
                 'value': host['identityfile'],
                 'type': 'private'
             }
             request = urllib2.Request(self.API_URL + "terminal/ssh_key/")
             request.add_header("Authorization", "ApiKey %s:%s" % (username, key))
             request.add_header("Content-Type", "application/json")
-            result = urllib2.urlopen(request, json.dumps(ssh_key))
+            response = urllib2.urlopen(request, json.dumps(ssh_key))
 
-            key_number = int(result.headers['Location'].rstrip('/').rsplit('/', 1)[-1])
+            key_number = int(response.headers['Location'].rstrip('/').rsplit('/', 1)[-1])
             connection = {
                 "hostname": host['hostname'],
                 "label": host['host'],
@@ -292,7 +312,7 @@ class API(object):
             request = urllib2.Request(self.API_URL + "terminal/connection/")
             request.add_header("Authorization", "ApiKey %s:%s" % (username, key))
             request.add_header("Content-Type", "application/json")
-            result = urllib2.urlopen(request, json.dumps(connection))
+            response = urllib2.urlopen(request, json.dumps(connection))
 
         return
 
@@ -308,22 +328,27 @@ class Application(object):
         self._full_hosts = None
         self._sa_username = None
         self._sa_key = None
+        self._sa_keys = None
+        self._sa_connections = None
 
     def run(self):
+        self._get_sa_user()
+        self._get_keys_and_connections()
         self._parse_config()
+        self._sync()
         self._get_hosts()
         self._get_full_hosts()
-        self._get_sa_user()
-        self._crypto()
         self._create_keys_and_connections()
+        return
 
-    def _log(self, message, is_pprint=False, color=None, *args, **kwargs):
+    def _log(self, message, is_pprint=False, sleep=0.5, color=None, *args, **kwargs):
         if self.VERBOSE:
             if is_pprint:
                 pprint.pprint(message, *args, **kwargs)
             else:
                 print(message, *args, **kwargs)
-            time.sleep(0.5)
+            if sleep:
+                time.sleep(sleep)
         return
 
     def _parse_config(self):
@@ -334,9 +359,33 @@ class Application(object):
                       "This file must be located in '%s'!" % self._config.USER_CONFIG_PATH, file=sys.stderr)
             sys.exit(1)
         self._hosts = self._config.get_complete_hosts()
+        self._log("Success!")
+        return
+
+    def _sync(self):
+        self._log("Synchronization...")
+
+        def is_exist(host):
+            h = self._config.get_host(host, substitute=True)
+            for conn in self._sa_connections:
+                key_id = conn['ssh_key']
+                if key_id and \
+                        conn['hostname'] == h['hostname'] and \
+                        conn['label'] == h['host'] and \
+                        conn['ssh_username'] == h['user'] and \
+                        self._sa_keys[key_id['id']]['value'] == h['identityfile']:
+                    return True
+            return False
+
+        hosts = self._hosts[:]
+        for host in hosts:
+            if is_exist(host):
+                self._hosts.remove(host)
+        self._log("Success!")
+        return
 
     def _get_hosts(self):
-        self._log("The following hosts have been founded in your ssh config:")
+        self._log("The following new hosts have been founded in your ssh config:")
         self._log(self._hosts)
         number = None
         while number != '0':
@@ -350,11 +399,17 @@ class Application(object):
                     self._log("There is no config for host %s!" % host, file=sys.stderr)
                 else:
                     self._hosts.append(host)
+
+                self._log("Hosts:\n%s" % self._hosts)
+
             elif number == '2':
                 host = raw_input("Deleting host: ")
-                self._hosts = filter(lambda x: x != host, self._hosts)
+                if host in self._hosts:
+                    self._hosts.remove(host)
+                else:
+                    self._log("There is no host %s!" % host, file=sys.stderr)
 
-            self._log("Hosts: %s" % self._hosts)
+                self._log("Hosts:\n%s" % self._hosts)
 
         self._log("Ok!")
 
@@ -362,8 +417,6 @@ class Application(object):
 
     def _get_full_hosts(self):
         self._full_hosts = [self._config.get_host(h, substitute=True) for h in self._hosts]
-        #self._log("Full configs for your hosts:")
-        #self._log(self._full_hosts, is_pprint=True)
         return
 
     def _get_sa_user(self):
@@ -373,12 +426,25 @@ class Application(object):
             self._sa_key = self._api.get_key(self._sa_username, password)
         except Exception as exc:
             self._log("Error! %s" % exc, file=sys.stderr)
-        else:
-            self._log("Success!")
+            sys.exit(1)
+
+        self._log("Success!")
         return
 
-    def _crypto(self):
-        pass
+    def _get_keys_and_connections(self):
+        self._log("Getting current keys and connections...")
+        try:
+            keys, self._sa_connections = self._api.get_keys_and_connections(self._sa_username, self._sa_key)
+        except Exception as exc:
+            self._log("Error! %s" % exc, file=sys.stderr)
+            sys.exit(1)
+
+        self._sa_keys = {}
+        for key in keys:
+            self._sa_keys[key['id']] = key
+        self._log("Success!")
+
+        return
 
     def _create_keys_and_connections(self):
         self._log("Creating keys and connections...")
