@@ -15,7 +15,7 @@ http://www.freebsd.org/cgi/man.cgi?query=sysexits&sektion=3
 
 TODO: Create tests.
 TODO: Create and handle exceptions.
-TODO: Check on python 2.5-7, 3.0-4. (see tox)
+TODO: Check on python 2.5-7, 3.0-4 (see tox).
 TODO: Check existing keys and connection.
 TODO: Add crypto.
 TODO: ...
