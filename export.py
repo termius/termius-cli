@@ -11,7 +11,6 @@ Verbose description. Verbose description. Verbose description.
 Verbose description.
 
 Useful links:
-http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 http://www.freebsd.org/cgi/man.cgi?query=sysexits&sektion=3
 
 TODO: Create tests.
@@ -34,6 +33,7 @@ import socket
 import sys
 import time
 import urllib2
+
 
 try:
     import json
@@ -320,6 +320,15 @@ class API(object):
 class Application(object):
 
     VERBOSE = True
+    COLOR_END = '\033[0m'
+    COLORS = {
+        'red': '\033[91m',
+        'green': '\033[92m',
+        'blue': '\033[94m',
+        'yellow': '\033[93m',
+        'magenta': '\033[95m',
+        'end': COLOR_END
+    }
 
     def __init__(self):
         self._config = SSHConfig()
@@ -341,12 +350,14 @@ class Application(object):
         self._create_keys_and_connections()
         return
 
-    def _log(self, message, is_pprint=False, sleep=0.5, color=None, *args, **kwargs):
+    def _log(self, message, is_pprint=False, sleep=0.5, color='end', *args, **kwargs):
         if self.VERBOSE:
+            print(self.COLORS.get(color, self.COLOR_END))
             if is_pprint:
                 pprint.pprint(message, *args, **kwargs)
             else:
                 print(message, *args, **kwargs)
+            print(self.COLOR_END)
             if sleep:
                 time.sleep(sleep)
         return
@@ -425,10 +436,10 @@ class Application(object):
         try:
             self._sa_key = self._api.get_key(self._sa_username, password)
         except Exception as exc:
-            self._log("Error! %s" % exc, file=sys.stderr)
+            self._log("Error! %s" % exc, file=sys.stderr, color='red')
             sys.exit(1)
 
-        self._log("Success!")
+        self._log("Success!", color='blue')
         return
 
     def _get_keys_and_connections(self):
