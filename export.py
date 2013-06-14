@@ -319,8 +319,8 @@ class API(object):
 
 class Application(object):
 
-    VERBOSE = True
     COLOR_END = '\033[0m'
+    COLOR_BOLD = '\033[1m'
     COLORS = {
         'red': '\033[91m',
         'green': '\033[92m',
@@ -336,11 +336,12 @@ class Application(object):
         self._hosts = None
         self._full_hosts = None
         self._sa_username = None
-        self._sa_key = None
+        self._sa_auth_key = None
         self._sa_keys = None
         self._sa_connections = None
 
     def run(self):
+        self._greeting()
         self._get_sa_user()
         self._get_keys_and_connections()
         self._parse_config()
@@ -350,16 +351,21 @@ class Application(object):
         self._create_keys_and_connections()
         return
 
-    def _log(self, message, is_pprint=False, sleep=0.5, color='end', *args, **kwargs):
-        if self.VERBOSE:
-            print(self.COLORS.get(color, self.COLOR_END))
-            if is_pprint:
-                pprint.pprint(message, *args, **kwargs)
-            else:
-                print(message, *args, **kwargs)
-            print(self.COLOR_END)
-            if sleep:
-                time.sleep(sleep)
+    def _log(self, message, is_pprint=False, sleep=0.5, color='end', color_bold=False, *args, **kwargs):
+        print(self.COLORS.get(color, self.COLOR_END), end='')
+        if color_bold:
+            print(self.COLOR_BOLD, end='')
+        if is_pprint:
+            pprint.pprint(message, *args, **kwargs)
+        else:
+            print(message, end='', *args, **kwargs)
+        print(self.COLOR_END)
+        if sleep:
+            time.sleep(sleep)
+        return
+
+    def _greeting(self):
+        self._log("ServerAuditor's ssh config script.", color='magenta', color_bold=True)
         return
 
     def _parse_config(self):
@@ -434,18 +440,18 @@ class Application(object):
         self._sa_username = raw_input("Enter your Server Auditor's username: ").strip()
         password = getpass.getpass("Enter your Server Auditor's password: ")
         try:
-            self._sa_key = self._api.get_key(self._sa_username, password)
+            self._sa_auth_key = self._api.get_key(self._sa_username, password)
         except Exception as exc:
             self._log("Error! %s" % exc, file=sys.stderr, color='red')
             sys.exit(1)
 
-        self._log("Success!", color='blue')
+        self._log("Success!", color='green')
         return
 
     def _get_keys_and_connections(self):
         self._log("Getting current keys and connections...")
         try:
-            keys, self._sa_connections = self._api.get_keys_and_connections(self._sa_username, self._sa_key)
+            keys, self._sa_connections = self._api.get_keys_and_connections(self._sa_username, self._sa_auth_key)
         except Exception as exc:
             self._log("Error! %s" % exc, file=sys.stderr)
             sys.exit(1)
@@ -460,7 +466,7 @@ class Application(object):
     def _create_keys_and_connections(self):
         self._log("Creating keys and connections...")
         try:
-            self._api.create_keys_and_connections(self._full_hosts, self._sa_username, self._sa_key)
+            self._api.create_keys_and_connections(self._full_hosts, self._sa_username, self._sa_auth_key)
         except Exception as exc:
             self._log("Error! %s" % exc, file=sys.stderr)
         else:
@@ -475,7 +481,7 @@ def main():
         app.run()
     except KeyboardInterrupt:
         pass
-    print("Bye!")
+    print("\nBye!")
     return
 
 
