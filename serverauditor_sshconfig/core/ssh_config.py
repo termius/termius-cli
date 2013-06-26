@@ -74,7 +74,7 @@ class SSHConfig(object):
                 self._config.append(current_config)
             elif key in ['identityfile', 'localforward', 'remoteforward']:
                 current_config.setdefault(key, []).append(value)
-            else:
+            elif key not in current_config:
                 current_config[key] = value
 
         return
