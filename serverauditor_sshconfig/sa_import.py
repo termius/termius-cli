@@ -4,11 +4,11 @@
 
 import sys
 
-from core.application import SSHConfigApplication, description
-from core.api import API
-from core.cryptor import RNCryptor
-from core.logger import PrettyLogger
-from core.ssh_config import SSHConfig
+from serverauditor_sshconfig.core.application import SSHConfigApplication, description
+from serverauditor_sshconfig.core.api import API
+from serverauditor_sshconfig.core.cryptor import RNCryptor
+from serverauditor_sshconfig.core.logger import PrettyLogger
+from serverauditor_sshconfig.core.ssh_config import SSHConfig
 
 
 class ImportSSHConfigApplication(SSHConfigApplication):

@@ -61,8 +61,7 @@ class SSHConfigApplication(object):
 
         self._sa_username = raw_input("Enter your Server Auditor's username: ").strip()
         self._sa_master_password = getpass.getpass("Enter your Server Auditor's password: ")
-        password = hash_password(self._sa_master_password)
-        self._sa_auth_key = self._api.get_auth_key(self._sa_username, password)
+        self._sa_auth_key = self._api.get_auth_key(self._sa_username, hash_password(self._sa_master_password))
         return
 
     @description("Getting current keys and connections...")
