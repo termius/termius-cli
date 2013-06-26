@@ -4,7 +4,7 @@
 
 import sys
 
-from core.application import SSHConfigApplication
+from core.application import SSHConfigApplication, description
 from core.api import API
 from core.cryptor import RNCryptor
 from core.logger import PrettyLogger
@@ -34,6 +34,7 @@ class ExportSSHConfigApplication(SSHConfigApplication):
         self._logger.log("ServerAuditor's ssh config script. Export from local machine to SA servers.", color='magenta')
         return
 
+    @description("Synchronization...")
     def _sync_for_export(self):
         def is_exist(host):
             h = self._config.get_host(host, substitute=True)
@@ -47,13 +48,10 @@ class ExportSSHConfigApplication(SSHConfigApplication):
                     return True
             return False
 
-        self._logger.log("Synchronization...")
-
         for host in self._local_hosts[:]:
             if is_exist(host):
                 self._local_hosts.remove(host)
 
-        self._logger.log("Success!", color='green')
         return
 
     def _choose_new_hosts(self):
@@ -85,6 +83,7 @@ class ExportSSHConfigApplication(SSHConfigApplication):
         self._logger.log("Ok!", color='green')
         return
 
+    @description("Getting full information...")
     def _get_full_hosts(self):
         def encrypt_host(host):
             host['host'] = self._cryptor.encrypt(host['host'], self._sa_master_password)
@@ -93,21 +92,12 @@ class ExportSSHConfigApplication(SSHConfigApplication):
             host['password'] = self._cryptor.encrypt('', self._sa_master_password)
             return host
 
-        self._logger.log("Getting full information...")
         self._full_local_hosts = [encrypt_host(self._config.get_host(h, substitute=True)) for h in self._local_hosts]
-
-        self._logger.log("Success!", color='green')
         return
 
+    @description("Creating keys and connections...")
     def _create_keys_and_connections(self):
-        self._logger.log("Creating keys and connections...")
-        try:
-            self._api.create_keys_and_connections(self._full_local_hosts, self._sa_username, self._sa_auth_key)
-        except Exception as exc:
-            self._logger.log("Error! %s" % exc, file=sys.stderr)
-            sys.exit(1)
-
-        self._logger.log("Success!", color='green')
+        self._api.create_keys_and_connections(self._full_local_hosts, self._sa_username, self._sa_auth_key)
         return
 
 

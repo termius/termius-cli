@@ -4,7 +4,7 @@
 
 import sys
 
-from core.application import SSHConfigApplication
+from core.application import SSHConfigApplication, description
 from core.api import API
 from core.cryptor import RNCryptor
 from core.logger import PrettyLogger
@@ -40,6 +40,7 @@ Host {host}
         self._logger.log("ServerAuditor's ssh config script. Import from SA servers to local machine.", color='magenta')
         return
 
+    @description("Synchronization...")
     def _sync_for_import(self):
         def is_exist(conn):
             for attempt in (conn['hostname'], conn['label']):
@@ -52,13 +53,10 @@ Host {host}
             # TODO: may be need to check local config's hostnames
             return False
 
-        self._logger.log("Synchronization...")
-
         for conn in self._sa_connections[:]:
             if is_exist(conn):
                 self._sa_connections.remove(conn)
 
-        self._logger.log("Success!", color='green')
         return
 
     def _choose_new_hosts(self):
@@ -81,7 +79,7 @@ Host {host}
                 if number >= len(self._sa_connections) or number < 0:
                     raise IndexError
             except (ValueError, IndexError):
-                self._logger.log("Bad index!", color='red')
+                self._logger.log("Bad index!", color='red', file=sys.stderr)
             else:
                 self._sa_connections.pop(number)
                 self._logger.log("Hosts:\n%s" % [get_connection_name(c, i) for i, c in enumerate(self._sa_connections)])
@@ -89,6 +87,7 @@ Host {host}
         self._logger.log("Ok!", color='green')
         return
 
+    @description("Creating keys and connections...")
     def _create_keys_and_connections(self):
         def create_connection(conn):
             with open(self._config.USER_CONFIG_PATH, 'a') as cf:
@@ -100,12 +99,9 @@ Host {host}
                 )
                 cf.write(host)
 
-        self._logger.log("Creating keys and connections...")
-
         for conn in self._sa_connections:
             create_connection(conn)
 
-        self._logger.log("Success!", color='green')
         return
 
 
