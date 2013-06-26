@@ -50,7 +50,7 @@ class SSHConfig(object):
     def _parse_file(self, file_object):
         """ Parses separated file.
 
-        :raises Exception: if there is any unparsable line in file.
+        :raises SSHConfigException: if there is any unparsable line in file.
         :param file_object: file.
         """
 
@@ -63,7 +63,7 @@ class SSHConfig(object):
 
             match = re.match(settings_regex, line)
             if not match:
-                raise Exception("Unparsable line %s" % line)
+                raise SSHConfigException("Unparsable line %s" % line)
             key = match.group(1).lower()
             value = match.group(3)
             if value.startswith('"') and value.endswith('"'):
@@ -72,6 +72,8 @@ class SSHConfig(object):
             if key == 'host':
                 current_config = {'host': value.split()}
                 self._config.append(current_config)
+            elif key in ['identityfile', 'localforward', 'remoteforward']:
+                current_config.setdefault(key, []).append(value)
             else:
                 current_config[key] = value
 
@@ -138,7 +140,7 @@ class SSHConfig(object):
     def _substitute_variables(self, settings):
         """ Substituted variables in settings.
 
-        :raises Exception: if user does not permissions for read IdentityFile.
+        :raises SSHConfigException: if user does not permissions for read IdentityFile.
         :param settings: config which will be changed.
         """
 
@@ -197,13 +199,18 @@ class SSHConfig(object):
         for k in settings:
             if k in replacements:
                 for find, replace in replacements[k]:
-                    settings[k] = settings[k].replace(find, replace)
+                    if isinstance(settings[k], list):
+                        for i in range(len(settings[k])):
+                            settings[k][i] = settings[k][i].replace(find, replace)
+                    else:
+                        settings[k] = settings[k].replace(find, replace)
 
         if 'identityfile' in settings:
-            if self._is_file_ok(settings['identityfile']):
-                with open(settings['identityfile']) as f:
-                    settings['identityfile'] = f.read()
+            for i in range(len(settings['identityfile'])):
+                if self._is_file_ok(settings['identityfile'][i]):
+                    with open(settings['identityfile'][i]) as f:
+                        settings['identityfile'][i] = f.read()
             #else:
-            #    raise Exception('Can not read IdentityFile %s' % settings['identityfile'])
+            #    raise SSHConfigException('Can not read IdentityFile %s' % settings['identityfile'])
 
         return
