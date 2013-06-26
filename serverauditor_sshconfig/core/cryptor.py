@@ -123,13 +123,13 @@ class RNCryptor(Cryptor):
         # return KDF.PBKDF2(password, salt, dkLen=key_length, count=iterations)
 
         ## https://github.com/mitsuhiko/python-pbkdf2 version -- medium speed
-        # from pbkdf2 import pbkdf2_bin
-        # return pbkdf2_bin(password, salt, iterations=iterations, keylen=key_length)
+        from pbkdf2 import pbkdf2_bin
+        return pbkdf2_bin(password, salt, iterations=iterations, keylen=key_length)
 
         ## django version -- fast enough
-        import hashlib
-        from django.utils.crypto import pbkdf2
-        return pbkdf2(password, salt, iterations, dklen=key_length, digest=hashlib.sha1)
+        # import hashlib
+        # from django.utils.crypto import pbkdf2
+        # return pbkdf2(password, salt, iterations, dklen=key_length, digest=hashlib.sha1)
 
 
 def test():
