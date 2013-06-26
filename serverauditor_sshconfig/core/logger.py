@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import abc
 import pprint
+import sys
 import time
 
 
@@ -27,14 +28,15 @@ class PrettyLogger(Logger):
     }
 
     def log(self, message, sleep=0.5, color='end', color_bold=False, is_pprint=False, *args, **kwargs):
-        print(self.COLORS.get(color, self.COLOR_END), end='')
+        fl = kwargs.get('file', sys.stdout)
+        print(self.COLORS.get(color, self.COLOR_END), end='', file=fl)
         if color_bold:
-            print(self.COLOR_BOLD, end='')
+            print(self.COLOR_BOLD, end='', file=fl)
         if is_pprint:
             pprint.pprint(message, *args, **kwargs)
         else:
             print(message, end='', *args, **kwargs)
-        print(self.COLOR_END)
+        print(self.COLOR_END, file=fl)
         if sleep:
             time.sleep(sleep)
         return
