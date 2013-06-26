@@ -13,15 +13,15 @@ class SSHConfigApplication(object):
         self._cryptor = cryptor
         self._logger = logger
 
-        self._hosts = None
-        self._full_hosts = None
-
         self._sa_username = None
         self._sa_master_password = None
         self._sa_auth_key = None
 
         self._sa_keys = None
         self._sa_connections = None
+
+        self._local_hosts = None
+        self._full_local_hosts = None
         return
 
     @abc.abstractmethod
@@ -76,7 +76,7 @@ class SSHConfigApplication(object):
                 #value['public_key'] = self._cryptor.decrypt(value['public_key'], self._sa_master_password)
 
             for con in self._sa_connections:
-                #con['label'] = self._cryptor.decrypt(con['label'], self._sa_master_password)
+                con['label'] = self._cryptor.decrypt(con['label'], self._sa_master_password)
                 con['hostname'] = self._cryptor.decrypt(con['hostname'], self._sa_master_password)
                 con['ssh_username'] = self._cryptor.decrypt(con['ssh_username'], self._sa_master_password)
                 #con['ssh_password'] = self._cryptor.decrypt(con['ssh_password'], self._sa_master_password)
@@ -96,7 +96,7 @@ class SSHConfigApplication(object):
             self._logger.log("Error! %s" % exc, file=sys.stderr, color='red')
             sys.exit(1)
 
-        self._hosts = self._config.get_complete_hosts()
+        self._local_hosts = self._config.get_complete_hosts()
 
         self._logger.log("Success!", color='green')
         return

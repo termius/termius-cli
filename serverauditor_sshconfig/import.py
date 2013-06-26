@@ -13,6 +13,14 @@ from core.ssh_config import SSHConfig
 
 class ImportSSHConfigApplication(SSHConfigApplication):
 
+    SSH_CONFIG_HOST_TEMPLATE = """\
+# created by ServerAuditor
+Host {host}
+    User {user}
+    HostName {hostname}
+    Port {port}\n
+"""
+
     def run(self):
         self._greeting()
 
@@ -33,13 +41,72 @@ class ImportSSHConfigApplication(SSHConfigApplication):
         return
 
     def _sync_for_import(self):
-        pass
+        def is_exist(conn):
+            for attempt in (conn['hostname'], conn['label']):
+                h = self._config.get_host(attempt, substitute=True)
+                key_id = conn['ssh_key']
+                if (conn['ssh_username'] == h['user'] and
+                        conn['port'] == int(h.get('port', 22))):
+                        # key check
+                    return True
+            # TODO: may be need to check local config's hostnames
+            return False
+
+        self._logger.log("Synchronization...")
+
+        for conn in self._sa_connections[:]:
+            if is_exist(conn):
+                self._sa_connections.remove(conn)
+
+        self._logger.log("Success!", color='green')
+        return
 
     def _choose_new_hosts(self):
-        pass
+        def get_connection_name(conn, number):
+            name = conn['label'] or "%s@%s:%s" % (conn['ssh_username'], conn['hostname'], conn['port'])
+            return '%s (%d)' % (name, number)
+
+        self._logger.log("The following new hosts have been founded on ServerAuditor's servers:", sleep=0)
+        self._logger.log([get_connection_name(c, i) for i, c in enumerate(self._sa_connections)])
+
+        number = None
+        while number != '=':
+            number = raw_input("You may confirm this list (press '=') or remove host (enter number): ").strip()
+
+            if number == '=':
+                continue
+
+            try:
+                number = int(number)
+                if number >= len(self._sa_connections) or number < 0:
+                    raise IndexError
+            except (ValueError, IndexError):
+                self._logger.log("Bad index!", color='red')
+            else:
+                self._sa_connections.pop(number)
+                self._logger.log("Hosts:\n%s" % [get_connection_name(c, i) for i, c in enumerate(self._sa_connections)])
+
+        self._logger.log("Ok!", color='green')
+        return
 
     def _create_keys_and_connections(self):
-        pass
+        def create_connection(conn):
+            with open(self._config.USER_CONFIG_PATH, 'a') as cf:
+                host = self.SSH_CONFIG_HOST_TEMPLATE.format(
+                    host=conn['label'] or conn['hostname'],
+                    hostname=conn['hostname'],
+                    port=conn['port'],
+                    user=conn['ssh_username']
+                )
+                cf.write(host)
+
+        self._logger.log("Creating keys and connections...")
+
+        for conn in self._sa_connections:
+            create_connection(conn)
+
+        self._logger.log("Success!", color='green')
+        return
 
 
 def main():
