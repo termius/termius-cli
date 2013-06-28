@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+from __future__ import print_function
+
 import abc
 import base64
 
@@ -27,10 +32,10 @@ class RNCryptor(Cryptor):
 
     AES_BLOCK_SIZE = AES.block_size
     AES_MODE = AES.MODE_CBC
-    HMAC_SIZE = 8
+    SALT_SIZE = 8
 
-    ENCRYPTION_SALT = 'BR\x9b=7\xbd`)'
-    IV = '\xd9\x8a\xa6P\x1d1\xe5#:IX\xa2\xd2\xa1\xc7C'
+    ENCRYPTION_SALT = b'BR\x9b=7\xbd`)'
+    IV = b'\xd9\x8a\xa6P\x1d1\xe5#:IX\xa2\xd2\xa1\xc7C'
 
     def pre_decrypt_data(self, data):
         return base64.decodestring(data)
@@ -67,7 +72,7 @@ class RNCryptor(Cryptor):
         """ Does padding for the data for AES (PKCS#7). """
 
         rem = self.AES_BLOCK_SIZE - len(data) % self.AES_BLOCK_SIZE
-        return data + rem * chr(rem)
+        return data + chr(rem) * rem
 
     def post_encrypt_data(self, data):
         return base64.encodestring(data)
@@ -84,10 +89,10 @@ class RNCryptor(Cryptor):
         iv = self.iv
         cipher_text = self._aes_encrypt(encryption_key, iv, data)
 
-        version = chr(2)
-        options = chr(1)
+        version = b'\x02'
+        options = b'\x01'
 
-        new_data = ''.join([version, options, encryption_salt, hmac_salt, iv, cipher_text])
+        new_data = b''.join([version, options, encryption_salt, hmac_salt, iv, cipher_text])
         encrypted_data = new_data + self._hmac(hmac_key, new_data)
 
         return self.post_encrypt_data(encrypted_data)
@@ -98,24 +103,20 @@ class RNCryptor(Cryptor):
 
     @property
     def hmac_salt(self):
-        random = Random.new()
-        return random.read(self.HMAC_SIZE)
+        return Random.new().read(self.SALT_SIZE)
 
     @property
     def iv(self):
         return self.IV
 
     def _aes_encrypt(self, key, iv, text):
-        cipher = AES.new(key, self.AES_MODE, iv)
-        return cipher.encrypt(text)
+        return AES.new(key, self.AES_MODE, iv).encrypt(text)
 
     def _aes_decrypt(self, key, iv, text):
-        cipher = AES.new(key, self.AES_MODE, iv)
-        return cipher.decrypt(text)
+        return AES.new(key, self.AES_MODE, iv).decrypt(text)
 
     def _hmac(self, key, data):
-        hmac = Hash.HMAC.new(key, data, Hash.SHA256)
-        return hmac.digest()
+        return Hash.HMAC.new(key, data, Hash.SHA256).digest()
 
     def _pbkdf2(self, password, salt, iterations=10000, key_length=32):
 
@@ -126,7 +127,7 @@ class RNCryptor(Cryptor):
         from pbkdf2 import pbkdf2_bin
         return pbkdf2_bin(password, salt, iterations=iterations, keylen=key_length)
 
-        ## django version -- fast enough
+        ## django 1.5 version -- fast enough
         # import hashlib
         # from django.utils.crypto import pbkdf2
         # return pbkdf2(password, salt, iterations, dklen=key_length, digest=hashlib.sha1)
@@ -140,18 +141,17 @@ def test():
     texts = ['www.crystalnix.com', '', '1' * 16, '2' * 15, '3' * 17]
 
     for text in texts:
-        print 'text: "{}"'.format(text)
+        print('text: "{}"'.format(text))
 
         s = time()
         encrypted_data = cryptor.encrypt(text, password)
-        print 'encrypted {}: "{}"'.format(time() - s, encrypted_data.replace('\n', ''))
+        print('encrypted {}: "{}"'.format(time() - s, encrypted_data))
 
         s = time()
         decrypted_data = cryptor.decrypt(encrypted_data, password)
-        print 'decrypted {}: "{}"'.format(time() - s, decrypted_data)
+        print('decrypted {}: "{}"\n'.format(time() - s, decrypted_data))
 
         assert text == decrypted_data
-        print
 
 
 if __name__ == '__main__':
