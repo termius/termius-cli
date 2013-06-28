@@ -51,19 +51,18 @@ Host {host}
             return [f[1] for f in host.get('identityfile', [])]
 
         # TODO: may be need to check local config hostname (also check conn['label'] and conn['hostname'])
+        # TODO: true if host is found using label
         def is_exist(conn):
-            for attempt in (conn['hostname'], conn['label']):
-                h = self._config.get_host(attempt, substitute=True)
-                key_check = True
-                key_id = conn['ssh_key']
-                if key_id:
-                    key_check = self._sa_keys[key_id['id']]['private_key'] in get_identity_files(h)
-                if (conn['ssh_username'] == h['user'] and
-                        #conn['hostname'] == h['hostname'] and
-                        conn['port'] == int(h.get('port', 22)) and
-                        key_check):
-                    return True
-            return False
+            attempt = conn['label'] or conn['hostname']
+            h = self._config.get_host(attempt, substitute=True)
+            key_check = True
+            key_id = conn['ssh_key']
+            if key_id:
+                key_check = self._sa_keys[key_id['id']]['private_key'] in get_identity_files(h)
+            return (conn['ssh_username'] == h['user'] and
+                    conn['hostname'] == h['hostname'] and
+                    conn['port'] == int(h.get('port', 22)) and
+                    key_check)
 
         for conn in self._sa_connections[:]:
             if is_exist(conn):
