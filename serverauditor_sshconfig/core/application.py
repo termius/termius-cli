@@ -6,6 +6,7 @@ import sys
 
 
 def description(message):
+
     def decorator(func):
 
         @functools.wraps(func)
@@ -78,10 +79,10 @@ class SSHConfigApplication(object):
 
         # TODO: looks like good for multiprocessing
         for key, value in self._sa_keys.items():
-            #value['label'] = self._cryptor.decrypt(value['label'], self._sa_master_password)
-            #value['passphrase'] = self._cryptor.decrypt(value['passphrase'], self._sa_master_password)
+            value['label'] = self._cryptor.decrypt(value['label'], self._sa_master_password)
             value['private_key'] = self._cryptor.decrypt(value['private_key'], self._sa_master_password)
-            #value['public_key'] = self._cryptor.decrypt(value['public_key'], self._sa_master_password)
+            value['public_key'] = self._cryptor.decrypt(value['public_key'], self._sa_master_password)
+            #value['passphrase'] = self._cryptor.decrypt(value['passphrase'], self._sa_master_password)
 
         for con in self._sa_connections:
             con['label'] = self._cryptor.decrypt(con['label'], self._sa_master_password)

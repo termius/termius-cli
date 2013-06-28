@@ -138,7 +138,10 @@ class SSHConfig(object):
         for m in matches:
             for k, v in m.items():
                 if k not in settings:
-                    settings[k] = v
+                    if isinstance(v, list):
+                        settings[k] = v[:]
+                    else:
+                        settings[k] = v
 
         if substitute:
             self._substitute_variables(settings)
@@ -213,10 +216,11 @@ class SSHConfig(object):
                         settings[k] = settings[k].replace(find, replace)
 
         if 'identityfile' in settings:
-            for i in range(len(settings['identityfile'])):
-                if self._is_file_ok(settings['identityfile'][i]):
+            for i, name in enumerate(settings['identityfile']):
+                if self._is_file_ok(name):
+                    name = name[name.rfind('/') + 1:]
                     with open(settings['identityfile'][i]) as f:
-                        settings['identityfile'][i] = f.read()
+                        settings['identityfile'][i] = [name, f.read()]
             #else:
             #    raise SSHConfigException('Can not read IdentityFile %s' % settings['identityfile'])
 
