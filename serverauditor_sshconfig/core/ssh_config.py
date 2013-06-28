@@ -148,7 +148,7 @@ class SSHConfig(object):
         return settings
 
     def _substitute_variables(self, settings):
-        """ Substituted variables in settings.
+        """ Substitutes variables in settings.
 
         :raises SSHConfigException: if user does not permissions for read IdentityFile.
         :param settings: config which will be changed.
