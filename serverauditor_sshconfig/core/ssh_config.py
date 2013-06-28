@@ -38,10 +38,17 @@ class SSHConfig(object):
         Then, file SYSTEM_CONFIG_PATH is used.
         """
 
+        def create_config_file():
+            """ Creates configuration file. """
+            with open(path, 'w') as f:
+                f.write("# File was created by ServerAuditor\n\n")
+
+            return
+
         for path in (self.USER_CONFIG_PATH, ):  # self.SYSTEM_CONFIG_PATH):
             if not self._is_file_ok(path):
-                raise SSHConfigException("There is no local ssh config on your computer! "
-                                         "This file must be located in '%s'!" % self.USER_CONFIG_PATH)
+                create_config_file()
+
             with open(path) as f:
                 self._parse_file(f)
 
