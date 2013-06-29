@@ -3,6 +3,7 @@
 # Copyright 2013 Crystalnix
 
 import os
+import stat
 import sys
 
 from serverauditor_sshconfig.core.application import SSHConfigApplication, description
@@ -145,10 +146,12 @@ Host {host}
                 if key['private_key']:
                     with open(key_name, 'w') as private_file:
                         private_file.write(key['private_key'])
+                    os.chmod(key_name, stat.S_IWUSR | stat.S_IRUSR)
 
                 if key['public_key']:
                     with open(key_name + '.pub', 'w') as public_file:
                         public_file.write(key['public_key'])
+                    os.chmod(key_name + '.pub', stat.S_IWUSR | stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
 
             return
 
