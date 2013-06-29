@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+
+import sys
+
+
+def main():
+    if len(sys.argv) != 2 or sys.argv[1] not in ('export', 'import'):
+        sys.stderr.write('Usage: %s export | import\n' % sys.argv[0].rsplit('/', 1)[-1])
+        sys.exit(1)
+
+    if sys.argv[1] == 'export':
+        from serverauditor_sshconfig.sa_export import main
+    else:
+        from serverauditor_sshconfig.sa_import import main
+
+    sys.exit(main())
+
+
+if __name__ == '__main__':
+
+    main()
