@@ -109,14 +109,15 @@ Host {host}
                 os.mkdir(key_dir)
 
         def get_key_path(key):
-            key_name = os.path.join(os.path.expanduser(self.SSH_KEYS_DIR), key['label'])
+            key_name = os.path.join(self.SSH_KEYS_DIR, key['label'])
             i = 1
-            while os.path.exists(key_name):
+            while os.path.exists(os.path.expanduser(key_name)):
                 key_name += '-%d' % i
                 i += 1
             return key_name
 
         def create_connection(conn):
+
             with open(self._config.USER_CONFIG_PATH, 'a') as cf:
                 host = self.SSH_CONFIG_HOST_TEMPLATE.format(
                     host=conn['label'] or conn['hostname'],
@@ -128,7 +129,7 @@ Host {host}
 
                 if conn['ssh_key']:
                     key = self._sa_keys[conn['ssh_key']['id']]
-                    key_name = os.path.join(self.SSH_KEYS_DIR, key['label'])
+                    key_name = get_key_path(key)
                     idf = self.SSH_CONFIG_HOST_IDENTITY_FILE.format(key=key_name)
                     cf.write(idf)
 
@@ -137,7 +138,7 @@ Host {host}
             if conn['ssh_key']:
                 check_ssh_keys_dir()
                 key = self._sa_keys[conn['ssh_key']['id']]
-                key_name = get_key_path(key)
+                key_name = os.path.expanduser(get_key_path(key))
 
                 if key['private_key']:
                     with open(key_name, 'w') as private_file:
