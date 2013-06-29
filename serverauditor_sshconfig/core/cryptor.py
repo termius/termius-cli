@@ -133,7 +133,7 @@ class RNCryptor(Cryptor):
         # return pbkdf2(password, salt, iterations, dklen=key_length, digest=hashlib.sha1)
 
 
-def test():
+def main():
     from time import time
 
     cryptor = RNCryptor()
@@ -156,4 +156,4 @@ def test():
 
 if __name__ == '__main__':
 
-    test()
+    main()

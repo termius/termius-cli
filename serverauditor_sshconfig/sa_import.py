@@ -66,6 +66,8 @@ Host {host}
 
         for conn in self._sa_connections[:]:
             if is_exist(conn):
+                name = conn['label'] or "%s@%s:%s" % (conn['ssh_username'], conn['hostname'], conn['port'])
+                self._logger.log('Connection "%s" may be already used by ssh.' % name, color='blue')
                 self._sa_connections.remove(conn)
 
         return

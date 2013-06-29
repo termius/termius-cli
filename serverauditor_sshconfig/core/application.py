@@ -1,7 +1,9 @@
 import abc
+import ConfigParser
 import functools
 import getpass
 import hashlib
+import os
 import sys
 
 
@@ -29,6 +31,8 @@ def description(message):
 
 class SSHConfigApplication(object):
     __metaclass__ = abc.ABCMeta
+
+    SERVER_AUDITOR_SETTINGS_PATH = os.path.expanduser('~/.serverauditor')
 
     def __init__(self, api, ssh_config, cryptor, logger):
         self._api = api
@@ -60,7 +64,34 @@ class SSHConfigApplication(object):
         def hash_password(password):
             return hashlib.sha256(password).hexdigest()
 
-        self._sa_username = raw_input("Enter your Server Auditor's username: ").strip()
+        def read_name_from_config():
+            settings_path = self.SERVER_AUDITOR_SETTINGS_PATH
+            if not os.path.exists(settings_path):
+                with open(settings_path, 'w+'):
+                    pass
+                return ''
+            settings = ConfigParser.ConfigParser()
+            settings.read([settings_path])
+            return settings.get('User', 'name')
+
+        def write_name_to_config(name):
+            settings = ConfigParser.ConfigParser()
+            settings.add_section('User')
+            settings.set('User', 'name', name)
+            with open(self.SERVER_AUDITOR_SETTINGS_PATH, 'w') as f:
+                settings.write(f)
+            return
+
+        prompt = "Enter your Server Auditor's username%s: "
+        name = read_name_from_config()
+        if name:
+            prompt %= (' [%s]' % name)
+            self._sa_username = raw_input(prompt).strip() or name
+        else:
+            prompt %= name
+            self._sa_username = raw_input(prompt).strip()
+
+        write_name_to_config(self._sa_username)
         self._sa_master_password = getpass.getpass("Enter your Server Auditor's password: ")
         self._sa_auth_key = self._api.get_auth_key(self._sa_username, hash_password(self._sa_master_password))
         return
