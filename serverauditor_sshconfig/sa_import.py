@@ -68,7 +68,7 @@ Host {host}
         for conn in self._sa_connections[:]:
             if is_exist(conn):
                 name = conn['label'] or "%s@%s:%s" % (conn['ssh_username'], conn['hostname'], conn['port'])
-                self._logger.log('Connection "%s" may be already used by ssh.' % name, color='blue')
+                self._logger.log('Connection "%s" can already be used by ssh.' % name, color='blue')
                 self._sa_connections.remove(conn)
 
         return
@@ -80,6 +80,11 @@ Host {host}
 
         def get_connections_names():
             return [get_connection_name(c, i) for i, c in enumerate(self._sa_connections)]
+
+        if not self._sa_connections:
+            self._logger.log("There are no new connections on ServerAuditor's servers.")
+            self._valediction()
+            sys.exit(0)
 
         self._logger.log("The following new hosts have been founded on ServerAuditor's servers:", sleep=0)
         self._logger.log(get_connections_names())
