@@ -7,4 +7,4 @@ Usage (alpha version, would be better if you create new virtualenv and activate 
 * cd serverauditor-sshconfig
 * install package ("pip install .", "easy_install .", "python setup.py install")
 * install requirements ("pip install -r requirements.txt" or "easy_install pycrypto")
-* run "serveraditor export | import"
+* run "serverauditor export | import"
