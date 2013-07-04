@@ -1,4 +1,5 @@
 import abc
+import base64
 import ConfigParser
 import functools
 import getpass
@@ -93,7 +94,10 @@ class SSHConfigApplication(object):
 
         write_name_to_config(self._sa_username)
         self._sa_master_password = getpass.getpass("Enter your Server Auditor's password: ")
-        self._sa_auth_key = self._api.get_auth_key(self._sa_username, hash_password(self._sa_master_password))
+        data = self._api.get_auth_key(self._sa_username, hash_password(self._sa_master_password))
+        self._sa_auth_key = data['key']
+        self._cryptor.iv = base64.decodestring(data['iv'])
+        self._cryptor.encryption_salt = base64.decodestring(data['salt'])
         return
 
     @description("Getting current keys and connections...")

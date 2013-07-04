@@ -13,9 +13,8 @@ class API(object):
         request = urllib2.Request(self.API_URL + "token/auth/")
         auth = base64.encodestring('%s:%s' % (username, password)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % auth)
-        result = urllib2.urlopen(request)
-
-        return json.load(result)['key']
+        response = urllib2.urlopen(request)
+        return json.load(response)
 
     def get_keys_and_connections(self, username, auth_key):
         """ Gets current keys and connections.
@@ -29,13 +28,13 @@ class API(object):
         request.add_header("Authorization", auth_header)
         request.add_header("Content-Type", "application/json")
         response = urllib2.urlopen(request)
-        keys = json.loads(response.read())['objects']
+        keys = json.load(response)['objects']
 
         request = urllib2.Request(self.API_URL + "terminal/connection/?limit=100")
         request.add_header("Authorization", auth_header)
         request.add_header("Content-Type", "application/json")
         response = urllib2.urlopen(request)
-        connections = json.loads(response.read())['objects']
+        connections = json.load(response)['objects']
 
         return keys, connections
 
@@ -71,6 +70,6 @@ class API(object):
             request = urllib2.Request(self.API_URL + "terminal/connection/")
             request.add_header("Authorization", auth_header)
             request.add_header("Content-Type", "application/json")
-            response = urllib2.urlopen(request, json.dumps(connection))
+            urllib2.urlopen(request, json.dumps(connection))
 
         return

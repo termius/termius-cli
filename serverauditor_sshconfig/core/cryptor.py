@@ -34,9 +34,6 @@ class RNCryptor(Cryptor):
     AES_MODE = AES.MODE_CBC
     SALT_SIZE = 8
 
-    ENCRYPTION_SALT = b'BR\x9b=7\xbd`)'
-    IV = b'\xd9\x8a\xa6P\x1d1\xe5#:IX\xa2\xd2\xa1\xc7C'
-
     def pre_decrypt_data(self, data):
         return base64.decodestring(data)
 
@@ -99,15 +96,27 @@ class RNCryptor(Cryptor):
 
     @property
     def encryption_salt(self):
-        return self.ENCRYPTION_SALT
+        return self._encryption_salt
+
+    @encryption_salt.setter
+    def encryption_salt(self, value):
+        self._encryption_salt = value
 
     @property
     def hmac_salt(self):
         return Random.new().read(self.SALT_SIZE)
 
+    @hmac_salt.setter
+    def hmac_salt(self, value):
+        raise NotImplementedError()
+
     @property
     def iv(self):
-        return self.IV
+        return self._iv
+
+    @iv.setter
+    def iv(self, value):
+        self._iv = value
 
     def _aes_encrypt(self, key, iv, text):
         return AES.new(key, self.AES_MODE, iv).encrypt(text)
@@ -137,21 +146,25 @@ def main():
     from time import time
 
     cryptor = RNCryptor()
-    password = 'p@s$VV0Rd'
-    texts = ['www.crystalnix.com', '', '1' * 16, '2' * 15, '3' * 17]
+    cryptor.encryption_salt = b'BR\x9b=7\xbd`)'
+    cryptor.iv = b'\xd9\x8a\xa6P\x1d1\xe5#:IX\xa2\xd2\xa1\xc7C'
 
-    for text in texts:
-        print('text: "{}"'.format(text))
+    passwords = 'p@s$VV0Rd', 'пароль'
+    texts = 'www.crystalnix.com', 'текст', '', '1' * 16, '2' * 15, '3' * 17
 
-        s = time()
-        encrypted_data = cryptor.encrypt(text, password)
-        print('encrypted {}: "{}"'.format(time() - s, encrypted_data))
+    for password in passwords:
+        for text in texts:
+            print('text: "{}"'.format(text))
 
-        s = time()
-        decrypted_data = cryptor.decrypt(encrypted_data, password)
-        print('decrypted {}: "{}"\n'.format(time() - s, decrypted_data))
+            s = time()
+            encrypted_data = cryptor.encrypt(text, password)
+            print('encrypted {}: "{}"'.format(time() - s, encrypted_data))
 
-        assert text == decrypted_data
+            s = time()
+            decrypted_data = cryptor.decrypt(encrypted_data, password)
+            print('decrypted {}: "{}"\n'.format(time() - s, decrypted_data))
+
+            assert text == decrypted_data
 
 
 if __name__ == '__main__':
