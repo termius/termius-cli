@@ -41,16 +41,18 @@ class ExportSSHConfigApplication(SSHConfigApplication):
 
         def is_exist(host):
             h = self._config.get_host(host, substitute=True)
-            key_check = bool(h.get('identityfile', None))
+            has_key = bool(h.get('identityfile', None))
             for conn in self._sa_connections:
-                if key_check:
-                    key_id = conn['ssh_key']
+                key_check = True
+                key_id = conn['ssh_key']
+                if has_key:
                     if key_id:
                         key_check = self._sa_keys[key_id['id']]['private_key'] in get_identity_files(h)
                     else:
                         continue
                 else:
-                    key_check = True
+                    if key_id:
+                        continue
 
                 if (conn['hostname'] == h['hostname'] and
                         conn['ssh_username'] == h['user'] and
