@@ -5,6 +5,8 @@ from __future__ import print_function
 
 import abc
 import base64
+import hashlib
+import hmac
 
 import Crypto.Cipher.AES as AES
 import Crypto.Hash as Hash
@@ -128,26 +130,25 @@ class RNCryptor(Cryptor):
         return Hash.HMAC.new(key, data, Hash.SHA256).digest()
 
     def _pbkdf2(self, password, salt, iterations=10000, key_length=32):
+        return KDF.PBKDF2(password, salt, dkLen=key_length, count=iterations,
+                          prf=lambda p, s: hmac.new(p, s, hashlib.sha1).digest())
 
-        ## crypto version -- very slow
-        # return KDF.PBKDF2(password, salt, dkLen=key_length, count=iterations)
-
-        ## https://github.com/mitsuhiko/python-pbkdf2 version -- medium speed
-        from pbkdf2 import pbkdf2_bin
-        return pbkdf2_bin(password, salt, iterations=iterations, keylen=key_length)
-
-        ## django 1.5 version -- fast enough
+        ## django 1.5 version -- faster than crypto version
         # import hashlib
         # from django.utils.crypto import pbkdf2
         # return pbkdf2(password, salt, iterations, dklen=key_length, digest=hashlib.sha1)
+
+        ## passlib version -- the faster version
+        # from passlib.utils.pbkdf2 import pbkdf2
+        # return pbkdf2(password, salt, iterations, key_length)
 
 
 def main():
     from time import time
 
     cryptor = RNCryptor()
-    cryptor.encryption_salt = b'BR\x9b=7\xbd`)'
-    cryptor.iv = b'\xd9\x8a\xa6P\x1d1\xe5#:IX\xa2\xd2\xa1\xc7C'
+    cryptor.encryption_salt = b'1' * 8
+    cryptor.iv = b'2' * 16
 
     passwords = 'p@s$VV0Rd', 'пароль'
     texts = 'www.crystalnix.com', 'текст', '', '1' * 16, '2' * 15, '3' * 17
@@ -166,6 +167,31 @@ def main():
 
             assert text == decrypted_data
 
+
+def main2():
+
+    cryptor = RNCryptor()
+    cryptor.encryption_salt = b'1' * 8
+    cryptor.iv = b'2' * 16
+    password = '123qew123qwe'
+
+    from multiprocessing import Process, Pipe
+    from itertools import izip
+
+    def spawn(f):
+        def fun(pipe, x):
+            pipe.send(f(x))
+            pipe.close()
+        return fun
+
+    def parallel_map(f, X):
+        pipes = [Pipe() for _ in X]
+        processes = [Process(target=spawn(f), args=(c, x)) for x, (p, c) in izip(X, pipes)]
+        [p.start() for p in processes]
+        [p.join() for p in processes]
+        return [p.recv() for (p, c) in pipes]
+
+    print(parallel_map(lambda x: cryptor.encrypt(x, password), map(str, range(40))))
 
 if __name__ == '__main__':
 
