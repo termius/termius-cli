@@ -106,6 +106,7 @@ class RNCryptor(Cryptor):
 
     @property
     def hmac_salt(self):
+        Random.atfork()
         return Random.new().read(self.SALT_SIZE)
 
     @hmac_salt.setter
@@ -138,7 +139,7 @@ class RNCryptor(Cryptor):
         # from django.utils.crypto import pbkdf2
         # return pbkdf2(password, salt, iterations, dklen=key_length, digest=hashlib.sha1)
 
-        ## passlib version -- the faster version
+        ## passlib version -- the fastest version
         # from passlib.utils.pbkdf2 import pbkdf2
         # return pbkdf2(password, salt, iterations, key_length)
 
@@ -167,31 +168,6 @@ def main():
 
             assert text == decrypted_data
 
-
-def main2():
-
-    cryptor = RNCryptor()
-    cryptor.encryption_salt = b'1' * 8
-    cryptor.iv = b'2' * 16
-    password = '123qew123qwe'
-
-    from multiprocessing import Process, Pipe
-    from itertools import izip
-
-    def spawn(f):
-        def fun(pipe, x):
-            pipe.send(f(x))
-            pipe.close()
-        return fun
-
-    def parallel_map(f, X):
-        pipes = [Pipe() for _ in X]
-        processes = [Process(target=spawn(f), args=(c, x)) for x, (p, c) in izip(X, pipes)]
-        [p.start() for p in processes]
-        [p.join() for p in processes]
-        return [p.recv() for (p, c) in pipes]
-
-    print(parallel_map(lambda x: cryptor.encrypt(x, password), map(str, range(40))))
 
 if __name__ == '__main__':
 

@@ -9,6 +9,7 @@ from serverauditor_sshconfig.core.api import API
 from serverauditor_sshconfig.core.cryptor import RNCryptor
 from serverauditor_sshconfig.core.logger import PrettyLogger
 from serverauditor_sshconfig.core.ssh_config import SSHConfig
+from serverauditor_sshconfig.core.utils import parallel_map
 
 
 class ExportSSHConfigApplication(SSHConfigApplication):
@@ -126,7 +127,8 @@ class ExportSSHConfigApplication(SSHConfigApplication):
             return host
 
         empty_and_encrypted = self._cryptor.encrypt('', self._sa_master_password)
-        self._full_local_hosts = [encrypt_host(self._config.get_host(h, substitute=True)) for h in self._local_hosts]
+        almost_full_local_hosts = [self._config.get_host(h, substitute=True) for h in self._local_hosts]
+        self._full_local_hosts = parallel_map(encrypt_host, almost_full_local_hosts)
         return
 
     @description("Creating keys and connections...")

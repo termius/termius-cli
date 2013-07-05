@@ -7,6 +7,8 @@ import hashlib
 import os
 import sys
 
+from .utils import parallel_map
+
 
 def description(message):
 
@@ -111,33 +113,24 @@ class SSHConfigApplication(object):
 
     @description("Decrypting keys and connections...")
     def _decrypt_sa_keys_and_connections(self):
-        # def decrypt_key(key):
-        #     value = self._sa_keys[key]
-        #     self._sa_keys[key] = {
-        #         'label': self._cryptor.decrypt(value['label'], self._sa_master_password),
-        #         'private_key': self._cryptor.decrypt(value['private_key'], self._sa_master_password),
-        #         'public_key': self._cryptor.decrypt(value['public_key'], self._sa_master_password),
-        #         #'passphrase': self._cryptor.decrypt(value['passphrase'], self._sa_master_password),
-        #     }
+        def decrypt_key(kv):
+            key = kv[0]
+            value = kv[1]
+            value = {
+                'label': self._cryptor.decrypt(value['label'], self._sa_master_password),
+                'private_key': self._cryptor.decrypt(value['private_key'], self._sa_master_password),
+                'public_key': self._cryptor.decrypt(value['public_key'], self._sa_master_password),
+            }
+            return key, value
 
         def decrypt_connection(con):
             con['label'] = self._cryptor.decrypt(con['label'], self._sa_master_password)
             con['hostname'] = self._cryptor.decrypt(con['hostname'], self._sa_master_password)
             con['ssh_username'] = self._cryptor.decrypt(con['ssh_username'], self._sa_master_password)
-            #con['ssh_password'] = self._cryptor.decrypt(con['ssh_password'], self._sa_master_password)
             return con
 
-        # for key in self._sa_keys:
-        #     decrypt_key(key)
-
-        for key, value in self._sa_keys.items():
-            value['label'] = self._cryptor.decrypt(value['label'], self._sa_master_password)
-            value['private_key'] = self._cryptor.decrypt(value['private_key'], self._sa_master_password)
-            value['public_key'] = self._cryptor.decrypt(value['public_key'], self._sa_master_password)
-            #value['passphrase'] = self._cryptor.decrypt(value['passphrase'], self._sa_master_password)
-
-        for con in self._sa_connections:
-            decrypt_connection(con)
+        self._sa_keys = dict(parallel_map(decrypt_key, self._sa_keys.items()))
+        self._sa_connections = parallel_map(decrypt_connection, self._sa_connections)
 
         return
 
