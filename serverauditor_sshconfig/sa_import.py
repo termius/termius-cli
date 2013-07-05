@@ -76,7 +76,7 @@ Host {host}
     def _choose_new_hosts(self):
         def get_connection_name(conn, number):
             name = conn['label'] or "%s@%s:%s" % (conn['ssh_username'], conn['hostname'], conn['port'])
-            return '%s (%d)' % (name, number)
+            return '%s (#%d)' % (name, number)
 
         def get_connections_names():
             return [get_connection_name(c, i) for i, c in enumerate(self._sa_connections)]
@@ -89,12 +89,12 @@ Host {host}
         self._logger.log("The following new hosts have been founded on ServerAuditor's servers:", sleep=0)
         self._logger.log(get_connections_names())
 
-        number = None
-        while number != '=':
-            number = raw_input("You may confirm this list (press '=') or remove host (enter number): ").strip()
+        prompt = "You may confirm this list (press 'Enter') or remove host (enter its number): "
+        while True:
+            number = raw_input(prompt).strip()
 
-            if number == '=':
-                continue
+            if number == '':
+                break
 
             try:
                 number = int(number)

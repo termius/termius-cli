@@ -70,17 +70,17 @@ class ExportSSHConfigApplication(SSHConfigApplication):
 
     def _choose_new_hosts(self):
         def get_hosts_names():
-            return ['%s (%d)' % (h, i) for i, h in enumerate(self._local_hosts)]
+            return ['%s (#%d)' % (h, i) for i, h in enumerate(self._local_hosts)]
 
         self._logger.log("The following new hosts have been founded in your ssh config:", sleep=0)
         self._logger.log(get_hosts_names())
-        number = None
-        while number != '=':
-            number = raw_input("You may confirm this list (enter '='), "
-                               "add (enter '+') or remove (enter number) host: ").strip()
 
-            if number == '=':
-                continue
+        prompt = "You may confirm this list (press 'Enter'), add (enter '+') or remove (enter its number) host: "
+        while True:
+            number = raw_input(prompt).strip()
+
+            if number == '':
+                break
 
             if number == '+':
                 host = raw_input("Adding host: ")
@@ -95,14 +95,13 @@ class ExportSSHConfigApplication(SSHConfigApplication):
             else:
                 try:
                     number = int(number)
-                except ValueError:
-                    pass
-                else:
                     if number >= len(self._local_hosts) or number < 0:
-                        self._logger.log("Incorrect index!", color='red', file=sys.stderr)
-                    else:
-                        self._local_hosts.pop(number)
-                        self._logger.log("Hosts:\n%s" % get_hosts_names())
+                        raise IndexError
+                except (ValueError, IndexError):
+                    self._logger.log("Incorrect index!", color='red', file=sys.stderr)
+                else:
+                    self._local_hosts.pop(number)
+                    self._logger.log("Hosts:\n%s" % get_hosts_names())
 
         self._logger.log("Ok!", color='green')
         return
