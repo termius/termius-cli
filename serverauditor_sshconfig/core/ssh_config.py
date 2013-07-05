@@ -215,6 +215,9 @@ class SSHConfig(object):
                     else:
                         settings[k] = settings[k].replace(find, replace)
 
+        if 'port' in settings:
+            settings['port'] = int(settings['port'])
+
         if 'identityfile' in settings:
             for i, name in enumerate(settings['identityfile']):
                 if self._is_file_ok(name):
