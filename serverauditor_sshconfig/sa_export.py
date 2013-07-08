@@ -71,10 +71,10 @@ class ExportSSHConfigApplication(SSHConfigApplication):
 
     def _choose_new_hosts(self):
         def get_hosts_names():
-            return ['%s (#%d)' % (h, i) for i, h in enumerate(self._local_hosts)]
+            return ', '.join('%s (#%d)' % (h, i) for i, h in enumerate(self._local_hosts)) or '[]'
 
         self._logger.log("The following new hosts have been founded in your ssh config:", sleep=0)
-        self._logger.log(get_hosts_names())
+        self._logger.log(get_hosts_names(), color='blue')
 
         prompt = "You may confirm this list (press 'Enter'), add (enter '+') or remove (enter its number) host: "
         while True:
@@ -84,14 +84,12 @@ class ExportSSHConfigApplication(SSHConfigApplication):
                 break
 
             if number == '+':
-                host = raw_input("Adding host: ")
+                host = raw_input("Enter host: ")
                 conf = self._config.get_host(host)
                 if conf.keys() == ['host']:
                     self._logger.log("There is no config for host %s!" % host, file=sys.stderr)
                 else:
                     self._local_hosts.append(host)
-
-                self._logger.log("Hosts:\n%s" % get_hosts_names())
 
             else:
                 try:
@@ -100,9 +98,11 @@ class ExportSSHConfigApplication(SSHConfigApplication):
                         raise IndexError
                 except (ValueError, IndexError):
                     self._logger.log("Incorrect index!", color='red', file=sys.stderr)
+                    continue
                 else:
                     self._local_hosts.pop(number)
-                    self._logger.log("Hosts:\n%s" % get_hosts_names())
+
+            self._logger.log(get_hosts_names(), color='blue')
 
         self._logger.log("Ok!", color='green')
         return
@@ -141,7 +141,7 @@ def main():
     try:
         app.run()
     except (KeyboardInterrupt, EOFError):
-        pass
+        sys.exit(1)
     return
 
 

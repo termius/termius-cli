@@ -79,7 +79,7 @@ Host {host}
             return '%s (#%d)' % (name, number)
 
         def get_connections_names():
-            return [get_connection_name(c, i) for i, c in enumerate(self._sa_connections)]
+            return ', '.join(get_connection_name(c, i) for i, c in enumerate(self._sa_connections)) or '[]'
 
         if not self._sa_connections:
             self._logger.log("There are no new connections on ServerAuditor's servers.")
@@ -87,7 +87,7 @@ Host {host}
             sys.exit(0)
 
         self._logger.log("The following new hosts have been founded on ServerAuditor's servers:", sleep=0)
-        self._logger.log(get_connections_names())
+        self._logger.log(get_connections_names(), color='blue')
 
         prompt = "You may confirm this list (press 'Enter') or remove host (enter its number): "
         while True:
@@ -104,7 +104,7 @@ Host {host}
                 self._logger.log("Incorrect index!", color='red', file=sys.stderr)
             else:
                 self._sa_connections.pop(number)
-                self._logger.log("Hosts:\n%s" % get_connections_names())
+                self._logger.log(get_connections_names(), color='blue')
 
         self._logger.log("Ok!", color='green')
         return
@@ -171,7 +171,7 @@ def main():
     try:
         app.run()
     except (KeyboardInterrupt, EOFError):
-        pass
+        sys.exit(1)
     return
 
 
