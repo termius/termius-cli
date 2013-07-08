@@ -1,6 +1,10 @@
 #!/usr/bin/env python
-#
-# Copyright 2013 Crystalnix
+# coding: utf-8
+
+"""
+Copyright (c) 2013 Crystalnix.
+License BSD, see LICENSE for more details.
+"""
 
 import os
 import stat

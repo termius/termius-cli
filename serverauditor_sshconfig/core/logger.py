@@ -1,3 +1,10 @@
+# coding: utf-8
+
+"""
+Copyright (c) 2013 Crystalnix.
+License BSD, see LICENSE for more details.
+"""
+
 from __future__ import print_function
 
 import abc
