@@ -113,20 +113,19 @@ class ExportSSHConfigApplication(SSHConfigApplication):
             host['host'] = self._cryptor.encrypt(host['host'], self._sa_master_password)
             host['hostname'] = self._cryptor.encrypt(host['hostname'], self._sa_master_password)
             host['user'] = self._cryptor.encrypt(host['user'], self._sa_master_password)
-            host['password'] = empty_and_encrypted
+            host['password'] = ''
 
             host['ssh_key'] = []
             for i, f in enumerate(host.get('identityfile', [])):
                 ssh_key = {
                     'label': self._cryptor.encrypt(f[0], self._sa_master_password),
                     'private_key': self._cryptor.encrypt(f[1], self._sa_master_password),
-                    'public_key': empty_and_encrypted,
-                    'passphrase': empty_and_encrypted
+                    'public_key': '',
+                    'passphrase': ''
                 }
                 host['ssh_key'].append(ssh_key)
             return host
 
-        empty_and_encrypted = self._cryptor.encrypt('', self._sa_master_password)
         almost_full_local_hosts = [self._config.get_host(h, substitute=True) for h in self._local_hosts]
         self._full_local_hosts = parallel_map(encrypt_host, almost_full_local_hosts)
         return

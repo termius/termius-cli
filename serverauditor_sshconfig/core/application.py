@@ -115,16 +115,16 @@ class SSHConfigApplication(object):
     def _decrypt_sa_keys_and_connections(self):
         def decrypt_key(kv):
             key = kv[0]
-            value = kv[1]
+            v = kv[1]
             value = {
-                'label': self._cryptor.decrypt(value['label'], self._sa_master_password),
-                'private_key': self._cryptor.decrypt(value['private_key'], self._sa_master_password),
-                'public_key': self._cryptor.decrypt(value['public_key'], self._sa_master_password),
+                'label': self._cryptor.decrypt(v['label'], self._sa_master_password),
+                'private_key': v['private_key'] and self._cryptor.decrypt(v['private_key'], self._sa_master_password),
+                'public_key': v['public_key'] and self._cryptor.decrypt(v['public_key'], self._sa_master_password),
             }
             return key, value
 
         def decrypt_connection(con):
-            con['label'] = self._cryptor.decrypt(con['label'], self._sa_master_password)
+            con['label'] = con['label'] and self._cryptor.decrypt(con['label'], self._sa_master_password)
             con['hostname'] = self._cryptor.decrypt(con['hostname'], self._sa_master_password)
             con['ssh_username'] = self._cryptor.decrypt(con['ssh_username'], self._sa_master_password)
             return con
