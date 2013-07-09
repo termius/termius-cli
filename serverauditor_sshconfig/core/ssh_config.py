@@ -47,6 +47,10 @@ class SSHConfig(object):
 
         def create_config_file():
             """ Creates configuration file. """
+            ssh_dir = os.path.dirname(path)
+            if not os.path.exists(ssh_dir):
+                os.mkdir(ssh_dir, 0700)
+
             with open(path, 'w') as f:
                 f.write("# File was created by ServerAuditor\n\n")
 
@@ -55,9 +59,9 @@ class SSHConfig(object):
         for path in (self.USER_CONFIG_PATH, ):  # self.SYSTEM_CONFIG_PATH):
             if not self._is_file_ok(path):
                 create_config_file()
-
-            with open(path) as f:
-                self._parse_file(f)
+            else:
+                with open(path) as f:
+                    self._parse_file(f)
 
         return
 
