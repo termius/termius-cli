@@ -50,15 +50,15 @@ class SSHConfigApplication(object):
         self._cryptor = cryptor
         self._logger = logger
 
-        self._sa_username = None
-        self._sa_master_password = None
-        self._sa_auth_key = None
+        self._sa_username = ''
+        self._sa_master_password = ''
+        self._sa_auth_key = ''
 
-        self._sa_keys = None
-        self._sa_connections = None
+        self._sa_keys = {}
+        self._sa_connections = []
 
-        self._local_hosts = None
-        self._full_local_hosts = None
+        self._local_hosts = []
+        self._full_local_hosts = []
         return
 
     @abc.abstractmethod
