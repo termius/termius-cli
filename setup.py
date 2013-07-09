@@ -1,25 +1,38 @@
-from distutils.core import setup
+from setuptools import setup, find_packages
 
-
-name = 'serverauditor_sshconfig'
+from serverauditor_sshconfig import __version__
 
 
 def get_version():
-    from serverauditor_sshconfig import __version__
     return '.'.join(map(str, __version__))
 
 
+def get_long_description():
+    with open('README.md') as f:
+        return f.read()
+
+
 setup(
-    name=name,
+    name='serverauditor-sshconfig',
     version=get_version(),
-    packages=['serverauditor_sshconfig', 'serverauditor_sshconfig.core'],
-    url='https://github.com/Crystalnix/serverauditor-sshconfig',
     license='BSD',
     author='Yan Kalchevskiy',
     author_email='yan.kalchevskiy@crystalnix.com',
+    url='https://github.com/Crystalnix/serverauditor-sshconfig',
     description='Serverauditor ssh-config utility.',
+    long_description=get_long_description(),
+    keywords=['serverauditor', 'crystalnix'],
+    packages=find_packages(),
     scripts=['serverauditor_sshconfig/serverauditor'],
-    requires=[
-        'pycrypto',
+    install_requires=['pycrypto==2.6'],
+    zip_safe=False,
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Environment :: Console',
+        'Intended Audience :: System Administrators',
+        'License :: OSI Approved :: BSD License',
+        'Operating System :: Unix',
+        'Programming Language :: Python :: 2.7',
+        'Topic :: Utilities',
     ]
 )

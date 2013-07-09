@@ -1,10 +1,38 @@
 ServerAuditor ssh config utility
 ================================
 
-Usage (alpha version, would be better if you create new virtualenv and activate it before setup):
 
-* clone repository
-* cd serverauditor-sshconfig
-* install package ("pip install .", "easy_install .", "python setup.py install")
-* install requirements ("pip install -r requirements.txt" or "easy_install pycrypto")
-* run "serverauditor export | import"
+Installation
+------------
+
+serverauditor-sshconfig can be installed via [pip](http://www.pip-installer.org/en/latest/index.html):
+
+    $ pip install serverauditor-sshconfig
+
+or [easy_install](http://pythonhosted.org/distribute/):
+
+    $ easy_install serverauditor-sshconfig
+
+
+Usage
+-----
+
+If you want to *export* connections from your computer to your ServerAuditor's account:
+
+    $ serverauditor export
+
+If you want to *import* connections from your ServerAuditor's account to your computer:
+
+    $ serverauditor import
+
+
+License
+-------
+
+Please see [LICENSE](https://github.com/Crystalnix/serverauditor-sshconfig/blob/master/LICENSE).
+
+
+Notes
+-----
+
+Some stages of utility's work may last for several seconds (depends on amount of the connections and your computer's performance).
