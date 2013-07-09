@@ -3,3 +3,5 @@
 *.pyo
 
 .idea
+dist
+*.egg-info
