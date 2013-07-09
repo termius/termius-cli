@@ -171,6 +171,8 @@ class SSHConfig(object):
         else:
             port = self.SSH_PORT
 
+        settings['port'] = int(port)
+
         user = getpass.getuser()
         if 'user' not in settings:
             settings['user'] = user
@@ -221,9 +223,6 @@ class SSHConfig(object):
                             settings[k][i] = settings[k][i].replace(find, replace)
                     else:
                         settings[k] = settings[k].replace(find, replace)
-
-        if 'port' in settings:
-            settings['port'] = int(settings['port'])
 
         if 'identityfile' in settings:
             for i, name in enumerate(settings['identityfile']):

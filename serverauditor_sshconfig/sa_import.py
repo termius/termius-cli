@@ -66,7 +66,7 @@ Host {host}
                 key_check = self._sa_keys[key_id['id']]['private_key'] in get_identity_files(h)
             return (conn['ssh_username'] == h['user'] and
                     conn['hostname'] == h['hostname'] and
-                    conn['port'] == int(h.get('port', 22)) and
+                    conn['port'] == h['port'] and
                     key_check)
 
         for conn in self._sa_connections[:]:

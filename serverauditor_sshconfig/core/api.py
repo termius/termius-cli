@@ -73,6 +73,7 @@ class API(object):
                 "ssh_key": key,
                 "ssh_password": host['password'],
                 "ssh_username": host['user'],
+                "port": host['port']
             }
             request = urllib2.Request(self.API_URL + "terminal/connection/")
             request.add_header("Authorization", auth_header)
