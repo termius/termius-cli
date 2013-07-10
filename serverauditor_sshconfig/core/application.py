@@ -82,7 +82,10 @@ class SSHConfigApplication(object):
                 return None
             settings = ConfigParser.ConfigParser()
             settings.read([settings_path])
-            return settings.get('User', 'name')
+            try:
+                return settings.get('User', 'name')
+            except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
+                return None
 
         def write_name_to_config(name):
             settings = ConfigParser.ConfigParser()
