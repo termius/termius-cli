@@ -8,7 +8,7 @@ def get_version():
 
 
 def get_long_description():
-    with open('README') as f:
+    with open('README.rst') as f:
         return f.read()
 
 
