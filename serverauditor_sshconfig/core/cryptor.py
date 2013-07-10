@@ -13,10 +13,10 @@ import base64
 import hashlib
 import hmac
 
-import Crypto.Cipher.AES as AES
-import Crypto.Hash as Hash
-import Crypto.Protocol.KDF as KDF
-import Crypto.Random as Random
+from Crypto import Hash
+from Crypto import Random
+from Crypto.Cipher import AES
+from Crypto.Protocol import KDF
 
 
 class CryptorException(Exception):

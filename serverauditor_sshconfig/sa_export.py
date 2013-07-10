@@ -36,7 +36,7 @@ class ExportSSHConfigApplication(SSHConfigApplication):
         return
 
     def _greeting(self):
-        self._logger.log("ServerAuditor's ssh config script. Export from local machine to SA servers.", color='magenta')
+        self._logger.log("ServerAuditor's ssh config script. Export from your computer to SA account.", color='magenta')
         return
 
     @description("Synchronization...")
@@ -109,6 +109,9 @@ class ExportSSHConfigApplication(SSHConfigApplication):
             self._logger.log(get_hosts_names(), color='blue')
 
         self._logger.log("Ok!", color='green')
+        if not self._local_hosts:
+            self._valediction()
+            sys.exit(0)
         return
 
     @description("Getting full information...")
@@ -147,7 +150,6 @@ def main():
     except (KeyboardInterrupt, EOFError):
         sys.exit(1)
     return
-
 
 if __name__ == "__main__":
 

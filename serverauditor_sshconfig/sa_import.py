@@ -47,7 +47,7 @@ Host {host}
         return
 
     def _greeting(self):
-        self._logger.log("ServerAuditor's ssh config script. Import from SA servers to local machine.", color='magenta')
+        self._logger.log("ServerAuditor's ssh config script. Import from SA account to your  computer.", color='magenta')
         return
 
     @description("Synchronization...")
@@ -111,6 +111,9 @@ Host {host}
                 self._logger.log(get_connections_names(), color='blue')
 
         self._logger.log("Ok!", color='green')
+        if not self._sa_connections:
+            self._valediction()
+            sys.exit(0)
         return
 
     @description("Creating keys and connections...")
