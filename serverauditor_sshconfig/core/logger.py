@@ -7,21 +7,12 @@ License BSD, see LICENSE for more details.
 
 from __future__ import print_function
 
-import abc
 import pprint
 import sys
 import time
 
 
-class Logger(object):
-    __metaclass__ = abc.ABCMeta
-
-    @abc.abstractmethod
-    def log(self, message, *args, **kwargs):
-        pass
-
-
-class PrettyLogger(Logger):
+class PrettyLogger(object):
 
     COLOR_END = '\033[0m'
     COLOR_BOLD = '\033[1m'

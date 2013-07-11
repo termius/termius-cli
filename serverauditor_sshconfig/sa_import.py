@@ -15,6 +15,7 @@ from serverauditor_sshconfig.core.api import API
 from serverauditor_sshconfig.core.cryptor import RNCryptor
 from serverauditor_sshconfig.core.logger import PrettyLogger
 from serverauditor_sshconfig.core.ssh_config import SSHConfig
+from serverauditor_sshconfig.core.utils import p_input
 
 
 class ImportSSHConfigApplication(SSHConfigApplication):
@@ -95,7 +96,7 @@ Host {host}
 
         prompt = "You may confirm this list (press 'Enter') or remove host (enter its number): "
         while True:
-            number = raw_input(prompt).strip()
+            number = p_input(prompt).strip()
 
             if number == '':
                 break

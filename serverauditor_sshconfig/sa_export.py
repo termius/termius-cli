@@ -13,7 +13,7 @@ from serverauditor_sshconfig.core.api import API
 from serverauditor_sshconfig.core.cryptor import RNCryptor
 from serverauditor_sshconfig.core.logger import PrettyLogger
 from serverauditor_sshconfig.core.ssh_config import SSHConfig
-from serverauditor_sshconfig.core.utils import parallel_map
+from serverauditor_sshconfig.core.utils import parallel_map, p_input
 
 
 class ExportSSHConfigApplication(SSHConfigApplication):
@@ -82,13 +82,13 @@ class ExportSSHConfigApplication(SSHConfigApplication):
 
         prompt = "You may confirm this list (press 'Enter'), add (enter '+') or remove (enter its number) host: "
         while True:
-            number = raw_input(prompt).strip()
+            number = p_input(prompt).strip()
 
             if number == '':
                 break
 
             if number == '+':
-                host = raw_input("Enter host: ")
+                host = p_input("Enter host: ")
                 conf = self._config.get_host(host)
                 if conf.keys() == ['host']:
                     self._logger.log("There is no config for host %s!" % host, file=sys.stderr)

@@ -1,7 +1,9 @@
 *~
-*.pyc
-*.pyo
+.DS_Store
 
 .idea
+
+*.pyc
+*.pyo
 dist
 *.egg-info

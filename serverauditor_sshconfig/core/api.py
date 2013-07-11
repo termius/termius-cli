@@ -7,7 +7,12 @@ License BSD, see LICENSE for more details.
 
 import base64
 import json
-import urllib2
+try:
+    import urllib.request as urllib2
+except ImportError:
+    import urllib2
+
+from .utils import to_bytes, to_str
 
 
 class API(object):
@@ -18,10 +23,11 @@ class API(object):
         """ Returns user's auth token. """
 
         request = urllib2.Request(self.API_URL + "token/auth/")
-        auth = base64.encodestring('%s:%s' % (username, password)).replace('\n', '')
-        request.add_header("Authorization", "Basic %s" % auth)
+        auth_str = '%s:%s' % (username, password)
+        auth = base64.encodestring(to_bytes(auth_str)).replace(b'\n', b'')
+        request.add_header("Authorization", "Basic %s" % to_str(auth))
         response = urllib2.urlopen(request)
-        return json.load(response)
+        return json.loads(to_str(response.read()))
 
     def get_keys_and_connections(self, username, auth_key):
         """ Gets current keys and connections.
@@ -35,13 +41,13 @@ class API(object):
         request.add_header("Authorization", auth_header)
         request.add_header("Content-Type", "application/json")
         response = urllib2.urlopen(request)
-        keys = json.load(response)['objects']
+        keys = json.loads(to_str(response.read()))['objects']
 
         request = urllib2.Request(self.API_URL + "terminal/connection/?limit=100")
         request.add_header("Authorization", auth_header)
         request.add_header("Content-Type", "application/json")
         response = urllib2.urlopen(request)
-        connections = json.load(response)['objects']
+        connections = json.loads(to_str(response.read()))['objects']
 
         return keys, connections
 
@@ -60,7 +66,7 @@ class API(object):
                 request = urllib2.Request(self.API_URL + "terminal/ssh_key/")
                 request.add_header("Authorization", auth_header)
                 request.add_header("Content-Type", "application/json")
-                response = urllib2.urlopen(request, json.dumps(ssh_key))
+                response = urllib2.urlopen(request, to_bytes(json.dumps(ssh_key)))
                 key_numbers.append(int(response.headers['Location'].rstrip('/').rsplit('/', 1)[-1]))
 
             key = None
@@ -78,6 +84,6 @@ class API(object):
             request = urllib2.Request(self.API_URL + "terminal/connection/")
             request.add_header("Authorization", auth_header)
             request.add_header("Content-Type", "application/json")
-            urllib2.urlopen(request, json.dumps(connection))
+            urllib2.urlopen(request, to_bytes(json.dumps(connection)))
 
         return

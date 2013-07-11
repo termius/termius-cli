@@ -49,7 +49,7 @@ class SSHConfig(object):
             """ Creates configuration file. """
             ssh_dir = os.path.dirname(path)
             if not os.path.exists(ssh_dir):
-                os.mkdir(ssh_dir, 0700)
+                os.mkdir(ssh_dir, 0o700)
 
             with open(path, 'w') as f:
                 f.write("# File was created by ServerAuditor\n\n")

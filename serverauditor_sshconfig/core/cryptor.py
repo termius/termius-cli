@@ -8,7 +8,6 @@ License BSD, see LICENSE for more details.
 
 from __future__ import print_function
 
-import abc
 import base64
 import hashlib
 import hmac
@@ -18,39 +17,32 @@ from Crypto import Random
 from Crypto.Cipher import AES
 from Crypto.Protocol import KDF
 
+from .utils import bchr, bord, to_bytes, to_str
+
 
 class CryptorException(Exception):
     pass
 
 
-class Cryptor(object):
-    __metaclass__ = abc.ABCMeta
-
-    @abc.abstractmethod
-    def decrypt(self, data, password):
-        return data
-
-    @abc.abstractmethod
-    def encrypt(self, data, password):
-        return data
-
-
-class RNCryptor(Cryptor):
+class RNCryptor(object):
 
     AES_BLOCK_SIZE = AES.block_size
     AES_MODE = AES.MODE_CBC
     SALT_SIZE = 8
 
     def pre_decrypt_data(self, data):
+        data = to_bytes(data)
         return base64.decodestring(data)
 
     def post_decrypt_data(self, data):
         """ Removes useless symbols which appear over padding for AES (PKCS#7). """
 
-        return data[:-ord(data[-1])]
+        data = data[:-bord(data[-1])]
+        return to_str(data)
 
     def decrypt(self, data, password):
         data = self.pre_decrypt_data(data)
+        password = to_bytes(password)
 
         n = len(data)
 
@@ -75,14 +67,17 @@ class RNCryptor(Cryptor):
     def pre_encrypt_data(self, data):
         """ Does padding for the data for AES (PKCS#7). """
 
+        data = to_bytes(data)
         rem = self.AES_BLOCK_SIZE - len(data) % self.AES_BLOCK_SIZE
-        return data + chr(rem) * rem
+        return data + bchr(rem) * rem
 
     def post_encrypt_data(self, data):
-        return base64.encodestring(data)
+        data = base64.encodestring(data)
+        return to_str(data)
 
     def encrypt(self, data, password):
         data = self.pre_encrypt_data(data)
+        password = to_bytes(password)
 
         encryption_salt = self.encryption_salt
         encryption_key = self._pbkdf2(password, encryption_salt)

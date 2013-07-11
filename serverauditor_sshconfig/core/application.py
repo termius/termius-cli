@@ -5,16 +5,18 @@ Copyright (c) 2013 Crystalnix.
 License BSD, see LICENSE for more details.
 """
 
-import abc
 import base64
-import ConfigParser
+try:
+    import configparser as ConfigParser
+except ImportError:
+    import ConfigParser
 import functools
 import getpass
 import hashlib
 import os
 import sys
 
-from .utils import parallel_map
+from .utils import parallel_map, p_input, to_bytes
 
 
 def description(message):
@@ -40,7 +42,6 @@ def description(message):
 
 
 class SSHConfigApplication(object):
-    __metaclass__ = abc.ABCMeta
 
     SERVER_AUDITOR_SETTINGS_PATH = os.path.expanduser('~/.serverauditor')
 
@@ -61,7 +62,6 @@ class SSHConfigApplication(object):
         self._full_local_hosts = []
         return
 
-    @abc.abstractmethod
     def run(self):
         pass
 
@@ -72,6 +72,7 @@ class SSHConfigApplication(object):
     @description(None)
     def _get_sa_user(self):
         def hash_password(password):
+            password = to_bytes(password)
             return hashlib.sha256(password).hexdigest()
 
         def read_name_from_config():
@@ -99,17 +100,17 @@ class SSHConfigApplication(object):
         name = read_name_from_config()
         if name:
             prompt %= (' [%s]' % name)
-            self._sa_username = raw_input(prompt).strip() or name
+            self._sa_username = p_input(prompt).strip() or name
         else:
             prompt %= ''
-            self._sa_username = raw_input(prompt).strip()
+            self._sa_username = p_input(prompt).strip()
 
         write_name_to_config(self._sa_username)
         self._sa_master_password = getpass.getpass("Enter your Server Auditor's password: ")
         data = self._api.get_auth_key(self._sa_username, hash_password(self._sa_master_password))
         self._sa_auth_key = data['key']
-        self._cryptor.iv = base64.decodestring(data['iv'])
-        self._cryptor.encryption_salt = base64.decodestring(data['salt'])
+        self._cryptor.iv = base64.decodestring(to_bytes(data['iv']))
+        self._cryptor.encryption_salt = base64.decodestring(to_bytes(data['salt']))
         return
 
     @description("Getting current keys and connections...")
@@ -139,7 +140,7 @@ class SSHConfigApplication(object):
             con['ssh_username'] = self._cryptor.decrypt(con['ssh_username'], self._sa_master_password)
             return con
 
-        self._sa_keys = dict(parallel_map(decrypt_key, self._sa_keys.items()))
+        self._sa_keys = dict(parallel_map(decrypt_key, list(self._sa_keys.items())))
         self._sa_connections = parallel_map(decrypt_connection, self._sa_connections)
 
         return
