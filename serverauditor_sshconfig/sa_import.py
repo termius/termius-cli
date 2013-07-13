@@ -119,6 +119,11 @@ Host {host}
 
     @description("Creating keys and connections...")
     def _create_keys_and_connections(self):
+        def get_param_name(s):
+            if any(c.isspace() for c in s):
+                return '"%s"' % s
+            return s
+
         def check_ssh_keys_dir():
             key_dir = os.path.expanduser(self.SSH_KEYS_DIR)
             if not os.path.exists(key_dir):
@@ -136,17 +141,17 @@ Host {host}
 
             with open(self._config.USER_CONFIG_PATH, 'a') as cf:
                 host = self.SSH_CONFIG_HOST_TEMPLATE.format(
-                    host=conn['label'] or conn['hostname'],
-                    hostname=conn['hostname'],
-                    port=conn['port'],
-                    user=conn['ssh_username']
+                    host=get_param_name(conn['label'] or conn['hostname']),
+                    hostname=get_param_name(conn['hostname']),
+                    user=get_param_name(conn['ssh_username']),
+                    port=conn['port']
                 )
                 cf.write(host)
 
                 if conn['ssh_key']:
                     key = self._sa_keys[conn['ssh_key']['id']]
                     key_name = get_key_path(key)
-                    idf = self.SSH_CONFIG_HOST_IDENTITY_FILE.format(key=key_name)
+                    idf = self.SSH_CONFIG_HOST_IDENTITY_FILE.format(key=get_param_name(key_name))
                     cf.write(idf)
 
                 cf.write('\n')
