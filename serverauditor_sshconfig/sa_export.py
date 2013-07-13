@@ -95,7 +95,7 @@ class ExportSSHConfigApplication(SSHConfigApplication):
             if number == '+':
                 host = p_input("Enter host: ")
                 conf = self._config.get_host(host)
-                if conf.keys() == ['host']:
+                if list(conf.keys()) == ['host']:
                     self._logger.log("There is no config for host %s!" % host, color='red', file=sys.stderr)
                 else:
                     self._local_hosts.append(host)
