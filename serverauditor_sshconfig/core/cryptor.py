@@ -12,8 +12,6 @@ import base64
 import hashlib
 import hmac
 
-from Crypto import Hash
-from Crypto import Random
 from Crypto.Cipher import AES
 from Crypto.Protocol import KDF
 
@@ -106,12 +104,11 @@ class RNCryptor(object):
 
     @property
     def hmac_salt(self):
-        Random.atfork()
-        return Random.new().read(self.SALT_SIZE)
+        return self._hmac_salt
 
     @hmac_salt.setter
     def hmac_salt(self, value):
-        raise NotImplementedError()
+        self._hmac_salt = value
 
     @property
     def iv(self):
@@ -128,11 +125,13 @@ class RNCryptor(object):
         return AES.new(key, self.AES_MODE, iv).decrypt(text)
 
     def _hmac(self, key, data):
-        return Hash.HMAC.new(key, data, Hash.SHA256).digest()
+        return hmac.new(key, data, hashlib.sha256).digest()
 
     def _pbkdf2(self, password, salt, iterations=10000, key_length=32):
-        return KDF.PBKDF2(password, salt, dkLen=key_length, count=iterations,
-                          prf=lambda p, s: hmac.new(p, s, hashlib.sha1).digest())
+        if not getattr(self, '_key', None):
+            self._key = KDF.PBKDF2(password, salt, dkLen=key_length, count=iterations,
+                                   prf=lambda p, s: hmac.new(p, s, hashlib.sha1).digest())
+        return self._key
 
         ## django 1.5 version -- faster than crypto version
         # import hashlib
@@ -149,6 +148,7 @@ def main():
 
     cryptor = RNCryptor()
     cryptor.encryption_salt = b'1' * 8
+    cryptor.hmac_salt = b'1' * 8
     cryptor.iv = b'2' * 16
 
     passwords = 'p@s$VV0Rd', 'пароль'

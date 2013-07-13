@@ -28,6 +28,10 @@ def parallel_map(f, iterable):
     return [p.recv() for (p, c) in pipes]
 
 
+# now parallel_map isn't needed
+parallel_map = lambda f, it: list(map(f, it))
+
+
 if PY2:
     p_input = raw_input
 

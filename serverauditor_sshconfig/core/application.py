@@ -111,6 +111,7 @@ class SSHConfigApplication(object):
         self._sa_auth_key = data['key']
         self._cryptor.iv = base64.decodestring(to_bytes(data['iv']))
         self._cryptor.encryption_salt = base64.decodestring(to_bytes(data['salt']))
+        self._cryptor.hmac_salt = base64.decodestring(to_bytes(data['salt']))
         return
 
     @description("Getting current keys and connections...")
