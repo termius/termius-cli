@@ -74,15 +74,20 @@ class ExportSSHConfigApplication(SSHConfigApplication):
         return
 
     def _choose_new_hosts(self):
+        def get_prompt():
+            if self._local_hosts:
+                return "You may confirm this list (press 'Enter'), add (enter '+') or remove (enter its number) host: "
+            else:
+                return "You may confirm this list (press 'Enter') or add (enter '+') host: "
+
         def get_hosts_names():
             return ', '.join('%s (#%d)' % (h, i) for i, h in enumerate(self._local_hosts)) or '[]'
 
         self._logger.log("The following new hosts have been founded in your ssh config:", sleep=0)
         self._logger.log(get_hosts_names(), color='blue')
 
-        prompt = "You may confirm this list (press 'Enter'), add (enter '+') or remove (enter its number) host: "
         while True:
-            number = p_input(prompt).strip()
+            number = p_input(get_prompt()).strip()
 
             if number == '':
                 break
@@ -91,7 +96,7 @@ class ExportSSHConfigApplication(SSHConfigApplication):
                 host = p_input("Enter host: ")
                 conf = self._config.get_host(host)
                 if conf.keys() == ['host']:
-                    self._logger.log("There is no config for host %s!" % host, file=sys.stderr)
+                    self._logger.log("There is no config for host %s!" % host, color='red', file=sys.stderr)
                 else:
                     self._local_hosts.append(host)
 

@@ -84,7 +84,8 @@ Host {host}
             return '%s (#%d)' % (name, number)
 
         def get_connections_names():
-            return ', '.join(get_connection_name(c, i) for i, c in enumerate(self._sa_connections)) or '[]'
+            return (', '.join(get_connection_name(c, i) for i, c in enumerate(self._sa_connections))
+                    or 'There are no more connections!')
 
         if not self._sa_connections:
             self._logger.log("There are no new connections on ServerAuditor's servers.")
@@ -95,7 +96,7 @@ Host {host}
         self._logger.log(get_connections_names(), color='blue')
 
         prompt = "You may confirm this list (press 'Enter') or remove host (enter its number): "
-        while True:
+        while len(self._sa_connections):
             number = p_input(prompt).strip()
 
             if number == '':
