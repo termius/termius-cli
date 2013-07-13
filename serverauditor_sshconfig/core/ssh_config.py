@@ -72,7 +72,7 @@ class SSHConfig(object):
         :param file_object: file.
         """
 
-        settings_regex = re.compile(r'(\w+)(\s*=\s*|\s+)(.+)')
+        settings_regex = re.compile(r'(\w+)(?:\s*=\s*|\s+)(.+)')
         current_config = self._config[0]
         for line in file_object:
             line = line.strip()
@@ -83,17 +83,23 @@ class SSHConfig(object):
             if not match:
                 raise SSHConfigException("Unparsable line %s" % line)
             key = match.group(1).lower()
-            value = match.group(3)
-            if value.startswith('"') and value.endswith('"'):
-                value = value[1:-1]
+            value = match.group(2)
 
             if key == 'host':
-                current_config = {'host': value.split()}
+                current_config = {}
+                if value.startswith('"') and value.endswith('"'):
+                    current_config['host'] = [value[1:-1]]
+                else:
+                    current_config['host'] = value.split()
                 self._config.append(current_config)
-            elif key in ['identityfile', 'localforward', 'remoteforward']:
-                current_config.setdefault(key, []).append(value)
-            elif key not in current_config:
-                current_config[key] = value
+            else:
+                if value.startswith('"') and value.endswith('"'):
+                    value = value[1:-1]
+
+                if key in ['identityfile', 'localforward', 'remoteforward']:
+                    current_config.setdefault(key, []).append(value)
+                elif key not in current_config:
+                    current_config[key] = value
 
         return
 
