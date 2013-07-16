@@ -5,6 +5,7 @@ Copyright (c) 2013 Crystalnix.
 License BSD, see LICENSE for more details.
 """
 
+import fnmatch
 import getpass
 import os
 import re
@@ -116,9 +117,8 @@ class SSHConfig(object):
             :return: True or False
             """
             host = conf['host']
-            is_full_name = len(host) == 1 and '*' not in host and '?' not in host
-            is_key = True  # 'identityfile' in conf
-            return is_full_name and is_key
+            is_full_name = len(host) == 1 and '*' not in host and '?' not in host and not host.startswith('!')
+            return is_full_name
 
         return [conf['host'][0] for conf in self._config if is_complete(conf)]
 
@@ -136,19 +136,16 @@ class SSHConfig(object):
             :param patterns: list of patterns.
             :return: True or False
             """
-            positive = []
-            negative = []
+            matched = False
             for pattern in patterns:
-                is_negative = pattern.startswith('!')
-                name = pattern.lstrip('!').replace('.', '\.').replace('*', '.+').replace('?', '.')
-                name += '$'
-                match = re.match(name, host)
-                if is_negative:
-                    negative.append(match)
+                if pattern.startswith('!'):
+                    if fnmatch.fnmatch(host, pattern[1:]):
+                        return False
                 else:
-                    positive.append(match)
+                    if fnmatch.fnmatch(host, pattern):
+                        matched = True
 
-            return any(positive) and not any(negative)
+            return matched
 
         matches = [h for h in self._config if is_match(h['host'])]
         settings = {'host': host}
@@ -202,7 +199,7 @@ class SSHConfig(object):
                 ('%r', settings['user']),
                 ('%u', user)
             ],
-            'loaclcommand': [
+            'localcommand': [
                 ('%d', home_dir),
                 ('%h', settings['hostname']),
                 ('%l', fqdn),
