@@ -73,6 +73,27 @@ class SSHConfig(object):
         :param file_object: file.
         """
 
+        def get_hosts(val):
+            i, length = 0, len(val)
+            hosts = []
+            while i < length:
+                if val[i] == '"':
+                    end = val.find('"', i + 1)
+                    if end < 0:
+                        raise SSHConfigException("Unparsable host %s" % val)
+                    hosts.append(val[i + 1:end])
+                    i = end + 1
+                elif not val[i].isspace():
+                    end = i + 1
+                    while end < length and not val[end].isspace():
+                        end += 1
+                    hosts.append(val[i:end])
+                    i = end + 1
+                else:
+                    i += 1
+
+            return hosts
+
         settings_regex = re.compile(r'(\w+)(?:\s*=\s*|\s+)(.+)')
         current_config = self._config[0]
         for line in file_object:
@@ -87,11 +108,7 @@ class SSHConfig(object):
             value = match.group(2)
 
             if key == 'host':
-                current_config = {}
-                if value.startswith('"') and value.endswith('"'):
-                    current_config['host'] = [value[1:-1]]
-                else:
-                    current_config['host'] = value.split()
+                current_config = {'host': get_hosts(value)}
                 self._config.append(current_config)
             else:
                 if value.startswith('"') and value.endswith('"'):
