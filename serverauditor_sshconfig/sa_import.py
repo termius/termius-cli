@@ -48,7 +48,7 @@ Host {host}
         return
 
     def _greeting(self):
-        self._logger.log("ServerAuditor's ssh config script. Import from SA account to your  computer.", color='magenta')
+        self._logger.log("ServerAuditor's ssh config script. Import from SA account to your computer.", color='magenta')
         return
 
     @description("Synchronization...")
