@@ -6,34 +6,15 @@ License BSD, see LICENSE for more details.
 """
 
 import sys
-from multiprocessing import Pipe, Process
 
 
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
 
 
-def parallel_map(f, iterable):
-
-    def spawn(f):
-        def fun(pipe, x):
-            pipe.send(f(x))
-            pipe.close()
-        return fun
-
-    pipes = [Pipe() for _ in range(len(iterable))]
-    processes = [Process(target=spawn(f), args=(c, x)) for x, (p, c) in zip(iterable, pipes)]
-    [p.start() for p in processes]
-    [p.join() for p in processes]
-    return [p.recv() for (p, c) in pipes]
-
-
-# now parallel_map isn't needed
-parallel_map = lambda f, it: list(map(f, it))
-
-
 if PY2:
     p_input = raw_input
+    p_map = map
 
     def to_bytes(s):
         if isinstance(s, str):
@@ -51,6 +32,7 @@ if PY2:
 
 elif PY3:
     p_input = input
+    p_map = lambda f, it: list(map(f, it))
 
     def to_bytes(s):
         if isinstance(s, bytes):

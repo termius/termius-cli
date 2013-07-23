@@ -16,7 +16,7 @@ import hashlib
 import os
 import sys
 
-from .utils import parallel_map, p_input, to_bytes
+from .utils import p_input, p_map, to_bytes
 
 
 def description(message):
@@ -141,8 +141,8 @@ class SSHConfigApplication(object):
             con['ssh_username'] = self._cryptor.decrypt(con['ssh_username'], self._sa_master_password)
             return con
 
-        self._sa_keys = dict(parallel_map(decrypt_key, list(self._sa_keys.items())))
-        self._sa_connections = parallel_map(decrypt_connection, self._sa_connections)
+        self._sa_keys = dict(p_map(decrypt_key, list(self._sa_keys.items())))
+        self._sa_connections = p_map(decrypt_connection, self._sa_connections)
 
         return
 
