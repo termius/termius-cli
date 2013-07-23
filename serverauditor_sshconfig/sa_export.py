@@ -121,6 +121,23 @@ class ExportSSHConfigApplication(SSHConfigApplication):
 
     @description("Getting full information...")
     def _get_full_hosts(self):
+        def check_duplicates(hosts):
+            new_hosts = []
+            new_hosts_ids = set()
+            new_hosts_names = {}
+            for host in hosts:
+                host_id = '{host[user]}@{host[hostname]}:{host[port]}'.format(host=host)
+                if not host_id in new_hosts_ids:
+                    new_hosts_ids.add(host_id)
+                    new_hosts.append(host)
+                    new_hosts_names[host_id] = host['host']
+                else:
+                    self._logger.log('Seems "{cur_host}" is an duplicate of "{ex_host}"!'.format(
+                        cur_host=host['host'],
+                        ex_host=new_hosts_names[host_id]
+                    ), color='blue')
+            return new_hosts
+
         def encrypt_host(host):
             host['host'] = self._cryptor.encrypt(host['host'], self._sa_master_password)
             host['hostname'] = self._cryptor.encrypt(host['hostname'], self._sa_master_password)
@@ -139,7 +156,8 @@ class ExportSSHConfigApplication(SSHConfigApplication):
             return host
 
         almost_full_local_hosts = [self._config.get_host(h, substitute=True) for h in self._local_hosts]
-        self._full_local_hosts = p_map(encrypt_host, almost_full_local_hosts)
+        full_local_hosts = check_duplicates(almost_full_local_hosts)
+        self._full_local_hosts = p_map(encrypt_host, full_local_hosts)
         return
 
     @description("Creating keys and connections...")
