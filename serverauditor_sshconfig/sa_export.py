@@ -125,6 +125,13 @@ class ExportSSHConfigApplication(SSHConfigApplication):
             new_hosts = []
             new_hosts_ids = set()
             new_hosts_names = {}
+
+            # current serverauditor connections
+            for conn in self._sa_connections:
+                conn_id = '{conn[ssh_username]}@{conn[hostname]}:{conn[port]}'.format(conn=conn)
+                new_hosts_ids.add(conn_id)
+                new_hosts_names[conn_id] = conn['label'] or conn_id
+
             for host in hosts:
                 host_id = '{host[user]}@{host[hostname]}:{host[port]}'.format(host=host)
                 if not host_id in new_hosts_ids:
