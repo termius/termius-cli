@@ -78,6 +78,7 @@ Host {host}
 
         return
 
+    @description(None, "OK!")
     def _choose_new_hosts(self):
         def get_connection_name(conn, number):
             name = conn['label'] or "%s@%s:%s" % (conn['ssh_username'], conn['hostname'], conn['port'])
@@ -112,7 +113,6 @@ Host {host}
                 self._sa_connections.pop(number)
                 self._logger.log(get_connections_names(), color='blue')
 
-        self._logger.log("Ok!", color='green')
         if not self._sa_connections:
             self._valediction()
             sys.exit(0)

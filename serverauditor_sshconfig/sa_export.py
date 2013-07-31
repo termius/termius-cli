@@ -73,6 +73,7 @@ class ExportSSHConfigApplication(SSHConfigApplication):
 
         return
 
+    @description(None, "OK!")
     def _choose_new_hosts(self):
         def get_prompt():
             if self._local_hosts:
@@ -113,7 +114,6 @@ class ExportSSHConfigApplication(SSHConfigApplication):
 
             self._logger.log(get_hosts_names(), color='blue')
 
-        self._logger.log("Ok!", color='green')
         if not self._local_hosts:
             self._valediction()
             sys.exit(0)

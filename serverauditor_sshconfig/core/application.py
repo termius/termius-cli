@@ -15,25 +15,26 @@ import getpass
 import hashlib
 import os
 import sys
+import traceback
 
 from .utils import p_input, p_map, to_bytes
 
 
-def description(message):
+def description(greeting=None, valediction="Success!"):
 
     def decorator(func):
 
         @functools.wraps(func)
         def wrapped(self):
-            if message:
-                self._logger.log(message)
+            if greeting:
+                self._logger.log(greeting)
             try:
                 func(self)
             except Exception as exc:
-                self._logger.log("Error! %s" % exc, file=sys.stderr, color='red')
+                self._logger.log("Error! %s\n%s" % (exc, traceback.format_exc()), file=sys.stderr, color='red')
                 sys.exit(1)
 
-            self._logger.log("Success!", color='green')
+            self._logger.log(valediction, color='green')
             return
 
         return wrapped
