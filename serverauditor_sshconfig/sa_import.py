@@ -78,10 +78,10 @@ Host {host}
 
         return
 
-    @description(None, "OK!")
+    @description(valediction="OK!")
     def _choose_new_hosts(self):
         def get_connection_name(conn, number):
-            name = conn['label'] or "%s@%s:%s" % (conn['ssh_username'], conn['hostname'], conn['port'])
+            name = self._get_sa_connection_name(conn)
             return '%s (#%d)' % (name, number)
 
         def get_connections_names():

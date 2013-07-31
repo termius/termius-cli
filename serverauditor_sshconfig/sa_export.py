@@ -73,7 +73,7 @@ class ExportSSHConfigApplication(SSHConfigApplication):
 
         return
 
-    @description(None, "OK!")
+    @description(valediction="OK!")
     def _choose_new_hosts(self):
         def get_prompt():
             if self._local_hosts:
@@ -128,9 +128,9 @@ class ExportSSHConfigApplication(SSHConfigApplication):
 
             # current serverauditor connections
             for conn in self._sa_connections:
-                conn_id = '{conn[ssh_username]}@{conn[hostname]}:{conn[port]}'.format(conn=conn)
+                conn_id = self._get_sa_connection_uri(conn)
                 new_hosts_ids.add(conn_id)
-                new_hosts_names[conn_id] = conn['label'] or conn_id
+                new_hosts_names[conn_id] = self._get_sa_connection_name(conn)
 
             for host in hosts:
                 host_id = '{host[user]}@{host[hostname]}:{host[port]}'.format(host=host)

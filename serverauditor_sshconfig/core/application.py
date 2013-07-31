@@ -70,7 +70,7 @@ class SSHConfigApplication(object):
         self._logger.log("Bye!", color='magenta')
         return
 
-    @description(None)
+    @description()
     def _get_sa_user(self):
         def hash_password(password):
             password = to_bytes(password)
@@ -152,3 +152,9 @@ class SSHConfigApplication(object):
         self._config.parse()
         self._local_hosts = self._config.get_complete_hosts()
         return
+
+    def _get_sa_connection_uri(self, conn):
+        return '{conn[ssh_username]}@{conn[hostname]}:{conn[port]}'.format(conn=conn)
+
+    def _get_sa_connection_name(self, conn):
+        return conn['label'] or self._get_sa_connection_uri(conn)
