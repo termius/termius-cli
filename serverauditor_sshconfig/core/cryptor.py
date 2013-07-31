@@ -14,6 +14,7 @@ import hmac
 
 from Crypto.Cipher import AES
 from Crypto.Protocol import KDF
+from Crypto import Random
 
 from .utils import bchr, bord, to_bytes, to_str
 
@@ -23,6 +24,10 @@ class CryptorException(Exception):
 
 
 class RNCryptor(object):
+    """
+    NB. You must set encryption_salt, hmac_salt and password
+    after creation of RNCryptor's instance.
+    """
 
     AES_BLOCK_SIZE = AES.block_size
     AES_MODE = AES.MODE_CBC
@@ -38,9 +43,8 @@ class RNCryptor(object):
         data = data[:-bord(data[-1])]
         return to_str(data)
 
-    def decrypt(self, data, password):
+    def decrypt(self, data):
         data = self.pre_decrypt_data(data)
-        password = to_bytes(password)
 
         n = len(data)
 
@@ -52,11 +56,14 @@ class RNCryptor(object):
         cipher_text = data[34:n - 32]
         hmac = data[n - 32:]
 
-        encryption_key = self._pbkdf2(password, encryption_salt)
-        hmac_key = self._pbkdf2(password, hmac_salt)
+        if encryption_salt != self.encryption_salt or hmac_salt != self.hmac_salt:
+            raise CryptorException("Bad encryption salt or hmac salt!")
+
+        encryption_key = self.encryption_key
+        hmac_key = self.hmac_key
 
         if self._hmac(hmac_key, data[:n - 32]) != hmac:
-            raise CryptorException("Bad data")
+            raise CryptorException("Bad data!")
 
         decrypted_data = self._aes_decrypt(encryption_key, iv, cipher_text)
 
@@ -73,15 +80,14 @@ class RNCryptor(object):
         data = base64.encodestring(data)
         return to_str(data)
 
-    def encrypt(self, data, password):
+    def encrypt(self, data):
         data = self.pre_encrypt_data(data)
-        password = to_bytes(password)
 
         encryption_salt = self.encryption_salt
-        encryption_key = self._pbkdf2(password, encryption_salt)
+        encryption_key = self.encryption_key
 
         hmac_salt = self.hmac_salt
-        hmac_key = self._pbkdf2(password, hmac_salt)
+        hmac_key = self.hmac_key
 
         iv = self.iv
         cipher_text = self._aes_encrypt(encryption_key, iv, data)
@@ -95,12 +101,20 @@ class RNCryptor(object):
         return self.post_encrypt_data(encrypted_data)
 
     @property
+    def password(self):
+        return self._password
+
+    @password.setter
+    def password(self, value):
+        self._password = to_bytes(value)
+
+    @property
     def encryption_salt(self):
         return self._encryption_salt
 
     @encryption_salt.setter
     def encryption_salt(self, value):
-        self._encryption_salt = value
+        self._encryption_salt = to_bytes(value)
 
     @property
     def hmac_salt(self):
@@ -108,15 +122,23 @@ class RNCryptor(object):
 
     @hmac_salt.setter
     def hmac_salt(self, value):
-        self._hmac_salt = value
+        self._hmac_salt = to_bytes(value)
 
     @property
     def iv(self):
-        return self._iv
+        return Random.new().read(self.AES_BLOCK_SIZE)
 
-    @iv.setter
-    def iv(self, value):
-        self._iv = value
+    @property
+    def encryption_key(self):
+        if not getattr(self, '_encryption_key', None):
+            self._encryption_key = self._pbkdf2(self.password, self.encryption_salt)
+        return self._encryption_key
+
+    @property
+    def hmac_key(self):
+        if not getattr(self, '_hmac_key', None):
+            self._hmac_key = self._pbkdf2(self.password, self.hmac_salt)
+        return self._hmac_key
 
     def _aes_encrypt(self, key, iv, text):
         return AES.new(key, self.AES_MODE, iv).encrypt(text)
@@ -128,10 +150,8 @@ class RNCryptor(object):
         return hmac.new(key, data, hashlib.sha256).digest()
 
     def _pbkdf2(self, password, salt, iterations=10000, key_length=32):
-        if not getattr(self, '_key', None):
-            self._key = KDF.PBKDF2(password, salt, dkLen=key_length, count=iterations,
-                                   prf=lambda p, s: hmac.new(p, s, hashlib.sha1).digest())
-        return self._key
+        return KDF.PBKDF2(password, salt, dkLen=key_length, count=iterations,
+                          prf=lambda p, s: hmac.new(p, s, hashlib.sha1).digest())
 
         ## django 1.5 version -- faster than crypto version
         # import hashlib
@@ -149,21 +169,21 @@ def main():
     cryptor = RNCryptor()
     cryptor.encryption_salt = b'1' * 8
     cryptor.hmac_salt = b'1' * 8
-    cryptor.iv = b'2' * 16
 
     passwords = 'p@s$VV0Rd', 'пароль'
     texts = 'www.crystalnix.com', 'текст', '', '1' * 16, '2' * 15, '3' * 17
 
     for password in passwords:
+        cryptor.password = password
         for text in texts:
             print('text: "{}"'.format(text))
 
             s = time()
-            encrypted_data = cryptor.encrypt(text, password)
+            encrypted_data = cryptor.encrypt(text)
             print('encrypted {}: "{}"'.format(time() - s, encrypted_data))
 
             s = time()
-            decrypted_data = cryptor.decrypt(encrypted_data, password)
+            decrypted_data = cryptor.decrypt(encrypted_data)
             print('decrypted {}: "{}"\n'.format(time() - s, decrypted_data))
 
             assert text == decrypted_data

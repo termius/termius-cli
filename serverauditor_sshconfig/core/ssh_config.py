@@ -134,7 +134,7 @@ class SSHConfig(object):
             :return: True or False
             """
             host = conf['host']
-            is_full_name = len(host) == 1 and '*' not in host and '?' not in host and not host.startswith('!')
+            is_full_name = len(host) == 1 and '*' not in host[0] and '?' not in host[0] and not host[0].startswith('!')
             return is_full_name
 
         return [conf['host'][0] for conf in self._config if is_complete(conf)]

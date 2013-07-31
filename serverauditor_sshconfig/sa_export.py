@@ -146,16 +146,16 @@ class ExportSSHConfigApplication(SSHConfigApplication):
             return new_hosts
 
         def encrypt_host(host):
-            host['host'] = self._cryptor.encrypt(host['host'], self._sa_master_password)
-            host['hostname'] = self._cryptor.encrypt(host['hostname'], self._sa_master_password)
-            host['user'] = self._cryptor.encrypt(host['user'], self._sa_master_password)
+            host['host'] = self._cryptor.encrypt(host['host'])
+            host['hostname'] = self._cryptor.encrypt(host['hostname'])
+            host['user'] = self._cryptor.encrypt(host['user'])
             host['password'] = ''
 
             host['ssh_key'] = []
             for i, f in enumerate(host.get('identityfile', [])):
                 ssh_key = {
-                    'label': self._cryptor.encrypt(f[0], self._sa_master_password),
-                    'private_key': self._cryptor.encrypt(f[1], self._sa_master_password),
+                    'label': self._cryptor.encrypt(f[0]),
+                    'private_key': self._cryptor.encrypt(f[1]),
                     'public_key': '',
                     'passphrase': ''
                 }

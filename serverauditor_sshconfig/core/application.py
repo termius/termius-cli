@@ -109,9 +109,9 @@ class SSHConfigApplication(object):
         self._sa_master_password = getpass.getpass("Enter your Server Auditor's password: ")
         data = self._api.get_auth_key(self._sa_username, hash_password(self._sa_master_password))
         self._sa_auth_key = data['key']
-        self._cryptor.iv = base64.decodestring(to_bytes(data['iv']))
+        self._cryptor.password = self._sa_master_password
         self._cryptor.encryption_salt = base64.decodestring(to_bytes(data['salt']))
-        self._cryptor.hmac_salt = base64.decodestring(to_bytes(data['salt']))
+        self._cryptor.hmac_salt = base64.decodestring(to_bytes(data['hmac_salt']))
         return
 
     @description("Getting current keys and connections...")
@@ -129,16 +129,16 @@ class SSHConfigApplication(object):
             key = kv[0]
             v = kv[1]
             value = {
-                'label': self._cryptor.decrypt(v['label'], self._sa_master_password),
-                'private_key': v['private_key'] and self._cryptor.decrypt(v['private_key'], self._sa_master_password),
-                'public_key': v['public_key'] and self._cryptor.decrypt(v['public_key'], self._sa_master_password),
+                'label': self._cryptor.decrypt(v['label']),
+                'private_key': v['private_key'] and self._cryptor.decrypt(v['private_key']),
+                'public_key': v['public_key'] and self._cryptor.decrypt(v['public_key']),
             }
             return key, value
 
         def decrypt_connection(con):
-            con['label'] = con['label'] and self._cryptor.decrypt(con['label'], self._sa_master_password)
-            con['hostname'] = self._cryptor.decrypt(con['hostname'], self._sa_master_password)
-            con['ssh_username'] = self._cryptor.decrypt(con['ssh_username'], self._sa_master_password)
+            con['label'] = con['label'] and self._cryptor.decrypt(con['label'])
+            con['hostname'] = self._cryptor.decrypt(con['hostname'])
+            con['ssh_username'] = self._cryptor.decrypt(con['ssh_username'])
             return con
 
         self._sa_keys = dict(p_map(decrypt_key, list(self._sa_keys.items())))
