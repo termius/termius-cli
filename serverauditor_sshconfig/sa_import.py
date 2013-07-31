@@ -31,6 +31,9 @@ Host {host}
     SSH_CONFIG_HOST_IDENTITY_FILE = """\
     IdentityFile {key}
 """
+    SSH_CONFIG_HOST_DUPLICATE = """\
+# Duplicate host will not work with SSH
+"""
 
     def run(self):
         self._greeting()
@@ -56,8 +59,6 @@ Host {host}
         def get_identity_files(host):
             return [f[1] for f in host.get('identityfile', [])]
 
-        # TODO: may be need to check local config hostname (also check conn['label'] and conn['hostname'])
-        # TODO: true if host is found using label
         def is_exist(conn):
             attempt = conn['label'] or conn['hostname']
             h = self._config.get_host(attempt, substitute=True)
@@ -131,18 +132,27 @@ Host {host}
                 os.mkdir(key_dir)
 
         def get_key_path(key):
-            key_name = os.path.join(self.SSH_KEYS_DIR, key['label'])
+            key_name = test_key_name = os.path.join(self.SSH_KEYS_DIR, key['label'])
             i = 1
-            while os.path.exists(os.path.expanduser(key_name)):
-                key_name += '-%d' % i
+            while os.path.exists(os.path.expanduser(test_key_name)):
+                test_key_name = key_name + '-%d' % i
                 i += 1
-            return key_name
+            return test_key_name
 
         def create_connection(conn):
 
+            name = conn['label'] or conn['hostname']
+            is_duplicate = name in self._local_hosts
+            if is_duplicate:
+                self._logger.log(('Seems local config already contains host with name "{name}". '
+                                  'SSH won\'t be able to use the second one.').format(name=name), color='blue')
+
             with open(self._config.USER_CONFIG_PATH, 'a') as cf:
+                if is_duplicate:
+                    cf.write(self.SSH_CONFIG_HOST_DUPLICATE)
+
                 host = self.SSH_CONFIG_HOST_TEMPLATE.format(
-                    host=get_param_name(conn['label'] or conn['hostname']),
+                    host=get_param_name(name),
                     hostname=get_param_name(conn['hostname']),
                     user=get_param_name(conn['ssh_username']),
                     port=conn['port']
