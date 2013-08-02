@@ -139,7 +139,7 @@ class ExportSSHConfigApplication(SSHConfigApplication):
                     new_hosts.append(host)
                     new_hosts_names[host_id] = host['host']
                 else:
-                    self._logger.log('Seems "{cur_host}" is an duplicate of "{ex_host}"!'.format(
+                    self._logger.log('Seems "{cur_host}" is duplicate of "{ex_host}"!'.format(
                         cur_host=host['host'],
                         ex_host=new_hosts_names[host_id]
                     ), color='blue')
