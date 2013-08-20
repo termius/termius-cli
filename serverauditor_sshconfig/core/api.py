@@ -17,7 +17,7 @@ from .utils import to_bytes, to_str
 
 class API(object):
 
-    API_URL = 'http://dev.serverauditor.com/api/v1/'
+    API_URL = 'https://serverauditor.com/api/v1/'
 
     def get_auth_key(self, username, password):
         """ Returns user's auth token. """
