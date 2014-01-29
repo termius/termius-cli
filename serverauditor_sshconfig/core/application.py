@@ -160,10 +160,8 @@ class SSHConfigApplication(object):
 
     @description("Fixing keys and connections...")
     def _fix_sa_keys_and_connections(self):
-        for i in self._sa_connections:
-            if i is None:
-                self._sa_connections.remove(i)
-
+        self._sa_connections = [c for c in self._sa_connections[:] if c is not None]
+        
         def remove_key(key):
             for i in self._sa_connections:
                 if i['ssh_key'] == key:
