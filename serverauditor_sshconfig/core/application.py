@@ -160,7 +160,7 @@ class SSHConfigApplication(object):
 
     @description("Fixing keys and connections...")
     def _fix_sa_keys_and_connections(self):
-        self._sa_connections = [c for c in self._sa_connections[:] if c is not None]
+        self._sa_connections = [c for c in self._sa_connections if c is not None]
         
         def remove_key(key):
             for i in self._sa_connections:
@@ -168,7 +168,7 @@ class SSHConfigApplication(object):
                     i['ssh_key'] = None
             self._sa_keys.pop(key)
 
-        for key in self._sa_keys:
+        for key in self._sa_keys.keys():
             if self._sa_keys[key] is None:
                 remove_key(key)
         return
