@@ -18,7 +18,7 @@ import sys
 import traceback
 
 from .utils import p_input, p_map, to_bytes
-
+from .cryptor import CryptorException
 
 def description(greeting=None, valediction="Success!"):
 
@@ -30,6 +30,12 @@ def description(greeting=None, valediction="Success!"):
                 self._logger.log(greeting)
             try:
                 func(self)
+            except CryptorException as e:
+                if e.args[0] == 'Bad data!':
+                    raise
+                else:
+                    self._logger.log("Error! %s\n%s" % (e, traceback.format_exc()), file=sys.stderr, color='red')
+                    sys.exit(1)
             except Exception as exc:
                 self._logger.log("Error! %s\n%s" % (exc, traceback.format_exc()), file=sys.stderr, color='red')
                 sys.exit(1)
@@ -121,7 +127,6 @@ class SSHConfigApplication(object):
         self._sa_keys = {}
         for key in keys:
             self._sa_keys[key['id']] = key
-
         return
 
     @description("Decrypting keys and connections...")
@@ -129,23 +134,45 @@ class SSHConfigApplication(object):
         def decrypt_key(kv):
             key = kv[0]
             v = kv[1]
-            value = {
-                'label': self._cryptor.decrypt(v['label']),
-                'private_key': v['private_key'] and self._cryptor.decrypt(v['private_key']),
-                'public_key': v['public_key'] and self._cryptor.decrypt(v['public_key']),
-            }
+            try:
+                value = {
+                    'label': self._cryptor.decrypt(v['label']),
+                    'private_key': v['private_key'] and self._cryptor.decrypt(v['private_key']),
+                    'public_key': v['public_key'] and self._cryptor.decrypt(v['public_key']),
+                }
+            except CryptorException as e:
+                return key, None
             return key, value
 
         def decrypt_connection(con):
-            con['label'] = con['label'] and self._cryptor.decrypt(con['label'])
-            con['hostname'] = self._cryptor.decrypt(con['hostname'])
-            con['ssh_username'] = self._cryptor.decrypt(con['ssh_username'])
+            try:
+                con['label'] = con['label'] and self._cryptor.decrypt(con['label'])
+                con['hostname'] = self._cryptor.decrypt(con['hostname'])
+                con['ssh_username'] = self._cryptor.decrypt(con['ssh_username'])
+            except CryptorException as e:
+                return None
             return con
 
         self._sa_keys = dict(p_map(decrypt_key, list(self._sa_keys.items())))
         self._sa_connections = p_map(decrypt_connection, self._sa_connections)
 
         return
+
+    @description("Fixing keys and connections...")
+    def _fix_sa_keys_and_connections(self):
+        self._sa_connections = [c for c in self._sa_connections if c is not None]
+        
+        def remove_key(key):
+            for i in self._sa_connections:
+                if i['ssh_key'] == key:
+                    i['ssh_key'] = None
+            self._sa_keys.pop(key)
+
+        for key in self._sa_keys.keys():
+            if self._sa_keys[key] is None:
+                remove_key(key)
+        return
+
 
     @description("Parsing ssh config file...")
     def _parse_local_config(self):
