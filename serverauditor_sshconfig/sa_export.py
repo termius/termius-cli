@@ -24,6 +24,7 @@ class ExportSSHConfigApplication(SSHConfigApplication):
         self._get_sa_user()
         self._get_sa_keys_and_connections()
         self._decrypt_sa_keys_and_connections()
+        self._fix_sa_keys_and_connections()
 
         self._parse_local_config()
         self._sync_for_export()
