@@ -21,13 +21,13 @@ or `easy_install <http://pythonhosted.org/distribute/>`_:
 Usage
 -----
 
-If you want to *export* connections from your computer to your ServerAuditor's account:
+If you want to *export* connections from your computer to your Serverauditor's account:
 
 .. code-block:: bash
 
     $ serverauditor export
 
-If you want to *import* connections from your ServerAuditor's account to your computer:
+If you want to *import* connections from your Serverauditor's account to your computer:
 
 .. code-block:: bash
 
