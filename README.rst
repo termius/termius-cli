@@ -1,11 +1,11 @@
-ServerAuditor ssh config utility
+Serverauditor ssh config utility
 ================================
 
 
 Installation
 ------------
 
-ServerAuditor ssh config utility can be installed via `pip <http://www.pip-installer.org/en/latest/index.html>`_:
+Serverauditor ssh config utility can be installed via `pip <http://www.pip-installer.org/en/latest/index.html>`_:
 
 .. code-block:: bash
 
