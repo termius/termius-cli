@@ -2,6 +2,23 @@ Serverauditor ssh config utility
 ================================
 
 
+
+Prerequisites
+-------------
+
+Our package requires `cryptolibrary <https://pypi.python.org/pypi/pycrypto>`_, so please install Python Development Libraries for it. If you're on Ubuntu/Debian:
+
+.. code-block:: bash
+
+    $ sudo apt-get install python-dev
+
+or if you use Fedora/RedHat
+
+.. code-block:: bash
+
+    $ sudo yum  install python-devel.x86_64
+
+
 Installation
 ------------
 
@@ -39,20 +56,7 @@ License
 
 Please see `LICENSE <https://github.com/Crystalnix/serverauditor-sshconfig/blob/master/LICENSE>`_.
 
-
 Notes
 -----
 
 * Some stages of utility's work may last for several seconds (depends on amount of the connections and your computer's performance).
-
-* If installation failed with gcc error, you must install Python Development Libraries, for example:
-
-.. code-block:: bash
-
-    $ sudo apt-get install python-dev
-
-or
-
-.. code-block:: bash
-
-    $ sudo yum  install python-devel.x86_64
