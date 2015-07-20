@@ -16,5 +16,5 @@
   fi
   run serverauditor login --username $Serverauditor_username -p $Serverauditor_password
   [ "$status" -eq 0 ]
-  [ ! -z $(cat ~/.serverauditor) ]
+  ! [ -z $(cat ~/.serverauditor) ]
 }

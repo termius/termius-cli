@@ -50,7 +50,7 @@ setup(
             'serverauditor = serverauditor_sshconfig.main:main'
         ],
         'serverauditor.handlers': [
-            'sync = serverauditor_sshconfig.handlers:SyncCommand',
+            'sync = serverauditor_sshconfig.sync.commands:SyncCommand',
             'use = serverauditor_sshconfig.handlers:UseGroupCommand',
             'host = serverauditor_sshconfig.handlers:HostCommand',
             'group = serverauditor_sshconfig.handlers:GroupCommand',
@@ -65,6 +65,9 @@ setup(
             'pull = serverauditor_sshconfig.handlers:PullCommand',
             'info = serverauditor_sshconfig.handlers:InfoCommand',
             'connect = serverauditor_sshconfig.handlers:ConnectCommand',
+        ],
+        'serverauditor.sync.services': [
+            'aws = serverauditor_sshconfig.sync.services.aws:AWSService',
         ],
     },
 )

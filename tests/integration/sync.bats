@@ -9,3 +9,9 @@
   run serverauditor help sync
   [ "$status" -eq 0 ]
 }
+
+@test "sync not supported service" {
+  run serverauditor sync awesomeservice
+  [ "$status" -eq 1 ]
+  [ "$output" = "Do not support service: awesomeservice." ]
+}

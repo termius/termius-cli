@@ -2,19 +2,6 @@
 from .core.commands import AbstractCommand
 
 
-class SyncCommand(AbstractCommand):
-
-    """Sync with IaaS or PaaS."""
-
-    def get_parser(self, prog_name):
-        parser = super(SyncCommand, self).get_parser(prog_name)
-        parser.add_argument('-c', '--credentials')
-        parser.add_argument('service', metavar='SERVICE')
-        return parser
-
-    def take_action(self, parsed_args):
-        self.log.info('Sync with service %s.', parsed_args['service'])
-
 
 class UseGroupCommand(AbstractCommand):
 
