@@ -32,7 +32,7 @@ class Config(object):
     def touch_files(self):
         for i in self._paths:
             if not os.path.exists(i):
-                with open(in, 'w+'):
+                with open(i, 'w+'):
                     pass
 
     def get(self, *args, **kwargs):

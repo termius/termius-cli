@@ -12,7 +12,8 @@ def get_long_description():
         return f.read()
 
 requires = [
-    'cliff==1.13'
+    'cliff==1.13',
+    'requests==2.7.0',
 ]
 
 

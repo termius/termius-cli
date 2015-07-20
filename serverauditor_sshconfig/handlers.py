@@ -27,7 +27,7 @@ class SyncCommand(AbstractCommand):
         return parser
 
     def take_action(self, parsed_args):
-        self.log.info('Sync with service {}.'.format(parsed_args['service']))
+        self.log.info('Sync with service %s.', parsed_args['service'])
 
 
 class UseGroupCommand(AbstractCommand):
@@ -282,4 +282,4 @@ class ConnectCommand(AbstractCommand):
         return parser
 
     def take_action(self, parsed_args):
-        self.log.info('Connect to host {}.'.format(parsed_args['host']))
+        self.log.info('Connect to host %s.', parsed_args['host'])
