@@ -4,7 +4,8 @@
 Copyright (c) 2013 Crystalnix.
 License BSD, see LICENSE for more details.
 """
-
+import six
+import hashlib
 import requests
 from requests.auth import AuthBase
 
@@ -18,12 +19,17 @@ class ServerauditorAuth(AuthBase):
     @property
     def auth_header(self):
         return "ApiKey {username}:{apikey}".format(
-            username=username, apikey=apikey
+            username=self.username, apikey=self.apikey
         )
 
     def __call__(self, request):
         request.headers['Authorization'] = self.auth_header
         return request
+
+
+def hash_password(password):
+    password = six.b(password)
+    return hashlib.sha256(password).hexdigest()
 
 
 class API(object):
@@ -45,11 +51,27 @@ class API(object):
 
     def login(self, username, password):
         """Returns user's auth token."""
-        response = requests.get(self.request_url("token/auth/"),
-                               auth=(username, password))
+        password = hash_password(password)
+        response = requests.get(self.request_url("v1/token/auth/"),
+                                auth=(username, password))
         assert response.status_code == 200
 
         response_payload = response.json()
-        apikey = response_payload.pop('key')
+        apikey = response_payload['key']
         self.set_auth(username, apikey)
         return response_payload
+
+    def post(self, endpoint, data):
+        response = requests.get(self.request_url(endpoint), auth=self.auth)
+        assert response.status_code == 201
+        return response.json()
+
+    def get(self, endpoint, data):
+        response = requests.get(self.request_url(endpoint), auth=self.auth)
+        assert response.status_code == 200
+        return response.json()
+
+    def put(self, endpoint, data):
+        response = requests.get(self.request_url(endpoint), auth=self.auth)
+        assert response.status_code in (200, 204)
+        return response.json()

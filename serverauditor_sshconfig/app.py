@@ -1,5 +1,5 @@
 # coding: utf-8
-
+import logging
 from cliff.app import App
 from cliff.commandmanager import CommandManager
 
@@ -18,3 +18,8 @@ class ServerauditorApp(App):
             version=get_version(),
             command_manager=CommandManager('serverauditor.handlers'),
         )
+
+    def configure_logging(self):
+        super(ServerauditorApp, self).configure_logging()
+        logging.getLogger('requests').setLevel(logging.WARNING)
+        return

@@ -6,11 +6,7 @@ License BSD, see LICENSE for more details.
 """
 
 import os
-try:
-    import configparser as ConfigParser
-except ImportError:
-    import ConfigParser
-
+import six
 
 class Config(object):
 
@@ -22,7 +18,7 @@ class Config(object):
             i.format(application_name=application_name, **kwargs)
         ) for i in self.paths]
         self.touch_files()
-        self.config = ConfigParser.ConfigParser()
+        self.config = six.moves.configparser.ConfigParser()
         self.config.read(self._paths)
 
     @property
@@ -38,9 +34,19 @@ class Config(object):
     def get(self, *args, **kwargs):
         self.config.get(*args, **kwargs)
 
-    def set(self, *args, **kwargs):
-        self.config.set(*args, **kwargs)
+    def set(self, section, option, value):
+        if not self.config.has_section(section):
+            self.config.add_section(section)
+        self.config.set(section, option, value)
 
-    def close(self):
+    def remove(self, section, option):
+        if self.config.has_section(section):
+            self.config.remove_option(section, option)
+
+    def remove_section(self, section):
+        if self.config.has_section(section):
+            self.config.remove_section(section)
+
+    def write(self):
         with open(self.user_config_path, 'w') as f:
             self.config.write(f)

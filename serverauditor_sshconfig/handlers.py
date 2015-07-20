@@ -1,19 +1,5 @@
 # coding: utf-8
-import logging
-
-from cliff.command import Command
-
-
-class AbstractCommand(Command):
-
-    "Abstract Command with log."
-
-    log = logging.getLogger(__name__)
-
-    def get_parser(self, prog_name):
-        parser = super(AbstractCommand, self).get_parser(prog_name)
-        parser.add_argument('--log-file')
-        return parser
+from .core.commands import AbstractCommand
 
 
 class SyncCommand(AbstractCommand):
@@ -198,33 +184,6 @@ class TagsCommand(AbstractCommand):
 
     def take_action(self, parsed_args):
         self.log.info('Tag objects.')
-
-
-class LoginCommand(AbstractCommand):
-
-    """Sign into serverauditor cloud."""
-
-    def get_parser(self, prog_name):
-        parser = super(LoginCommand, self).get_parser(prog_name)
-        parser.add_argument('-u', '--username', metavar='USERNAME')
-        parser.add_argument('--sync-sshconfig', action='store_true')
-        return parser
-
-    def take_action(self, parsed_args):
-        self.log.info('Sign into serverauditor cloud.')
-
-
-class LogoutCommand(AbstractCommand):
-
-    """Sign out serverauditor cloud."""
-
-    def get_parser(self, prog_name):
-        parser = super(LogoutCommand, self).get_parser(prog_name)
-        parser.add_argument('--clear-sshconfig', action='store_true')
-        return parser
-
-    def take_action(self, parsed_args):
-        self.log.info('Sign out serverauditor cloud.')
 
 
 class PushCommand(AbstractCommand):

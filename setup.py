@@ -14,6 +14,10 @@ def get_long_description():
 requires = [
     'cliff==1.13',
     'requests==2.7.0',
+    'six==1.9.0',
+    'pyopenssl',
+    'ndg-httpsclient',
+    'pyasn1',
 ]
 
 
@@ -55,8 +59,8 @@ setup(
             'pfrule = serverauditor_sshconfig.handlers:PFRuleCommand',
             'pfrules = serverauditor_sshconfig.handlers:PFRulesCommand',
             'tags = serverauditor_sshconfig.handlers:TagsCommand',
-            'login = serverauditor_sshconfig.handlers:LoginCommand',
-            'logout = serverauditor_sshconfig.handlers:LogoutCommand',
+            'login = serverauditor_sshconfig.account.commands:LoginCommand',
+            'logout = serverauditor_sshconfig.account.commands:LogoutCommand',
             'push = serverauditor_sshconfig.handlers:PushCommand',
             'pull = serverauditor_sshconfig.handlers:PullCommand',
             'info = serverauditor_sshconfig.handlers:InfoCommand',
