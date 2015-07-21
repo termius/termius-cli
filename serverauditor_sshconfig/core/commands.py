@@ -12,5 +12,5 @@ class AbstractCommand(Command):
 
     def get_parser(self, prog_name):
         parser = super(AbstractCommand, self).get_parser(prog_name)
-        parser.add_argument('--log-file')
+        parser.add_argument('--log-file', help="Path to log file.")
         return parser
