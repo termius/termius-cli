@@ -13,6 +13,7 @@ def get_long_description():
 
 requires = [
     'cliff==1.13',
+    'stevedore==1.6.0',
     'requests==2.7.0',
     'six==1.9.0',
     'pyopenssl',
@@ -67,6 +68,8 @@ setup(
             'connect = serverauditor_sshconfig.handlers:ConnectCommand',
         ],
         'serverauditor.sync.services': [
+            # WARNING! It should be removed in production!
+            # Other projects should add such endpoint to add services.
             'aws = serverauditor_sshconfig.sync.services.aws:AWSService',
         ],
     },

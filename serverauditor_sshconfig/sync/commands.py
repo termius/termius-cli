@@ -1,6 +1,6 @@
 # coding: utf-8
 from ..core.commands import AbstractCommand
-from .servicemanager import ServicesManager
+from stevedore.extension import ExtensionManager
 
 
 class NoSuchServiceException(Exception):
@@ -11,24 +11,27 @@ class SyncCommand(AbstractCommand):
 
     """Sync with IaaS or PaaS."""
 
-    service_manager = ServicesManager('serverauditor.sync.services')
+    service_manager = ExtensionManager(
+        namespace='serverauditor.sync.services'
+    )
 
     def get_parser(self, prog_name):
         parser = super(SyncCommand, self).get_parser(prog_name)
-        parser.add_argument('-c', '--credentials')
-        parser.add_argument('service', metavar='SERVICE')
+        parser.add_argument(
+            '-c', '--credentials',
+            help='Credentials (path or file) for service.'
+        )
+        parser.add_argument('service', metavar='SERVICE', help='Service name.')
         return parser
 
     def get_service(self, service_name):
         try:
-            service_class, _ = self.service_manager.find_service(
-                service_name
-            )
+            extension = self.service_manager[service_name]
         except KeyError:
             raise NoSuchServiceException(
                 'Do not support service: {}.'.format(service_name)
             )
-        return service_class
+        return extension.plugin
 
     def sync_with_service(self, service, credentials):
         service_class = self.get_service(service)
