@@ -62,7 +62,8 @@ class API(object):
         return response_payload
 
     def post(self, endpoint, data):
-        response = requests.get(self.request_url(endpoint), auth=self.auth)
+        response = requests.post(self.request_url(endpoint),
+                                 json=data, auth=self.auth)
         assert response.status_code == 201
         return response.json()
 
@@ -71,7 +72,12 @@ class API(object):
         assert response.status_code == 200
         return response.json()
 
+    def delete(self, endpoint, data):
+        response = requests.delete(self.request_url(endpoint), auth=self.auth)
+        assert response.status_code in (200, 204)
+        return response.json()
+
     def put(self, endpoint, data):
-        response = requests.get(self.request_url(endpoint), auth=self.auth)
+        response = requests.put(self.request_url(endpoint), json=data, auth=self.auth)
         assert response.status_code in (200, 204)
         return response.json()

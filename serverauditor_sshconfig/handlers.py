@@ -1,5 +1,8 @@
 # coding: utf-8
-from .core.commands import AbstractCommand
+from operator import attrgetter
+from .core.commands import AbstractCommand, DetailCommand, ListCommand
+from .core.settings import ApplicationStorage
+from .models import Host, SshConfig, SshIdentity, SshKey, Tag, Group
 
 
 
@@ -56,24 +59,12 @@ class SshConfigArgs(object):
         return parser
 
 
-class HostCommand(AbstractCommand):
+class HostCommand(DetailCommand):
 
     """Operate with Host object."""
 
     def get_parser(self, prog_name):
         parser = super(HostCommand, self).get_parser(prog_name)
-        parser.add_argument(
-            '-d', '--delete',
-            action='store_true', help='Delete hosts.'
-        )
-        parser.add_argument(
-            '-I', '--interactive', action='store_true',
-            help='Enter to interactive mode.'
-        )
-        parser.add_argument(
-            '-L', '--label', metavar='NAME',
-            help="Alias and Host's label in Serverauditor"
-        )
         parser.add_argument(
             '--generate-key', action='store_true',
             help='Create and assign automatically a identity file for host.'
@@ -107,21 +98,42 @@ class HostCommand(AbstractCommand):
         ssh_config_args.add_agrs(parser)
         return parser
 
+    def create_host(self, parsed_args):
+        if parsed_args.generate_key:
+            pass  # generate SshKey
+
+        storage = ApplicationStorage(self.app.NAME)
+
+        identity = SshIdentity()
+        identity.username = parsed_args.username
+        identity.password = parsed_args.password
+
+        config = SshConfig()
+        config.port = parsed_args.port
+        config.ssh_identity = identity
+
+        host = Host()
+        host.label = parsed_args.label
+        host.address = parsed_args.address
+        host.ssh_config = config
+
+        storage.save(host)
+        return host
+
     def take_action(self, parsed_args):
-        self.log.info('Host object.')
+        if not parsed_args.host:
+            host = self.create_host(parsed_args)
+            self.log.info('%s', host.id)
+        else:
+            self.log.info('Host object.')
 
 
-class HostsCommand(AbstractCommand):
+class HostsCommand(ListCommand):
 
     """Manage host objects."""
 
     def get_parser(self, prog_name):
         parser = super(HostsCommand, self).get_parser(prog_name)
-        parser.add_argument(
-            '-l', '--list', action='store_true',
-            help=('List hosts in current group with id, name, group in path '
-                  'format, tags, username, address and port.')
-        )
         parser.add_argument(
             '-t', '--tags', metavar='TAG_LIST',
             help=('(Comma separated tag list) list hosts with such tags.')
@@ -133,27 +145,20 @@ class HostsCommand(AbstractCommand):
         return parser
 
     def take_action(self, parsed_args):
-        self.log.info('Host objects.')
+        storage = ApplicationStorage(self.app.NAME)
+        hosts = storage.get_all(Host)
+        fields = Host.allowed_feilds()
+        getter = attrgetter(*fields)
+        import pudb;pudb.set_trace()
+        return fields, [getter(i) for i in hosts.values()]
 
 
-class GroupCommand(AbstractCommand):
+class GroupCommand(DetailCommand):
 
     """Operate with Group object."""
 
     def get_parser(self, prog_name):
         parser = super(GroupCommand, self).get_parser(prog_name)
-        parser.add_argument(
-            '-d', '--delete',
-            action='store_true', help='Delete groups.'
-        )
-        parser.add_argument(
-            '-I', '--interactive', action='store_true',
-            help='Enter to interactive mode.'
-        )
-        parser.add_argument(
-            '-L', '--label', metavar='NAME',
-            help="Group' label in Serverauditor"
-        )
         parser.add_argument(
             '--generate-key', action='store_true',
             help='Create and assign automatically a identity file for group.'
@@ -174,17 +179,12 @@ class GroupCommand(AbstractCommand):
         self.log.info('Group object.')
 
 
-class GroupsCommand(AbstractCommand):
+class GroupsCommand(ListCommand):
 
     """Manage group objects."""
 
     def get_parser(self, prog_name):
         parser = super(GroupsCommand, self).get_parser(prog_name)
-        parser.add_argument(
-            '-l', '--list', action='store_true',
-            help=('List groups of group (default is current group) with '
-                  'id, name, parent group in path format, username and port.')
-        )
         parser.add_argument(
             '-r', '--recursive', action='store_true',
             help=('List groups of current group '
@@ -200,24 +200,12 @@ class GroupsCommand(AbstractCommand):
         self.log.info('Group objects.')
 
 
-class PFRuleCommand(AbstractCommand):
+class PFRuleCommand(DetailCommand):
 
     """Operate with port forwarding rule object."""
 
     def get_parser(self, prog_name):
         parser = super(PFRuleCommand, self).get_parser(prog_name)
-        parser.add_argument(
-            '-d', '--delete',
-            action='store_true', help='Delete hosts.'
-        )
-        parser.add_argument(
-            '-I', '--interactive', action='store_true',
-            help='Enter to interactive mode.'
-        )
-        parser.add_argument(
-            '-L', '--label',  metavar='NAME',
-            help="Port frowarding rule' label in Serverauditor"
-        )
         parser.add_argument(
             '-H', '--host', metavar='HOST_ID or HOST_NAME',
             help='Create port forwarding rule for this host.'
@@ -249,25 +237,15 @@ class PFRuleCommand(AbstractCommand):
         self.log.info('Port Forwarding Rule object.')
 
 
-class PFRulesCommand(AbstractCommand):
+class PFRulesCommand(ListCommand):
 
     """Manage port forwarding rule objects."""
-
-    def get_parser(self, prog_name):
-        parser = super(PFRulesCommand, self).get_parser(prog_name)
-        parser.add_argument(
-            '-l', '--list', action='store_true',
-            help=("List port frowarding rules with "
-                  "id, name, host's name, host' group in path format, "
-                  "type and dinding.")
-        )
-        return parser
 
     def take_action(self, parsed_args):
         self.log.info('Port Forwarding Rule objects.')
 
 
-class TagsCommand(AbstractCommand):
+class TagsCommand(ListCommand):
 
     """Manage tag objects."""
 
@@ -276,10 +254,6 @@ class TagsCommand(AbstractCommand):
         parser.add_argument(
             '-d', '--delete',
             action='store_true', help='Delete tags.'
-        )
-        parser.add_argument(
-            '-l', '--list', action='store_true',
-            help="List tags ids, name, and host's ids with such tag"
         )
         parser.add_argument(
             'tags', nargs='+', metavar='TAG_ID or TAG_NAME',
