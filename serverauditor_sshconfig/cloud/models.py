@@ -5,12 +5,14 @@ class Tag(Model):
 
     fields = {'label'}
     set_name = 'tag_set'
+    crypto_fields = fields
 
 
 class SshKey(Model):
 
     fields = {'label', 'passphrase', 'private_key', 'public_key'}
     set_name = 'sshkeycrypt_set'
+    crypto_fields = fields
 
 
 class SshIdentity(Model):
@@ -20,7 +22,7 @@ class SshIdentity(Model):
     mapping = {
         'ssh_key': Mapping(SshKey, many=False),
     }
-
+    crypto_fields = {'label', 'username', 'password'}
 
 class SshConfig(Model):
 
@@ -38,6 +40,7 @@ class Group(Model):
     mapping = {
         'ssh_config': Mapping(SshConfig, many=False),
     }
+    crypto_fields = {'label',}
 
 
 Group.mapping['parent_group'] = Mapping(Group, many=False)
@@ -45,11 +48,34 @@ Group.mapping['parent_group'] = Mapping(Group, many=False)
 
 class Host(Model):
 
-    fields = {'label', 'address', 'group', 'tags', 'address', 'ssh_config'}
+    fields = {'label', 'group', # 'tags',
+              'address', 'ssh_config'}
     set_name = 'host_set'
     mapping = {
         'ssh_config': Mapping(SshConfig, many=False),
-        'tags': Mapping(Tag, many=True),
+        # 'tags': Mapping(Tag, many=True),
+    }
+    crypto_fields = {'label', 'address'}
+
+
+class Host(Model):
+
+    fields = {'label', 'group', 'address', 'ssh_config'}
+    set_name = 'host_set'
+    mapping = {
+        'ssh_config': Mapping(SshConfig, many=False),
+        # 'tags': Mapping(Tag, many=True),
+    }
+    crypto_fields = {'label', 'address'}
+
+
+class TagHost(Model):
+
+    fields = {'host', 'tag'}
+    set_name = 'taghost_set'
+    mapping = {
+        'host': Mapping(Host, many=False),
+        'tag': Mapping(Tag, many=False),
     }
 
 
@@ -61,3 +87,4 @@ class PFRule(Model):
     mapping = {
         'host': Mapping(Host, many=False),
     }
+    crypto_fields = {'label', 'bound_address', 'hostname'}

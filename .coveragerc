@@ -1,0 +1,8 @@
+[run]
+branch = True
+source = serverauditor_sshconfig
+include = *.py
+
+[report]
+precision = 2
+show_missing = True

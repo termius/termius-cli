@@ -126,12 +126,12 @@ class PersistentDict(OrderedDict):
         try:
             DRIVERS[self.format].dump(fileobj, self)
         except KeyError:
-            raise NotImplementedError('Unknown format: ' + repr(format))
+            raise NotImplementedError('Unknown format: ' + repr(self.format))
 
     def load(self, fileobj):
         for loader in DRIVERS.values():
             try:
                 return self.update(loader.load(fileobj))
-            except Exception as e:
+            except Exception:
                 pass
         raise ValueError('File not in a supported format')

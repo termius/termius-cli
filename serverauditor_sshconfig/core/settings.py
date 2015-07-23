@@ -10,10 +10,23 @@ import six
 from uuid import uuid4
 from collections import OrderedDict
 from .storage import PersistentDict
+from .exceptions import DoesNotExistException
 
 
 def expand_and_format_path(paths, **kwargs):
     return [os.path.expanduser(i.format(**kwargs)) for i in paths]
+
+
+def tupled_attrgetter(*items):
+    def g(obj):
+        return tuple(resolve_attr(obj, attr) for attr in items)
+    return g
+
+
+def resolve_attr(obj, attr):
+    for name in attr.split("."):
+        obj = getattr(obj, name)
+    return obj
 
 
 class Config(object):
@@ -40,7 +53,7 @@ class Config(object):
                     pass
 
     def get(self, *args, **kwargs):
-        self.config.get(*args, **kwargs)
+        return self.config.get(*args, **kwargs)
 
     def set(self, section, option, value):
         if not self.config.has_section(section):
@@ -71,15 +84,15 @@ class IDGenerator(object):
     def __call__(self, model):
         """:param core.models.Model model: generate and set id for this Model."""
         assert not getattr(model, model.id_name)
-        uuid = uuid4().int
-        setattr(model, model.id_name, uuid)
-        return uuid
+        identificator = uuid4().time_low
+        setattr(model, model.id_name, identificator)
+        return identificator
 
 
 class ApplicationStorage(object):
 
     path = '~/.{application_name}.storage'
-    defaultstorage = OrderedDict
+    defaultstorage = list
 
     def __init__(self, application_name, **kwargs):
         self._path = expand_and_format_path(
@@ -91,29 +104,27 @@ class ApplicationStorage(object):
     def generate_id(self, model):
         return self.id_generator(model)
 
-    def get_all(self, model_class):
-        assert isinstance(model_class, type)
-        name = model_class.set_name
-        dict_data = self.driver.setdefault(name, self.defaultstorage())
-        if dict_data:
-            model_data = self.defaultstorage(
-                ((k, model_class(v)) for k, v in dict_data.items())
-            )
-        else:
-            model_data = dict_data
-        return model_data
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.driver.sync()
 
     def save_mapped_fields(self, model):
 
+        def save_instance(model):
+            if isinstance(model, six.integer_types):
+                return model
+            return self.save(model).id
+
         def sub_save(field, mapping):
             submodel = getattr(model, field)
-            if not submodel:
-                return submodel
             if not mapping.many:
-                saved_submodel = self.save(submodel).id
-            else:
-                saved_submodel = [self.save(submodel).id for i in submodel]
 
+                saved_submodel = submodel and save_instance(submodel)
+            else:
+                submodel = submodel or []
+                saved_submodel = [save_instance(i) for i in submodel]
             return saved_submodel
 
         model_copy = model.copy()
@@ -139,11 +150,11 @@ class ApplicationStorage(object):
 
     def create(self, model):
         assert not getattr(model, model.id_name)
-        models = self.get_all(type(model))
         model_with_saved_subs = self.save_mapped_fields(model)
-        models[self.generate_id(model)] = model_with_saved_subs
+        model.id = self.generate_id(model_with_saved_subs)
+        models = self.get_all(type(model))
+        models.append(model_with_saved_subs)
         self.driver[model.set_name] = models
-        self.driver.sync()
         return model_with_saved_subs
 
     def update(self, model):
@@ -151,23 +162,44 @@ class ApplicationStorage(object):
         assert identificator
 
         self.save_mapped_fields(model)
-        models = self.get_all(type(model))
         model_with_saved_subs = self.save_mapped_fields(model)
-        models[identificator] = model_with_saved_subs
+
+        self.delete(model)
+        models = self.get_all(type(model))
+        models.append(model_with_saved_subs)
         self.driver[model.set_name] = models
-        self.driver.sync()
 
     def get(self, model_class, **kwargs):
         assert isinstance(model_class, type)
+        assert kwargs
         models = self.get_all(model_class)
-        identificator = kwargs.get(model_class.id_name)
-        return model_class(models[identificator])
+        filter_keys = tuple(i[0] for i in kwargs.items())
+        filter_values = tuple(i[1] for i in kwargs.items())
+        getter = tupled_attrgetter(*filter_keys)
+        founded_models = [
+            i for i in models if getter(i) == filter_values
+        ]
+        if not founded_models:
+            raise DoesNotExistException
+        assert len(founded_models) == 1
+        return model_class(founded_models[0])
+
+    def get_all(self, model_class):
+        assert isinstance(model_class, type)
+        name = model_class.set_name
+        data = self.driver.setdefault(name, self.defaultstorage())
+        models = self.defaultstorage(
+            (model_class(i) for i in data)
+        )
+        return models
 
     def delete(self, model):
         identificator = getattr(model, model.id_name)
         assert identificator
 
-        models = self[model.set_name]
-        models.pop(identificator)
+        models = self.get_all(type(model))
+        for index, model in enumerate(models):
+            if model.id == identificator:
+                models.pop(index)
+                break
         self.driver[model.set_name] = models
-        self.driver.sync()

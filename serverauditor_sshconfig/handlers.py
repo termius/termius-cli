@@ -1,8 +1,7 @@
 # coding: utf-8
 from operator import attrgetter
 from .core.commands import AbstractCommand, DetailCommand, ListCommand
-from .core.settings import ApplicationStorage
-from .models import Host, SshConfig, SshIdentity, SshKey, Tag, Group
+from .cloud.models import Host, SshConfig, SshIdentity, SshKey, Tag, Group
 
 
 
@@ -102,8 +101,6 @@ class HostCommand(DetailCommand):
         if parsed_args.generate_key:
             pass  # generate SshKey
 
-        storage = ApplicationStorage(self.app.NAME)
-
         identity = SshIdentity()
         identity.username = parsed_args.username
         identity.password = parsed_args.password
@@ -117,7 +114,8 @@ class HostCommand(DetailCommand):
         host.address = parsed_args.address
         host.ssh_config = config
 
-        storage.save(host)
+        with self.storage:
+            self.storage.save(host)
         return host
 
     def take_action(self, parsed_args):
@@ -145,12 +143,10 @@ class HostsCommand(ListCommand):
         return parser
 
     def take_action(self, parsed_args):
-        storage = ApplicationStorage(self.app.NAME)
-        hosts = storage.get_all(Host)
+        hosts = self.storage.get_all(Host)
         fields = Host.allowed_feilds()
         getter = attrgetter(*fields)
-        import pudb;pudb.set_trace()
-        return fields, [getter(i) for i in hosts.values()]
+        return fields, [getter(i) for i in hosts]
 
 
 class GroupCommand(DetailCommand):
@@ -263,46 +259,6 @@ class TagsCommand(ListCommand):
 
     def take_action(self, parsed_args):
         self.log.info('Tag objects.')
-
-
-class PushCommand(AbstractCommand):
-
-    """Push data to Serverauditor cloud."""
-
-    def get_parser(self, prog_name):
-        parser = super(PushCommand, self).get_parser(prog_name)
-        parser.add_argument(
-            '-s', '--silent', action='store_true',
-            help='Do not produce any interactions.'
-        )
-        parser.add_argument(
-            '-S', '--strategy', metavar='STRATEGY_NAME',
-            help='Force to use specific strategy to merge data.'
-        )
-        return parser
-
-    def take_action(self, parsed_args):
-        self.log.info('Push data to Serverauditor cloud.')
-
-
-class PullCommand(AbstractCommand):
-
-    """Pull data from Serverauditor cloud."""
-
-    def get_parser(self, prog_name):
-        parser = super(PullCommand, self).get_parser(prog_name)
-        parser.add_argument(
-            '-s', '--silent', action='store_true',
-            help='Do not produce any interactions.'
-        )
-        parser.add_argument(
-            '-S', '--strategy', metavar='STRATEGY_NAME',
-            help='Force to use specific strategy to merge data.'
-        )
-        return parser
-
-    def take_action(self, parsed_args):
-        self.log.info('Pull data from Serverauditor cloud.')
 
 
 class InfoCommand(AbstractCommand):

@@ -12,7 +12,7 @@
 }
 
 @test "List hosts in table format" {
-    rm ~/.serverauditor.storage
+    rm ~/.serverauditor.storage || true
     serverauditor host -L test --port 2022 --username root --password password
     run serverauditor hosts
     [ "$status" -eq 0 ]

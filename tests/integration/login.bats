@@ -14,6 +14,8 @@
   if [ "$Serverauditor_username" == '' ] || [ "$Serverauditor_password" == '' ];then
       skip
   fi
+  rm ~/.serverauditor || true
+
   run serverauditor login --username $Serverauditor_username -p $Serverauditor_password
   echo $output
   [ "$status" -eq 0 ]

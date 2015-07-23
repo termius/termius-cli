@@ -1,15 +1,27 @@
 # coding: utf-8
 import logging
+import getpass
 
 from cliff.command import Command
 from cliff.lister import Lister
+from .settings import Config, ApplicationStorage
 
 
-class AbstractCommand(Command):
+class PasswordPromptMixin(object):
+    def prompt_password(self):
+        return getpass.getpass("Serverauditor's password:")
+
+
+class AbstractCommand(PasswordPromptMixin, Command):
 
     "Abstract Command with log."
 
     log = logging.getLogger(__name__)
+
+    def __init__(self, app, app_args, cmd_name=None):
+        super(AbstractCommand, self).__init__(app, app_args, cmd_name)
+        self.config = Config(self.app.NAME)
+        self.storage = ApplicationStorage(self.app.NAME)
 
     def get_parser(self, prog_name):
         parser = super(AbstractCommand, self).get_parser(prog_name)
@@ -37,6 +49,11 @@ class DetailCommand(AbstractCommand):
 
 
 class ListCommand(Lister):
+
+    def __init__(self, app, app_args, cmd_name=None):
+        super(ListCommand, self).__init__(app, app_args, cmd_name)
+        self.config = Config(self.app.NAME)
+        self.storage = ApplicationStorage(self.app.NAME)
 
     def get_parser(self, prog_name):
         parser = super(ListCommand, self).get_parser(prog_name)

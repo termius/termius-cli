@@ -14,7 +14,10 @@
   if [ "$Serverauditor_username" == '' ] || [ "$Serverauditor_password" == '' ];then
       skip
   fi
+
+  rm ~/.serverauditor || true
   serverauditor login --username $Serverauditor_username -p$Serverauditor_password
+
   run serverauditor logout
   [ "$status" -eq 0 ]
   [ -z $(cat ~/.serverauditor) ]

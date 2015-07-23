@@ -5,14 +5,13 @@ Copyright (c) 2013 Crystalnix.
 License BSD, see LICENSE for more details.
 """
 
-from ..core.settings import Config
 from ..core.api import API
 
 
 class AccountManager(object):
 
-    def __init__(self, application_name):
-        self.config = Config(application_name)
+    def __init__(self, config):
+        self.config = config
         self.api = API()
 
     def login(self, username, password):

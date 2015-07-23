@@ -67,12 +67,12 @@ class API(object):
         assert response.status_code == 201
         return response.json()
 
-    def get(self, endpoint, data):
+    def get(self, endpoint):
         response = requests.get(self.request_url(endpoint), auth=self.auth)
         assert response.status_code == 200
         return response.json()
 
-    def delete(self, endpoint, data):
+    def delete(self, endpoint):
         response = requests.delete(self.request_url(endpoint), auth=self.auth)
         assert response.status_code in (200, 204)
         return response.json()
