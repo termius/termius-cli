@@ -6,7 +6,7 @@ License BSD, see LICENSE for more details.
 """
 
 import sys
-
+import os
 
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
@@ -51,3 +51,19 @@ elif PY3:
 
     def bord(s):
         return s
+
+
+def expand_and_format_path(paths, **kwargs):
+    return [os.path.expanduser(i.format(**kwargs)) for i in paths]
+
+
+def tupled_attrgetter(*items):
+    def g(obj):
+        return tuple(resolve_attr(obj, attr) for attr in items)
+    return g
+
+
+def resolve_attr(obj, attr):
+    for name in attr.split("."):
+        obj = getattr(obj, name)
+    return obj

@@ -4,7 +4,14 @@ import getpass
 
 from cliff.command import Command
 from cliff.lister import Lister
-from .settings import Config, ApplicationStorage
+from .settings import Config
+from .storage import ApplicationStorage
+from .storage.strategies import (
+    SaveStrategy,
+    RelatedSaveStrategy,
+    GetStrategy,
+    RelatedGetStrategy,
+)
 
 
 class PasswordPromptMixin(object):
@@ -18,10 +25,17 @@ class AbstractCommand(PasswordPromptMixin, Command):
 
     log = logging.getLogger(__name__)
 
+    save_strategy = SaveStrategy
+    get_strategy = GetStrategy
+
     def __init__(self, app, app_args, cmd_name=None):
         super(AbstractCommand, self).__init__(app, app_args, cmd_name)
         self.config = Config(self.app.NAME)
-        self.storage = ApplicationStorage(self.app.NAME)
+        self.storage = ApplicationStorage(
+            self.app.NAME,
+            save_strategy=self.save_strategy,
+            get_strategy=self.get_strategy
+        )
 
     def get_parser(self, prog_name):
         parser = super(AbstractCommand, self).get_parser(prog_name)
@@ -49,6 +63,8 @@ class DetailCommand(AbstractCommand):
 
 
 class ListCommand(Lister):
+
+    log = logging.getLogger(__name__)
 
     def __init__(self, app, app_args, cmd_name=None):
         super(ListCommand, self).__init__(app, app_args, cmd_name)

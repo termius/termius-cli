@@ -5,7 +5,7 @@ from serverauditor_sshconfig.cloud.models import (
     Host, Group, Tag, SshKey, SshIdentity, SshConfig, Group, Host, PFRule
 )
 
-from serverauditor_sshconfig.core.settings import ApplicationStorage
+from serverauditor_sshconfig.core.storage import ApplicationStorage
 
 
 def test_generator():
@@ -23,17 +23,18 @@ def test_generator():
         yield save, instance
 
 
-@patch('serverauditor_sshconfig.core.settings.PersistentDict')
+@patch('serverauditor_sshconfig.core.storage.PersistentDict')
 def save(model, mocked):
 
     storage = ApplicationStorage('test')
-    storage.save(model)
+    with storage:
+        saved_model = storage.save(model)
 
-    assert isinstance(model.id, six.integer_types)
+    assert isinstance(saved_model.id, six.integer_types)
 
     for k, v in model.mapping.items():
-        setattr(model, k, [] if v.many else None)
-    stored_models = OrderedDict(((model.id, model),))
+        setattr(model, k, None)
+    stored_models = [saved_model]
 
     driver = mocked.return_value
     driver.__setitem__.assert_called_with(model.set_name, stored_models)

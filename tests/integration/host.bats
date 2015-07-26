@@ -12,7 +12,7 @@
 
 @test "Add general host" {
     rm ~/.serverauditor.storage || true
-    run serverauditor host -L test --port 2022 --username root --password password
+    run serverauditor host -L test --port 2022 --username root --password password --debug
     [ "$status" -eq 0 ]
     ! [ -z $(cat ~/.serverauditor.storage) ]
 }

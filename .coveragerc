@@ -1,7 +1,6 @@
 [run]
 branch = True
-source = serverauditor_sshconfig
-include = *.py
+include = serverauditor_sshconfig/**.py
 
 [report]
 precision = 2

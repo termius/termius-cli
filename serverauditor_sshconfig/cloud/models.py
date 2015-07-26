@@ -64,7 +64,7 @@ class Host(Model):
     set_name = 'host_set'
     mapping = {
         'ssh_config': Mapping(SshConfig, many=False),
-        # 'tags': Mapping(Tag, many=True),
+        'group': Mapping(Group, many=False),
     }
     crypto_fields = {'label', 'address'}
 
