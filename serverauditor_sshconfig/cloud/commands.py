@@ -1,10 +1,10 @@
+import re
 from base64 import b64decode
 from operator import attrgetter
 from ..core.commands import AbstractCommand, DetailCommand, ListCommand
-from ..core.storage.strategies import RelatedSaveStrategy, RelatedGetStrategy
 from .controllers import ApiController
 from .cryptor import RNCryptor
-from .models import Host, SshConfig, SshIdentity, SshKey, Tag, Group
+from .models import Host, SshConfig, SshIdentity, SshKey, Tag, Group, PFRule
 
 
 class PushCommand(AbstractCommand):
@@ -49,7 +49,6 @@ class PullCommand(AbstractCommand):
         self.log.info('Pull data from Serverauditor cloud.')
 
 
-
 class UseGroupCommand(AbstractCommand):
 
     """Change group."""
@@ -64,6 +63,75 @@ class UseGroupCommand(AbstractCommand):
 
     def take_action(self, parsed_args):
         self.log.info('Use Group.')
+
+
+class SshIdentityCommand(DetailCommand):
+
+    """Operate with ssh identity object."""
+
+    def get_parser(self, prog_name):
+        parser = super(SshIdentityCommand, self).get_parser(prog_name)
+        parser.add_argument(
+            '--generate-key', action='store_true',
+            help='Create and assign automatically a identity file for host.'
+        )
+        parser.add_argument(
+            '-u', '--username',
+            metavar='USERNAME', help="Username of host's user."
+        )
+        parser.add_argument(
+            '-p', '--password',
+            metavar='PASSWORD', help="Password of Host's user."
+        )
+        parser.add_argument(
+            '-i', '--identity-file',
+            metavar='PRIVATE_KEY', help="Private key."
+        )
+        parser.add_argument(
+            '-k', '--ssh-key',
+            metavar='SSH_KEY', help="Serveraduitor's ssh key's name or id."
+        )
+        parser.add_argument(
+            'ssh_identity', nargs='*', metavar='IDENITY_ID or IDENITY_NAME',
+            help='Pass to edit exited identities.'
+        )
+        return parser
+
+    def create_identity(self, parsed_args):
+        if parsed_args.generate_key:
+            raise NotImplementedError('Not implemented')
+
+        if parsed_args.identity_file:
+            raise NotImplementedError('Not implemented')
+
+        if parsed_args.ssh_key:
+            raise NotImplementedError('Not implemented')
+
+        identity = SshIdentity()
+        identity.username = parsed_args.username
+        identity.password = parsed_args.password
+
+        with self.storage:
+            saved_host = self.storage.save(identity)
+        return saved_host
+
+    def take_action(self, parsed_args):
+        if not parsed_args.ssh_identities:
+            ssh_identity = self.create_identity(parsed_args)
+            self.log.info('%s', ssh_identity.id)
+        else:
+            self.log.info('SshIdentity object.')
+
+
+class SshIdentitiesCommand(ListCommand):
+
+    """Manage ssh identity objects."""
+
+    def take_action(self, parsed_args):
+        ssh_identities = self.storage.get_all(SshIdentity)
+        fields = SshIdentity.allowed_feilds()
+        getter = attrgetter(*fields)
+        return fields, [getter(i) for i in ssh_identities]
 
 
 class SshConfigArgs(object):
@@ -83,6 +151,10 @@ class SshConfigArgs(object):
             help='Snippet id or snippet name.'
         )
         parser.add_argument(
+            '--ssh-identity',
+            metavar='SSH_IDENTITY', help="Ssh identity's id name or name."
+        )
+        parser.add_argument(
             '-k', '--keep-alive-packages',
             type=int, metavar='PACKAGES_COUNT',
             help='ServerAliveCountMax option from ssh_config.'
@@ -100,15 +172,16 @@ class SshConfigArgs(object):
             help=('Selects a file from which the identity (private key) '
                   'for public key authentication is read.')
         )
+        parser.add_argument(
+            'command', nargs='?', metavar='COMMAND',
+            help='Create and assign automatically snippet.'
+        )
         return parser
 
 
 class HostCommand(DetailCommand):
 
     """Operate with Host object."""
-
-    save_strategy = RelatedSaveStrategy
-    get_strategy = RelatedGetStrategy
 
     def get_parser(self, prog_name):
         parser = super(HostCommand, self).get_parser(prog_name)
@@ -136,10 +209,6 @@ class HostCommand(DetailCommand):
             'host', nargs='*', metavar='HOST_ID or HOST_NAME',
             help='Pass to edit exited hosts.'
         )
-        parser.add_argument(
-            'command', nargs='?', metavar='COMMAND',
-            help='Create and assign automatically snippet.'
-        )
 
         ssh_config_args = SshConfigArgs()
         ssh_config_args.add_agrs(parser)
@@ -147,6 +216,12 @@ class HostCommand(DetailCommand):
 
     def create_host(self, parsed_args):
         if parsed_args.generate_key:
+            raise NotImplementedError('Not implemented')
+
+        if parsed_args.group:
+            raise NotImplementedError('Not implemented')
+
+        if parsed_args.ssh_identity:
             raise NotImplementedError('Not implemented')
 
         identity = SshIdentity()
@@ -211,6 +286,10 @@ class GroupCommand(DetailCommand):
             '--ssh', help='Options in ssh_config format.'
         )
         parser.add_argument(
+            '-g', '--parent-group',
+            metavar='PARENT_GROU', help="Parent group's id or name."
+        )
+        parser.add_argument(
             'group', nargs='*', metavar='GROUP_ID or GROUP_NAME',
             help='Pass to edit exited groups.'
         )
@@ -219,8 +298,36 @@ class GroupCommand(DetailCommand):
         ssh_config_args.add_agrs(parser)
         return parser
 
+    def create_group(self, parsed_args):
+        if parsed_args.generate_key:
+            raise NotImplementedError('Not implemented')
+        if parsed_args.parent_group:
+            raise NotImplementedError('Not implemented')
+        if parsed_args.ssh_identity:
+            raise NotImplementedError('Not implemented')
+
+        identity = SshIdentity()
+        identity.username = parsed_args.username
+        identity.password = parsed_args.password
+
+        config = SshConfig()
+        config.port = parsed_args.port
+        config.ssh_identity = identity
+
+        group = Group()
+        group.label = parsed_args.label
+        group.ssh_config = config
+
+        with self.storage:
+            saved_host = self.storage.save(group)
+        return saved_host
+
     def take_action(self, parsed_args):
-        self.log.info('Group object.')
+        if not parsed_args.group:
+            group = self.create_group(parsed_args)
+            self.log.info('%s', group.id)
+        else:
+            self.log.info('Host object.')
 
 
 class GroupsCommand(ListCommand):
@@ -241,12 +348,53 @@ class GroupsCommand(ListCommand):
         return parser
 
     def take_action(self, parsed_args):
-        self.log.info('Group objects.')
+        groups = self.storage.get_all(Group)
+        fields = Group.allowed_feilds()
+        getter = attrgetter(*fields)
+        return fields, [getter(i) for i in groups]
+
+
+class InvalidBinging(Exception):
+    pass
+
+
+class BindingParser(object):
+
+    local_pf_re = re.compile(
+        r'^((?P<bound_address>\S+):)?(?P<local_port>\d+)'
+        r':(?P<hostname>\S+):(?P<remote_port>\d+)$'
+    )
+    dynamic_pf_re = re.compile(
+        r'^((?P<bound_address>\S+):)?(?P<local_port>\d+)'
+        r'(?P<hostname>)(?P<remote_port>)$'
+        # Regexp Groups should be the same for all rules.
+    )
+
+    @classmethod
+    def parse(cls, regexp, binding_str):
+        matched = regexp.match(binding_str)
+        if not matched:
+            raise InvalidBinging('Invalid binding format.')
+        return matched.groupdict()
+
+    @classmethod
+    def local(cls, binding_str):
+        return cls.parse(cls.local_pf_re, binding_str)
+
+    @classmethod
+    def dynamic(cls, binding_str):
+        return cls.parse(cls.dynamic_pf_re, binding_str)
 
 
 class PFRuleCommand(DetailCommand):
 
     """Operate with port forwarding rule object."""
+
+    binding_parsers = {
+        'D': BindingParser.dynamic,
+        'L': BindingParser.local,
+    }
+    binding_parsers['R'] = binding_parsers['L']
 
     def get_parser(self, prog_name):
         parser = super(PFRuleCommand, self).get_parser(prog_name)
@@ -277,16 +425,41 @@ class PFRuleCommand(DetailCommand):
         )
         return parser
 
-    def take_action(self, parsed_args):
-        self.log.info('Port Forwarding Rule object.')
+    def parse_binding(self, pf_type, binding):
+        return self.binding_parsers[pf_type](binding)
 
+    def create_pfrule(self, parsed_args):
+        if not parsed_args.host:
+            raise ValueError('Host is required.')
+        else:
+            raise NotImplementedError('Not implimented now.')
+
+        pf_rule = PFRule()
+        pf_rule.pf_type = parsed_args.type
+        binding_dict = self.parse_binding(pf_rule.pf_type, parsed_args.binging)
+        for k, v in binding_dict.items():
+            setattr(pf_rule, k, v)
+
+        with self.storage:
+            saved_pfrule = self.storage.save(pf_rule)
+        return saved_pfrule
+
+    def take_action(self, parsed_args):
+        if not parsed_args.pr_rule:
+            pfrule = self.create_pfrule(parsed_args)
+            self.log.info('%s', pfrule.id)
+        else:
+            self.log.info('Host object.')
 
 class PFRulesCommand(ListCommand):
 
     """Manage port forwarding rule objects."""
 
     def take_action(self, parsed_args):
-        self.log.info('Port Forwarding Rule objects.')
+        pf_rules = self.storage.get_all(PFRule)
+        fields = PFRule.allowed_feilds()
+        getter = attrgetter(*fields)
+        return fields, [getter(i) for i in pf_rules]
 
 
 class TagsCommand(ListCommand):

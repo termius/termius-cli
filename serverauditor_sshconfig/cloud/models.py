@@ -17,7 +17,7 @@ class SshKey(Model):
 
 class SshIdentity(Model):
 
-    fields = {'label', 'username', 'password', 'ssh_key'}
+    fields = {'label', 'username', 'password', 'ssh_key', 'is_visible'}
     set_name = 'sshidentity_set'
     mapping = {
         'ssh_key': Mapping(SshKey, many=False),
@@ -81,7 +81,7 @@ class TagHost(Model):
 
 class PFRule(Model):
 
-    fields = {'label', 'host',
+    fields = {'label', 'host', 'pf_type',
               'bound_address', 'local_port', 'hostname', 'remote_port'}
     set_name = 'pfrule_set'
     mapping = {

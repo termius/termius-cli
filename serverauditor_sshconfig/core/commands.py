@@ -45,6 +45,9 @@ class AbstractCommand(PasswordPromptMixin, Command):
 
 class DetailCommand(AbstractCommand):
 
+    save_strategy = RelatedSaveStrategy
+    get_strategy = RelatedGetStrategy
+
     def get_parser(self, prog_name):
         parser = super(DetailCommand, self).get_parser(prog_name)
         parser.add_argument(
