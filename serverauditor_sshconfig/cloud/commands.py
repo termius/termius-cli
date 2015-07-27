@@ -116,7 +116,7 @@ class SshIdentityCommand(DetailCommand):
         return saved_host
 
     def take_action(self, parsed_args):
-        if not parsed_args.ssh_identities:
+        if not parsed_args.ssh_identity:
             ssh_identity = self.create_identity(parsed_args)
             self.log.info('%s', ssh_identity.id)
         else:
