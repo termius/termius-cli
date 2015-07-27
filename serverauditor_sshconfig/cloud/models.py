@@ -8,6 +8,13 @@ class Tag(Model):
     crypto_fields = fields
 
 
+class Snippet(Model):
+
+    fields = {'label', 'script'}
+    set_name = 'snippet_set'
+    crypto_fields = fields
+
+
 class SshKey(Model):
 
     fields = {'label', 'passphrase', 'private_key', 'public_key'}
@@ -24,12 +31,14 @@ class SshIdentity(Model):
     }
     crypto_fields = {'label', 'username', 'password'}
 
+
 class SshConfig(Model):
 
-    fields = {'port', 'ssh_identity'}
+    fields = {'port', 'ssh_identity', 'startup_snippet'}
     set_name = 'sshconfig_set'
     mapping = {
         'ssh_identity': Mapping(SshIdentity, many=False),
+        'startup_snippet': Mapping(Snippet, many=False),
     }
 
 

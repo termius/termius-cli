@@ -14,9 +14,9 @@ setup() {
     [ "$status" -eq 0 ]
 }
 
-@test "List hosts in table format" {
-    serverauditor host -L test --port 2022 --address 123.2.3.2 --username root --password password
-    run serverauditor hosts
+@test "List snippets in table format" {
+    serverauditor snippet -L test --script 'ls'
+    run serverauditor snippets
     [ "$status" -eq 0 ]
     ! [ -z $(cat ~/.serverauditor.storage) ]
 }
