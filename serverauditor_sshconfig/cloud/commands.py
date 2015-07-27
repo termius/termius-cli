@@ -2,9 +2,14 @@ import re
 from base64 import b64decode
 from operator import attrgetter
 from ..core.commands import AbstractCommand, DetailCommand, ListCommand
+from ..core.exceptions import DoesNotExistException, TooManyEntriesException
 from .controllers import ApiController
 from .cryptor import RNCryptor
 from .models import Host, SshConfig, SshIdentity, SshKey, Tag, Group, PFRule
+
+
+class ArgumentRequiredException(ValueError):
+    pass
 
 
 class PushCommand(AbstractCommand):
@@ -118,7 +123,7 @@ class SshIdentityCommand(DetailCommand):
     def take_action(self, parsed_args):
         if not parsed_args.ssh_identity:
             ssh_identity = self.create_identity(parsed_args)
-            self.log.info('%s', ssh_identity.id)
+            self.app.stdout.write('{}\n'.format(ssh_identity.id))
         else:
             self.log.info('SshIdentity object.')
 
@@ -215,6 +220,9 @@ class HostCommand(DetailCommand):
         return parser
 
     def create_host(self, parsed_args):
+        if not parsed_args.address:
+            raise ArgumentRequiredException('Address is required.')
+
         if parsed_args.generate_key:
             raise NotImplementedError('Not implemented')
 
@@ -244,7 +252,7 @@ class HostCommand(DetailCommand):
     def take_action(self, parsed_args):
         if not parsed_args.host:
             host = self.create_host(parsed_args)
-            self.log.info('%s', host.id)
+            self.app.stdout.write('{}\n'.format(host.id))
         else:
             self.log.info('Host object.')
 
@@ -325,7 +333,7 @@ class GroupCommand(DetailCommand):
     def take_action(self, parsed_args):
         if not parsed_args.group:
             group = self.create_group(parsed_args)
-            self.log.info('%s', group.id)
+            self.app.stdout.write('{}\n'.format(group.id))
         else:
             self.log.info('Host object.')
 
@@ -354,18 +362,18 @@ class GroupsCommand(ListCommand):
         return fields, [getter(i) for i in groups]
 
 
-class InvalidBinging(Exception):
+class InvalidBinding(Exception):
     pass
 
 
 class BindingParser(object):
 
     local_pf_re = re.compile(
-        r'^((?P<bound_address>\S+):)?(?P<local_port>\d+)'
-        r':(?P<hostname>\S+):(?P<remote_port>\d+)$'
+        r'^((?P<bound_address>[\w.]+):)?(?P<local_port>\d+)'
+        r':(?P<hostname>[\w.]+):(?P<remote_port>\d+)$'
     )
     dynamic_pf_re = re.compile(
-        r'^((?P<bound_address>\S+):)?(?P<local_port>\d+)'
+        r'^((?P<bound_address>[\w.]+):)?(?P<local_port>\d+)'
         r'(?P<hostname>)(?P<remote_port>)$'
         # Regexp Groups should be the same for all rules.
     )
@@ -374,7 +382,7 @@ class BindingParser(object):
     def parse(cls, regexp, binding_str):
         matched = regexp.match(binding_str)
         if not matched:
-            raise InvalidBinging('Invalid binding format.')
+            raise InvalidBinding('Invalid binding format.')
         return matched.groupdict()
 
     @classmethod
@@ -420,7 +428,7 @@ class PFRuleCommand(DetailCommand):
                   '[bind_address:]port or [bind_address:]port:host:hostport')
         )
         parser.add_argument(
-            'pr-rule', nargs='?', metavar='PF_RULE_ID or PF_RULE_NAME',
+            'pr_rule', nargs='?', metavar='PF_RULE_ID or PF_RULE_NAME',
             help='Pass to edit exited port Frowarding Rule.'
         )
         return parser
@@ -428,15 +436,34 @@ class PFRuleCommand(DetailCommand):
     def parse_binding(self, pf_type, binding):
         return self.binding_parsers[pf_type](binding)
 
+    def get_host(self, arg):
+        try:
+            host_id = int(arg)
+        except ValueError:
+            host_id = None
+        try:
+            return self.storage.get(Host, query_union=any,
+                                    id=host_id, label=arg)
+        except DoesNotExistException:
+            raise ArgumentRequiredException('Not found any host.')
+        except TooManyEntriesException:
+            raise ArgumentRequiredException('Found to many hosts.')
+
+    def get_type(self, pf_type):
+        if not pf_type:
+            raise ArgumentRequiredException('Type is required.')
+        return pf_type
+
     def create_pfrule(self, parsed_args):
         if not parsed_args.host:
-            raise ValueError('Host is required.')
+            raise ArgumentRequiredException('Host is required.')
         else:
-            raise NotImplementedError('Not implimented now.')
+            host = self.get_host(parsed_args.host)
 
         pf_rule = PFRule()
-        pf_rule.pf_type = parsed_args.type
-        binding_dict = self.parse_binding(pf_rule.pf_type, parsed_args.binging)
+        pf_rule.pf_type = self.get_type(parsed_args.type)
+        pf_rule.host = host
+        binding_dict = self.parse_binding(pf_rule.pf_type, parsed_args.binding)
         for k, v in binding_dict.items():
             setattr(pf_rule, k, v)
 
@@ -447,7 +474,7 @@ class PFRuleCommand(DetailCommand):
     def take_action(self, parsed_args):
         if not parsed_args.pr_rule:
             pfrule = self.create_pfrule(parsed_args)
-            self.log.info('%s', pfrule.id)
+            self.app.stdout.write('{}\n'.format(pfrule.id))
         else:
             self.log.info('Host object.')
 

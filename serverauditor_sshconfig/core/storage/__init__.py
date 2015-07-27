@@ -1,7 +1,7 @@
 from .idgenerators import UUIDGenerator
 from .driver import PersistentDict
 from ..utils import expand_and_format_path, tupled_attrgetter
-from ..exceptions import DoesNotExistException
+from ..exceptions import DoesNotExistException, TooManyEntriesException
 from .strategies import SaveStrategy, GetStrategy
 
 
@@ -84,21 +84,34 @@ class ApplicationStorage(object):
         models = self._internal_get_all(type(model))
         models.append(model)
         self.driver[model.set_name] = models
+        return model
 
-    def get(self, model_class, **kwargs):
+    def get(self, model_class, query_union=None, **kwargs):
+        founded_models = self.filter(model_class, query_union, **kwargs)
+        if not founded_models:
+            raise DoesNotExistException
+        elif len(founded_models) != 1:
+            raise TooManyEntriesException
+        return founded_models[0]
+
+    def filter(self, model_class, query_union=None, **kwargs):
         assert isinstance(model_class, type)
         assert kwargs
+        query_operator = query_union or all
         models = self.get_all(model_class)
         filter_keys = tuple(i[0] for i in kwargs.items())
         filter_values = tuple(i[1] for i in kwargs.items())
         getter = tupled_attrgetter(*filter_keys)
-        founded_models = [
-            i for i in models if getter(i) == filter_values
-        ]
-        if not founded_models:
-            raise DoesNotExistException
-        assert len(founded_models) == 1
-        return founded_models[0]
+
+        def perform_query(got):
+            fields_values_equal = (
+                attribute == value for attribute, value
+                in zip(getter(got), filter_values)
+            )
+            return query_operator(fields_values_equal)
+
+        founded_models = [i for i in models if perform_query(i)]
+        return founded_models
 
     def _get_all_base(self, model_class, model_contructor):
         assert isinstance(model_class, type)
