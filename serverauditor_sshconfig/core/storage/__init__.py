@@ -26,7 +26,9 @@ class ApplicationStorage(object):
     path = '~/.{application_name}.storage'
     defaultstorage = list
 
-    def __init__(self, application_name, save_strategy=None, get_strategy=None, **kwargs):
+    def __init__(self, application_name,
+                 save_strategy=None, get_strategy=None,
+                 **kwargs):
         self._path = expand_and_format_path(
             [self.path], application_name=application_name, **kwargs
         )[0]

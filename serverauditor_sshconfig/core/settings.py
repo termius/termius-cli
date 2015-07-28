@@ -7,7 +7,6 @@ License BSD, see LICENSE for more details.
 
 import os
 import six
-from .exceptions import DoesNotExistException
 from .utils import expand_and_format_path
 
 

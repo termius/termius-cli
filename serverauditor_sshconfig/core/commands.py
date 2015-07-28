@@ -21,7 +21,7 @@ class PasswordPromptMixin(object):
 
 class AbstractCommand(PasswordPromptMixin, Command):
 
-    "Abstract Command with log."
+    """Abstract Command with log."""
 
     log = logging.getLogger(__name__)
 

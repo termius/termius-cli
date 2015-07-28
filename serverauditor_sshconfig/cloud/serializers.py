@@ -10,8 +10,8 @@ from .models import (
     Host, Group,
     Tag, SshKey,
     SshIdentity, SshConfig,
-    Group, Host,
-    PFRule, TagHost,
+    Host, PFRule,
+    TagHost,
 )
 
 
@@ -207,5 +207,7 @@ class BulkSerializer(Serializer):
         payload['last_synced'] = model.pop('last_synced')
         deleted_sets = payload.pop('deleted_sets')
         for set_name, serializer in self.mapping.items():
-            payload[set_name] = [serializer.to_model(i) for i in payload[set_name]]
+            payload[set_name] = [
+                serializer.to_model(i) for i in payload[set_name]
+            ]
         raise RuntimeError('Need implement deleted_sets showing.')

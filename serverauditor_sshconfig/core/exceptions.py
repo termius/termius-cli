@@ -4,3 +4,11 @@ class DoesNotExistException(Exception):
 
 class TooManyEntriesException(Exception):
     pass
+
+
+class ArgumentRequiredException(ValueError):
+    pass
+
+
+class InvalidArgumentException(ValueError):
+    pass

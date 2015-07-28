@@ -78,6 +78,7 @@ class API(object):
         return response.json()
 
     def put(self, endpoint, data):
-        response = requests.put(self.request_url(endpoint), json=data, auth=self.auth)
+        response = requests.put(self.request_url(endpoint),
+                                json=data, auth=self.auth)
         assert response.status_code in (200, 204)
         return response.json()
