@@ -9,6 +9,8 @@ class HostCommand(DetailCommand):
 
     """Operate with Host object."""
 
+    allowed_operations = DetailCommand.all_operations
+
     def get_parser(self, prog_name):
         parser = super(HostCommand, self).get_parser(prog_name)
         parser.add_argument(
@@ -31,16 +33,12 @@ class HostCommand(DetailCommand):
             '-a', '--address',
             metavar='ADDRESS', help='Address of host.'
         )
-        parser.add_argument(
-            'host', nargs='*', metavar='HOST_ID or HOST_NAME',
-            help='Pass to edit exited hosts.'
-        )
 
         ssh_config_args = SshConfigArgs()
         ssh_config_args.add_agrs(parser)
         return parser
 
-    def create_host(self, parsed_args):
+    def create(self, parsed_args):
         if not parsed_args.address:
             raise ArgumentRequiredException('Address is required.')
 
@@ -68,14 +66,8 @@ class HostCommand(DetailCommand):
 
         with self.storage:
             saved_host = self.storage.save(host)
-        return saved_host
 
-    def take_action(self, parsed_args):
-        if not parsed_args.host:
-            host = self.create_host(parsed_args)
-            self.app.stdout.write('{}\n'.format(host.id))
-        else:
-            self.log.info('Host object.')
+        self.log_create(saved_host)
 
 
 class HostsCommand(ListCommand):

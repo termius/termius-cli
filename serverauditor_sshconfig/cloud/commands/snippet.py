@@ -7,6 +7,8 @@ class SnippetCommand(DetailCommand):
 
     """Operate with Group object."""
 
+    allowed_operations = DetailCommand.all_operations
+
     def get_parser(self, prog_name):
         parser = super(SnippetCommand, self).get_parser(prog_name)
         parser.add_argument(
@@ -19,7 +21,7 @@ class SnippetCommand(DetailCommand):
         )
         return parser
 
-    def create_snippet(self, parsed_args):
+    def create(self, parsed_args):
         if not parsed_args.script:
             raise ArgumentRequiredException('Script is required')
 
@@ -29,14 +31,7 @@ class SnippetCommand(DetailCommand):
 
         with self.storage:
             saved_snippet = self.storage.save(snippet)
-        return saved_snippet
-
-    def take_action(self, parsed_args):
-        if not parsed_args.snippet:
-            snippet = self.create_snippet(parsed_args)
-            self.app.stdout.write('{}\n'.format(snippet.id))
-        else:
-            self.log.info('Snippet object.')
+        self.log_create(saved_snippet)
 
 
 class SnippetsCommand(ListCommand):

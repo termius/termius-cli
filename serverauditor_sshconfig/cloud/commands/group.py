@@ -12,6 +12,8 @@ class GroupCommand(DetailCommand):
 
     """Operate with Group object."""
 
+    allowed_operations = DetailCommand.all_operations
+
     def get_parser(self, prog_name):
         parser = super(GroupCommand, self).get_parser(prog_name)
         parser.add_argument(
@@ -25,16 +27,12 @@ class GroupCommand(DetailCommand):
             '-g', '--parent-group',
             metavar='PARENT_GROUP', help="Parent group's id or name."
         )
-        parser.add_argument(
-            'group', nargs='*', metavar='GROUP_ID or GROUP_NAME',
-            help='Pass to edit exited groups.'
-        )
 
         ssh_config_args = SshConfigArgs()
         ssh_config_args.add_agrs(parser)
         return parser
 
-    def create_group(self, parsed_args):
+    def create(self, parsed_args):
         if parsed_args.generate_key:
             raise NotImplementedError('Not implemented')
         if parsed_args.parent_group:
@@ -56,14 +54,7 @@ class GroupCommand(DetailCommand):
 
         with self.storage:
             saved_host = self.storage.save(group)
-        return saved_host
-
-    def take_action(self, parsed_args):
-        if not parsed_args.group:
-            group = self.create_group(parsed_args)
-            self.app.stdout.write('{}\n'.format(group.id))
-        else:
-            self.log.info('Host object.')
+        self.log_create(saved_host)
 
 
 class GroupsCommand(ListCommand):

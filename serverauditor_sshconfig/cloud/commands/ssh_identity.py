@@ -7,6 +7,8 @@ class SshIdentityCommand(DetailCommand):
 
     """Operate with ssh identity object."""
 
+    allowed_operations = DetailCommand.all_operations
+
     def get_parser(self, prog_name):
         parser = super(SshIdentityCommand, self).get_parser(prog_name)
         parser.add_argument(
@@ -35,7 +37,7 @@ class SshIdentityCommand(DetailCommand):
         )
         return parser
 
-    def create_identity(self, parsed_args):
+    def create(self, parsed_args):
         if parsed_args.generate_key:
             raise NotImplementedError('Not implemented')
 
@@ -51,14 +53,7 @@ class SshIdentityCommand(DetailCommand):
 
         with self.storage:
             saved_host = self.storage.save(identity)
-        return saved_host
-
-    def take_action(self, parsed_args):
-        if not parsed_args.ssh_identity:
-            ssh_identity = self.create_identity(parsed_args)
-            self.app.stdout.write('{}\n'.format(ssh_identity.id))
-        else:
-            self.log.info('SshIdentity object.')
+        self.log_create(saved_host)
 
 
 class SshIdentitiesCommand(ListCommand):

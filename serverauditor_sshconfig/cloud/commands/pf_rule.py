@@ -44,6 +44,8 @@ class PFRuleCommand(DetailCommand):
 
     """Operate with port forwarding rule object."""
 
+    allowed_operations = DetailCommand.all_operations
+
     binding_parsers = {
         'D': BindingParser.dynamic,
         'L': BindingParser.local,
@@ -100,7 +102,7 @@ class PFRuleCommand(DetailCommand):
             raise ArgumentRequiredException('Type is required.')
         return pf_type
 
-    def create_pfrule(self, parsed_args):
+    def create(self, parsed_args):
         if not parsed_args.host:
             raise ArgumentRequiredException('Host is required.')
         else:
@@ -115,14 +117,8 @@ class PFRuleCommand(DetailCommand):
 
         with self.storage:
             saved_pfrule = self.storage.save(pf_rule)
-        return saved_pfrule
+        self.log_create(saved_pfrule)
 
-    def take_action(self, parsed_args):
-        if not parsed_args.pr_rule:
-            pfrule = self.create_pfrule(parsed_args)
-            self.app.stdout.write('{}\n'.format(pfrule.id))
-        else:
-            self.log.info('Host object.')
 
 class PFRulesCommand(ListCommand):
 
