@@ -70,3 +70,40 @@ class Model(AbstractModel):
 class RemoteInstance(AbstractModel):
 
     fields = {'id', 'updated_at'}
+
+
+class DeleteSets(AbstractModel):
+
+    fields = {
+        'tag_set', 'snippet_set', 'sshkeycrypt_set', 'sshidentity_set',
+        'sshconfig_set', 'group_set', 'host_set', 'taghost_set',
+        'pfrule_set',
+
+    }
+    set_name = 'delete_sets'
+    default_field_value = list
+
+    def update_field(self, field, set_operator):
+        existed = getattr(self, field) or self.default_field_value()
+        existed_set = set(existed)
+        new_set = set_operator(existed_set)
+        new = self.default_field_value(new_set)
+        setattr(self, model.set_name, new)
+
+    def soft_delete(self, model):
+        if not model.remote_instance:
+            return
+
+        def union(existed_set):
+            return existed_set.union({model.remote_instance.id})
+
+        self.update_field(model.set_name, union)
+
+    def delete_soft_deleted(self, set_name, identity):
+        if not identity:
+            return
+
+        def intersection(existed_set):
+            return existed_set.intersection({identity})
+
+        self.update_field(set_name, intersection)

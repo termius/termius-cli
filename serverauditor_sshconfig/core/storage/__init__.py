@@ -2,7 +2,7 @@ from .idgenerators import UUIDGenerator
 from .driver import PersistentDict
 from ..utils import expand_and_format_path, tupled_attrgetter
 from ..exceptions import DoesNotExistException, TooManyEntriesException
-from .strategies import SaveStrategy, GetStrategy
+from .strategies import SaveStrategy, GetStrategy, DeleteStrategy
 
 
 class InternalModelContructor(object):
@@ -26,24 +26,27 @@ class ApplicationStorage(object):
     path = '~/.{application_name}.storage'
     defaultstorage = list
 
-    def __init__(self, application_name,
-                 save_strategy=None, get_strategy=None,
-                 **kwargs):
+    def __init__(self, application_name, save_strategy=None,
+                 get_strategy=None, delete_strategy=None, **kwargs):
         self._path = expand_and_format_path(
             [self.path], application_name=application_name, **kwargs
         )[0]
         self.driver = PersistentDict(self._path)
         self.id_generator = UUIDGenerator(self)
 
-        save_strategy_class = save_strategy or SaveStrategy
-        self.save_strategy = save_strategy_class(self)
-        get_strategy_class = get_strategy or GetStrategy
-        self.get_strategy = get_strategy_class(self)
+        self.save_strategy = self.make_strategy(save_strategy, SaveStrategy)
+        self.get_strategy = self.make_strategy(get_strategy, GetStrategy)
+        self.delete_strategy = self.make_strategy(delete_strategy,
+                                                  DeleteStrategy)
 
         self.internal_model_constructor = InternalModelContructor(
             self.get_strategy)
         self.model_constructor = ModelContructor(
             self.get_strategy)
+
+    def make_strategy(self, strategy_class, default):
+        strategy_class = strategy_class or default
+        return strategy_class(self)
 
     def generate_id(self, model):
         return self.id_generator(model)
@@ -73,20 +76,22 @@ class ApplicationStorage(object):
     def create(self, model):
         assert not getattr(model, model.id_name)
         model.id = self.generate_id(model)
-        models = self._internal_get_all(type(model))
-        models.append(model)
-        self.driver[model.set_name] = models
-        return model
+        return self._internal_update(model)
 
     def update(self, model):
         identificator = getattr(model, model.id_name)
         assert identificator
 
-        self.delete(model)
-        models = self._internal_get_all(type(model))
-        models.append(model)
-        self.driver[model.set_name] = models
-        return model
+        self._internal_delete(model)
+        return self._internal_update(model)
+
+    def delete(self, model):
+        self._internal_delete(model)
+        self.delete_strategy.delete(model)
+
+    def confirm_delete(self, deleted_sets):
+        # FIXME It need more suitable name
+        self.delete_strategy.confirm_delete(deleted_sets)
 
     def get(self, model_class, query_union=None, **kwargs):
         founded_models = self.filter(model_class, query_union, **kwargs)
@@ -115,6 +120,12 @@ class ApplicationStorage(object):
         founded_models = [i for i in models if perform_query(i)]
         return founded_models
 
+    def get_all(self, model_class):
+        return self._get_all_base(model_class, self.model_constructor)
+
+    def _internal_get_all(self, model_class):
+        return self._get_all_base(model_class, self.internal_model_constructor)
+
     def _get_all_base(self, model_class, model_contructor):
         assert isinstance(model_class, type)
         name = model_class.set_name
@@ -124,13 +135,13 @@ class ApplicationStorage(object):
         )
         return models
 
-    def _internal_get_all(self, model_class):
-        return self._get_all_base(model_class, self.internal_model_constructor)
+    def _internal_update(self, model):
+        models = self._internal_get_all(type(model))
+        models.append(model)
+        self.driver[model.set_name] = models
+        return model
 
-    def get_all(self, model_class):
-        return self._get_all_base(model_class, self.model_constructor)
-
-    def delete(self, model):
+    def _internal_delete(self, model):
         identificator = getattr(model, model.id_name)
         assert identificator
 
@@ -140,3 +151,9 @@ class ApplicationStorage(object):
                 models.pop(index)
                 break
         self.driver[model.set_name] = models
+
+    def low_get(self, key):
+        return self.driver[key]
+
+    def low_set(self, key, value):
+        self.driver[key] = value

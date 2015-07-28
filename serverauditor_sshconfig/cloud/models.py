@@ -1,4 +1,4 @@
-from ..core.models import Model, Mapping
+from ..core.models import AbstractModel, Model, Mapping
 
 
 class Tag(Model):
@@ -53,18 +53,6 @@ class Group(Model):
 
 
 Group.mapping['parent_group'] = Mapping(Group, many=False)
-
-
-class Host(Model):
-
-    fields = {'label', 'group', # 'tags',
-              'address', 'ssh_config'}
-    set_name = 'host_set'
-    mapping = {
-        'ssh_config': Mapping(SshConfig, many=False),
-        # 'tags': Mapping(Tag, many=True),
-    }
-    crypto_fields = {'label', 'address'}
 
 
 class Host(Model):

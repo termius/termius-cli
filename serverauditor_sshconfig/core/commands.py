@@ -8,9 +8,11 @@ from .settings import Config
 from .storage import ApplicationStorage
 from .storage.strategies import (
     SaveStrategy,
-    RelatedSaveStrategy,
     GetStrategy,
+    DeleteStrategy,
+    RelatedSaveStrategy,
     RelatedGetStrategy,
+    SoftDeleteStrategy,
 )
 
 
@@ -27,6 +29,7 @@ class AbstractCommand(PasswordPromptMixin, Command):
 
     save_strategy = SaveStrategy
     get_strategy = GetStrategy
+    delete_strategy = DeleteStrategy
 
     def __init__(self, app, app_args, cmd_name=None):
         super(AbstractCommand, self).__init__(app, app_args, cmd_name)
@@ -47,6 +50,7 @@ class DetailCommand(AbstractCommand):
 
     save_strategy = RelatedSaveStrategy
     get_strategy = RelatedGetStrategy
+    delete_strategy = SoftDeleteStrategy
 
     all_operations = {'delete', 'update', 'create'}
     allowed_operations = set()

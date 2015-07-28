@@ -1,4 +1,5 @@
 import six
+from ..models import DeleteSets
 
 
 class Strategy(object):
@@ -48,3 +49,45 @@ class RelatedGetStrategy(GetStrategy):
                 submodel = self.storage.get(mapping.model, id=submodel_id)
                 setattr(result, field, submodel)
         return result
+
+
+class DeleteStrategy(Strategy):
+
+    def get_delete_sets(self):
+        return {}
+
+    def delete(self, model):
+        return model
+
+    def confirm_delete(self, deleted_sets):
+        pass
+
+
+class SoftDeleteStrategy(DeleteStrategy):
+
+    delete_sets_class = DeleteSets
+
+    def get_delete_sets(self):
+        try:
+            data = self.storage.low_get(self.delete_sets_class.set_name)
+        except KeyError:
+            data = {}
+        model = self.delete_sets_class(data)
+        return model
+
+    def set_delete_sets(self, deleted):
+        self.storage.low_set(self.delete_sets_class.set_name, deleted)
+
+    def delete(self, model):
+        delete_sets = self.get_delete_sets()
+        delete_sets.soft_delete(model)
+        self.set_delete_sets(delete_sets)
+        return model
+
+    def confirm_delete(self, sets):
+        # FIXME It need more suitable name
+        delete_sets = self.get_delete_sets()
+        for k, v in sets.items():
+            for i in v:
+                delete_sets.delete_soft_deleted(k, i)
+        self.set_delete_sets(delete_sets)

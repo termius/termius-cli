@@ -6,6 +6,7 @@ from collections import OrderedDict
 from operator import attrgetter, itemgetter
 from ..core.models import RemoteInstance
 from ..core.exceptions import DoesNotExistException
+from ..core.storage.strategies import SoftDeleteStrategy
 from .models import (
     Host, Group,
     Tag, SshKey,
@@ -159,12 +160,6 @@ class BulkSerializer(Serializer):
         SshKey, SshIdentity, SshConfig, Tag, Group, Host, PFRule, TagHost
     )
 
-    def create_child_serializer(self, model_class):
-        return self.child_serializer_class(
-            model_class=model_class, storage=self.storage,
-            crypto_controller=self.crypto_controller
-        )
-
     def __init__(self, crypto_controller, **kwargs):
         super(BulkSerializer, self).__init__(**kwargs)
         self.crypto_controller = crypto_controller
@@ -172,12 +167,6 @@ class BulkSerializer(Serializer):
             (i.set_name, self.create_child_serializer(i))
             for i in self.supported_models
         ))
-
-    def process_model_entries(self, updated, deleted):
-        for i in updated:
-            self.storage.save(i)
-        for i in deleted:
-            self.storage.delete(i)
 
     def to_model(self, payload):
         models = {}
@@ -200,14 +189,33 @@ class BulkSerializer(Serializer):
             self.process_model_entries(
                 models[set_name], models['deleted_sets'][set_name]
             )
+        self.storage.confirm_delete(models['deleted_sets'])
         return models
 
     def to_payload(self, model):
         payload = {}
         payload['last_synced'] = model.pop('last_synced')
-        deleted_sets = payload.pop('deleted_sets')
+        delete_strategy = SoftDeleteStrategy(self.storage)
+        payload['delete_sets'] = delete_strategy.get_delete_sets()
         for set_name, serializer in self.mapping.items():
+            raise RuntimeError('You need to implement filter by operator.ge and convert datetime str to datetime')
+            self.storage.filter(
+                type(serializer.model_class),
+                **{'remote_instance.updated_at', payload['last_synced']}
+            )
             payload[set_name] = [
-                serializer.to_model(i) for i in payload[set_name]
+                serializer.to_model(i) for i in model[set_name]
             ]
-        raise RuntimeError('Need implement deleted_sets showing.')
+        return payload
+
+    def create_child_serializer(self, model_class):
+        return self.child_serializer_class(
+            model_class=model_class, storage=self.storage,
+            crypto_controller=self.crypto_controller
+        )
+
+    def process_model_entries(self, updated, deleted):
+        for i in updated:
+            self.storage.save(i)
+        for i in deleted:
+            self.storage.delete(i)
