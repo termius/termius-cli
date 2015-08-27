@@ -3,6 +3,7 @@ from .driver import PersistentDict
 from ..utils import expand_and_format_path, tupled_attrgetter
 from ..exceptions import DoesNotExistException, TooManyEntriesException
 from .strategies import SaveStrategy, GetStrategy, DeleteStrategy
+from .query import Query
 
 
 class InternalModelContructor(object):
@@ -104,20 +105,9 @@ class ApplicationStorage(object):
     def filter(self, model_class, query_union=None, **kwargs):
         assert isinstance(model_class, type)
         assert kwargs
-        query_operator = query_union or all
+        query = Query(query_union, **kwargs)
         models = self.get_all(model_class)
-        filter_keys = tuple(i[0] for i in kwargs.items())
-        filter_values = tuple(i[1] for i in kwargs.items())
-        getter = tupled_attrgetter(*filter_keys)
-
-        def perform_query(got):
-            fields_values_equal = (
-                attribute == value for attribute, value
-                in zip(getter(got), filter_values)
-            )
-            return query_operator(fields_values_equal)
-
-        founded_models = [i for i in models if perform_query(i)]
+        founded_models = [i for i in models if query(i)]
         return founded_models
 
     def get_all(self, model_class):

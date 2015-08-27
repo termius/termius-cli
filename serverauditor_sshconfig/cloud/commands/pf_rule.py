@@ -8,49 +8,19 @@ from ...core.commands import DetailCommand, ListCommand
 from ..models import Host, PFRule
 
 
-class InvalidBinding(InvalidArgumentException):
-    pass
-
-
-class BindingParser(object):
-
-    local_pf_re = re.compile(
-        r'^((?P<bound_address>[\w.]+):)?(?P<local_port>\d+)'
-        r':(?P<hostname>[\w.]+):(?P<remote_port>\d+)$'
-    )
-    dynamic_pf_re = re.compile(
-        r'^((?P<bound_address>[\w.]+):)?(?P<local_port>\d+)'
-        r'(?P<hostname>)(?P<remote_port>)$'
-        # Regexp Groups should be the same for all rules.
-    )
-
-    @classmethod
-    def parse(cls, regexp, binding_str):
-        matched = regexp.match(binding_str)
-        if not matched:
-            raise InvalidBinding('Invalid binding format.')
-        return matched.groupdict()
-
-    @classmethod
-    def local(cls, binding_str):
-        return cls.parse(cls.local_pf_re, binding_str)
-
-    @classmethod
-    def dynamic(cls, binding_str):
-        return cls.parse(cls.dynamic_pf_re, binding_str)
-
-
 class PFRuleCommand(DetailCommand):
 
     """Operate with port forwarding rule object."""
 
     allowed_operations = DetailCommand.all_operations
 
-    binding_parsers = {
-        'D': BindingParser.dynamic,
-        'L': BindingParser.local,
-    }
-    binding_parsers['R'] = binding_parsers['L']
+    @property
+    def binding_parsers(self):
+        return {
+            'D': BindingParser.dynamic,
+            'L': BindingParser.local,
+            'R': BindingParser.remote,
+        }
 
     def get_parser(self, prog_name):
         parser = super(PFRuleCommand, self).get_parser(prog_name)
@@ -129,3 +99,36 @@ class PFRulesCommand(ListCommand):
         fields = PFRule.allowed_feilds()
         getter = attrgetter(*fields)
         return fields, [getter(i) for i in pf_rules]
+
+
+class InvalidBinding(InvalidArgumentException):
+    pass
+
+
+class BindingParser(object):
+
+    local_pf_re = re.compile(
+        r'^((?P<bound_address>[\w.]+):)?(?P<local_port>\d+)'
+        r':(?P<hostname>[\w.]+):(?P<remote_port>\d+)$'
+    )
+    dynamic_pf_re = re.compile(
+        r'^((?P<bound_address>[\w.]+):)?(?P<local_port>\d+)'
+        r'(?P<hostname>)(?P<remote_port>)$'
+        # Regexp Groups should be the same for all rules.
+    )
+
+    @classmethod
+    def parse(cls, regexp, binding_str):
+        matched = regexp.match(binding_str)
+        if not matched:
+            raise InvalidBinding('Invalid binding format.')
+        return matched.groupdict()
+
+    @classmethod
+    def local(cls, binding_str):
+        return cls.parse(cls.local_pf_re, binding_str)
+    remote = local
+
+    @classmethod
+    def dynamic(cls, binding_str):
+        return cls.parse(cls.dynamic_pf_re, binding_str)

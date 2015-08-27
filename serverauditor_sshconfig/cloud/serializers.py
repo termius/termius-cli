@@ -195,18 +195,19 @@ class BulkSerializer(Serializer):
     def to_payload(self, model):
         payload = {}
         payload['last_synced'] = model.pop('last_synced')
-        delete_strategy = SoftDeleteStrategy(self.storage)
-        payload['delete_sets'] = delete_strategy.get_delete_sets()
+        payload['delete_sets'] = self.get_delete_strategy().get_delete_sets()
         for set_name, serializer in self.mapping.items():
-            raise RuntimeError('You need to implement filter by operator.ge and convert datetime str to datetime')
-            self.storage.filter(
+            internal_model = self.storage.filter(
                 type(serializer.model_class),
-                **{'remote_instance.updated_at', payload['last_synced']}
+                **{'remote_instance.updated_at.ge', payload['last_synced']}
             )
             payload[set_name] = [
-                serializer.to_model(i) for i in model[set_name]
+                serializer.to_model(i) for i in internal_model
             ]
         return payload
+
+    def get_delete_strategy(self):
+        return SoftDeleteStrategy(self.storage)
 
     def create_child_serializer(self, model_class):
         return self.child_serializer_class(
