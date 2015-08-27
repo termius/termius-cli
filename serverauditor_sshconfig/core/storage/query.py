@@ -19,7 +19,10 @@ class QueryOperator(object):
         self.value = value
 
     def __call__(self, obj):
-        field = self.get_field(obj)
+        try:
+            field = self.get_field(obj)
+        except AttributeError:
+            return False
         return self.operator(field, self.value)
 
 

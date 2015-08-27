@@ -4,6 +4,7 @@ from base64 import b64decode
 from ...core.commands import AbstractCommand
 from ..controllers import ApiController
 from ..cryptor import RNCryptor
+from ...core.storage.strategies import RelatedGetStrategy
 
 from .host import HostCommand, HostsCommand
 from .group import GroupCommand, GroupsCommand
@@ -44,6 +45,8 @@ class CloudSynchronizationCommand(AbstractCommand):
 class PushCommand(CloudSynchronizationCommand):
 
     """Push data to Serverauditor cloud."""
+
+    get_strategy = RelatedGetStrategy
 
     def process_sync(self, api_controller):
         api_controller.post_bulk()

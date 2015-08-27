@@ -62,7 +62,7 @@ class ApiController(object):
         payload = serializer.to_payload(request_model)
         response = self.api.post(mapped['url'], payload)
 
-        response_model = serializer.to_models(response)
+        response_model = serializer.to_model(response)
         return response_model
 
     def post_bulk(self):

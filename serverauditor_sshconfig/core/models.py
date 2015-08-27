@@ -40,7 +40,7 @@ class AbstractModel(dict):
         return newone
 
     def __deepcopy__(self, requesteddeepcopy):
-        return type(self)(copy.deepcopy(super(Model, self)))
+        return type(self)(copy.deepcopy(super(AbstractModel, self)))
 
 
 class Model(AbstractModel):
