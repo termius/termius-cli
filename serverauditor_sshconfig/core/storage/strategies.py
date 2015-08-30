@@ -1,5 +1,5 @@
 import six
-from ..models import DeleteSets
+from ..models import DeleteSets, Model
 
 
 class Strategy(object):
@@ -21,7 +21,9 @@ class SaveStrategy(Strategy):
 
     def save(self, model):
         model_copy = model.copy()
-        for field, mapping in model.mapping.items():
+        fk_fields = model.fk_field_names()
+        for field in fk_fields:
+            mapping = model.fields[field]
             saved_submodel = self.save_field(getattr(model, field), mapping)
             setattr(model_copy, field, saved_submodel)
         return model_copy
@@ -43,7 +45,9 @@ class RelatedGetStrategy(GetStrategy):
 
     def get(self, model):
         result = super(RelatedGetStrategy, self).get(model)
-        for field, mapping in result.mapping.items():
+        fk_fields = model.fk_field_names()
+        for field in fk_fields:
+            mapping = model.fields[field]
             submodel_id = getattr(result, field)
             if submodel_id:
                 submodel = self.storage.get(mapping.model, id=submodel_id)
@@ -85,7 +89,7 @@ class SoftDeleteStrategy(DeleteStrategy):
         return model
 
     def confirm_delete(self, sets):
-        # FIXME It need more suitable name
+        # FIXME It needs more suitable name
         delete_sets = self.get_delete_sets()
         for k, v in sets.items():
             for i in v:

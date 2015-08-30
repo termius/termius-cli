@@ -7,6 +7,7 @@ from operator import attrgetter, itemgetter
 from ..core.models import RemoteInstance
 from ..core.exceptions import DoesNotExistException
 from ..core.storage.strategies import SoftDeleteStrategy
+from ..core.models import Model
 from .models import (
     Host, Group,
     Tag, SshKey,
@@ -98,7 +99,7 @@ class BulkEntrySerializer(GetPrimaryKeySerializerMixin, BulkPrimaryKeySerializer
                 model.remote_instance, self.remote_instance_attrgetter
             )
             payload.update(zipped_remote_instance)
-        for field, mapping in model.mapping.items():
+        for field, mapping in model.fields.items():
             payload[field] = self.serialize_related_field(model, field, mapping)
         payload['local_id'] = model.id
         return payload
@@ -114,9 +115,10 @@ class BulkEntrySerializer(GetPrimaryKeySerializerMixin, BulkPrimaryKeySerializer
         return model
 
     def update_model_fields(self, model, payload):
+        fk_fields = model.fk_field_names()
         for i in model.fields:
-            mapping = model.mapping.get(i)
-            if mapping:
+            if i in fk_fields:
+                mapping = model.fields.get(i)
                 serializer = self.get_primary_key_serializer(mapping.model)
                 field = serializer.to_model(payload[i])
             else:

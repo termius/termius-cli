@@ -9,6 +9,7 @@ from serverauditor_sshconfig.core.storage.strategies import (
     GetStrategy, SaveStrategy, RelatedGetStrategy, RelatedSaveStrategy
 )
 
+
 class StrategyCase(TestCase):
 
     save_strategy_class = None

@@ -88,6 +88,6 @@ class HostsCommand(ListCommand):
 
     def take_action(self, parsed_args):
         hosts = self.storage.get_all(Host)
-        fields = Host.allowed_feilds()
+        fields = Host.allowed_fields()
         getter = attrgetter(*fields)
         return fields, [getter(i) for i in hosts]

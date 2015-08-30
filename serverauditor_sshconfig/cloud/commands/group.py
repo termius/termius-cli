@@ -76,6 +76,6 @@ class GroupsCommand(ListCommand):
 
     def take_action(self, parsed_args):
         groups = self.storage.get_all(Group)
-        fields = Group.allowed_feilds()
+        fields = Group.allowed_fields()
         getter = attrgetter(*fields)
         return fields, [getter(i) for i in groups]

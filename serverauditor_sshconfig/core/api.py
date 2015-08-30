@@ -4,6 +4,7 @@
 Copyright (c) 2013 Crystalnix.
 License BSD, see LICENSE for more details.
 """
+import logging
 import six
 import hashlib
 import requests
@@ -11,6 +12,8 @@ from requests.auth import AuthBase
 
 
 class ServerauditorAuth(AuthBase):
+
+    header_name = 'Authorization'
 
     def __init__(self, username, apikey):
         self.username = username
@@ -23,8 +26,16 @@ class ServerauditorAuth(AuthBase):
         )
 
     def __call__(self, request):
-        request.headers['Authorization'] = self.auth_header
+        request.headers[self.header_name] = self.auth_header
         return request
+
+    def __str__(self):
+        return unicode(self).encode('utf-8')
+
+    def __unicode__(self):
+        return '{key}: {value}'.format(
+            key=self.header_name, value=self.auth_header
+        )
 
 
 def hash_password(password):
@@ -36,6 +47,7 @@ class API(object):
 
     host = 'serverauditor.com'
     base_url = 'https://{}/api/'.format(host)
+    logger = logging.getLogger(__name__)
 
     def __init__(self, username=None, apikey=None):
         if username and apikey:

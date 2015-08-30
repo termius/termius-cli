@@ -1,87 +1,105 @@
-from ..core.models import AbstractModel, Model, Mapping
+from ..core.models import AbstractModel, Model, Field
 
 
 class Tag(Model):
 
-    fields = {'label'}
+    fields = {
+        'label': Field(str, False, '')
+    }
     set_name = 'tag_set'
     crypto_fields = fields
 
 
 class Snippet(Model):
 
-    fields = {'label', 'script'}
+    fields = {
+        'label': Field(str, False, ''),
+        'script': Field(str, False, ''),
+    }
     set_name = 'snippet_set'
     crypto_fields = fields
 
 
 class SshKey(Model):
 
-    fields = {'label', 'passphrase', 'private_key', 'public_key'}
+    fields = {
+        'label': Field(str, False, ''),
+        'passphrase': Field(str, False, ''),
+        'private_key': Field(str, False, ''),
+        'public_key': Field(str, False, ''),
+    }
     set_name = 'sshkeycrypt_set'
     crypto_fields = fields
 
 
 class SshIdentity(Model):
 
-    fields = {'label', 'username', 'password', 'ssh_key', 'is_visible'}
-    set_name = 'sshidentity_set'
-    mapping = {
-        'ssh_key': Mapping(SshKey, many=False),
+    fields = {
+        'label': Field(str, False, ''),
+        'username': Field(str, False, ''),
+        'password': Field(str, False, ''),
+        'ssh_key': Field(str, False, None),
+        'is_visible': Field(str, False, False),
+        'ssh_key': Field(SshKey, False, None),
     }
+    set_name = 'sshidentity_set'
     crypto_fields = {'label', 'username', 'password'}
 
 
 class SshConfig(Model):
 
-    fields = {'port', 'ssh_identity', 'startup_snippet'}
-    set_name = 'sshconfig_set'
-    mapping = {
-        'ssh_identity': Mapping(SshIdentity, many=False),
-        'startup_snippet': Mapping(Snippet, many=False),
+    fields = {
+        'port': Field(int, False, None),
+        'ssh_identity': Field(SshIdentity, False, None),
+        'startup_snippet': Field(Snippet, False, None),
     }
+    set_name = 'sshconfig_set'
 
 
 class Group(Model):
 
-    fields = {'label', 'parent_group', 'ssh_config'}
-    set_name = 'group_set'
-    mapping = {
-        'ssh_config': Mapping(SshConfig, many=False),
+    fields = {
+        'label': Field(str, False, ''),
+        'ssh_config': Field(SshConfig, False, None),
     }
+    set_name = 'group_set'
     crypto_fields = {'label',}
 
 
-Group.mapping['parent_group'] = Mapping(Group, many=False)
+Group.fields['parent_group'] = Field(Group, False, None)
 
 
 class Host(Model):
 
-    fields = {'label', 'group', 'address', 'ssh_config'}
-    set_name = 'host_set'
-    mapping = {
-        'ssh_config': Mapping(SshConfig, many=False),
-        'group': Mapping(Group, many=False),
+    fields = {
+        'label': Field(str, False, ''),
+        'address': Field(str, False, ''),
+        'group': Field(Group, False, None),
+        'ssh_config': Field(SshConfig, False, None),
     }
+    set_name = 'host_set'
     crypto_fields = {'label', 'address'}
 
 
 class TagHost(Model):
 
-    fields = {'host', 'tag'}
-    set_name = 'taghost_set'
-    mapping = {
-        'host': Mapping(Host, many=False),
-        'tag': Mapping(Tag, many=False),
+    fields = {
+        'host': Field(Host, False, None),
+        'tag': Field(Tag, False, None),
     }
+    set_name = 'taghost_set'
 
 
 class PFRule(Model):
 
-    fields = {'label', 'host', 'pf_type',
-              'bound_address', 'local_port', 'hostname', 'remote_port'}
-    set_name = 'pfrule_set'
-    mapping = {
-        'host': Mapping(Host, many=False),
+    fields = {
+        'label': Field(str, False, ''),
+        'host': Field(Host, False, None),
+        'pf_type': Field(str, False, 'L'),
+        'bound_address': Field(str, False, ''),
+        'local_port': Field(int, False, 22),
+        'hostname': Field(str, False, ''),
+        'remote_port': Field(int, False, 22),
     }
+    set_name = 'pfrule_set'
     crypto_fields = {'label', 'bound_address', 'hostname'}

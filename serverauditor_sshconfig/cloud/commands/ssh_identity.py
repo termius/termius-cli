@@ -62,6 +62,6 @@ class SshIdentitiesCommand(ListCommand):
 
     def take_action(self, parsed_args):
         ssh_identities = self.storage.get_all(SshIdentity)
-        fields = SshIdentity.allowed_feilds()
+        fields = SshIdentity.allowed_fields()
         getter = attrgetter(*fields)
         return fields, [getter(i) for i in ssh_identities]

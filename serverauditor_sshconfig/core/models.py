@@ -2,26 +2,34 @@ import copy
 from collections import namedtuple
 
 
-Mapping = namedtuple('Mapping', ('model', 'many'))
+Field = namedtuple('Field', ('model', 'many', 'default'))
 
 
 class AbstractModel(dict):
 
-    fields = set()
-    _mandatory_fields = set()
+    fields = dict()
+    _mandatory_fields = dict()
 
     @classmethod
-    def allowed_feilds(cls):
-        return tuple(cls.fields.union(cls._mandatory_fields))
+    def _fields(cls):
+        copy_fields = cls.fields.copy()
+        copy_mandatory_fields = cls._mandatory_fields.copy()
+        copy_fields.update(copy_mandatory_fields)
+        return copy_fields
+
+    @classmethod
+    def allowed_fields(cls):
+        return cls._fields().keys()
 
     @classmethod
     def _validate_attr(cls, name):
-        if name not in cls.allowed_feilds():
+        if name not in cls.allowed_fields():
             raise AttributeError
 
     def __getattr__(self, name):
         self._validate_attr(name)
-        return self.get(name)
+        default = self._fields()[name].default
+        return self.get(name, default)
 
     def __setattr__(self, name, value):
         self._validate_attr(name)
@@ -43,9 +51,20 @@ class AbstractModel(dict):
         return type(self)(copy.deepcopy(super(AbstractModel, self)))
 
 
+class RemoteInstance(AbstractModel):
+
+    fields = {
+        'id': Field(long, False, None),
+        'updated_at': Field(str, False, None)
+    }
+
+
 class Model(AbstractModel):
 
-    _mandatory_fields = {'id', 'remote_instance'}
+    _mandatory_fields = {
+        'id': Field(long, False, None),
+        'remote_instance': Field(RemoteInstance, False, None)
+    }
 
     def __init__(self, *args, **kwargs):
         super(Model, self).__init__(*args, **kwargs)
@@ -56,10 +75,14 @@ class Model(AbstractModel):
         if is_need_to_patch_remote_instance:
             self.remote_instance = RemoteInstance(self.remote_instance)
 
+    @classmethod
+    def fk_field_names(cls):
+        return tuple(
+            k for k, v in cls._fields().items() if issubclass(v.model, Model)
+        )
+
     # set_name = ''
     # """Key name in Application Storage."""
-    mapping = {}
-    """Foreign key mapping - Mapping instances per field_name."""
     crypto_fields = {}
     """Set of fields for enrpyption and decryption on cloud."""
 
@@ -67,18 +90,18 @@ class Model(AbstractModel):
     """Name of field to be used as identificator."""
 
 
-class RemoteInstance(AbstractModel):
-
-    fields = {'id', 'updated_at'}
-
-
 class DeleteSets(AbstractModel):
 
     fields = {
-        'tag_set', 'snippet_set', 'sshkeycrypt_set', 'sshidentity_set',
-        'sshconfig_set', 'group_set', 'host_set', 'taghost_set',
-        'pfrule_set',
-
+        'tag_set': Field(list, False, None),
+        'snippet_set': Field(list, False, None),
+        'sshkeycrypt_set': Field(list, False, None),
+        'sshidentity_set': Field(list, False, None),
+        'sshconfig_set': Field(list, False, None),
+        'group_set': Field(list, False, None),
+        'host_set': Field(list, False, None),
+        'taghost_set': Field(list, False, None),
+        'pfrule_set': Field(list, False, None),
     }
     set_name = 'delete_sets'
     default_field_value = list

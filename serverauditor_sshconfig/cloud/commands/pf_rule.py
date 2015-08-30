@@ -96,7 +96,7 @@ class PFRulesCommand(ListCommand):
 
     def take_action(self, parsed_args):
         pf_rules = self.storage.get_all(PFRule)
-        fields = PFRule.allowed_feilds()
+        fields = PFRule.allowed_fields()
         getter = attrgetter(*fields)
         return fields, [getter(i) for i in pf_rules]
 

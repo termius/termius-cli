@@ -1,6 +1,8 @@
 import six
 from collections import OrderedDict
 from mock import patch, Mock
+
+from serverauditor_sshconfig.cloud.models import Model
 from serverauditor_sshconfig.cloud.models import (
     Host, Group, Tag, SshKey, SshIdentity, SshConfig, Group, Host, PFRule
 )
@@ -16,8 +18,11 @@ def test_generator():
     )
     for model_class in model_classes:
         instance = model_class()
-        not_fk_instance = (i for i in instance.fields if i not in instance.mapping)
-        for i in not_fk_instance:
+        not_fk_field_names = (
+            k for k, v in instance.fields.items()
+            if not issubclass(v.model, Model)
+        )
+        for i in not_fk_field_names:
             setattr(instance, i, i)
 
         yield save, instance
@@ -32,8 +37,12 @@ def save(model, mocked):
 
     assert isinstance(saved_model.id, six.integer_types)
 
-    for k, v in model.mapping.items():
-        setattr(model, k, None)
+    fk_field_names = (
+        k for k, v in saved_model.fields.items()
+        if issubclass(v.model, Model)
+    )
+    for i in fk_field_names:
+        setattr(model, i, None)
     stored_models = [saved_model]
 
     driver = mocked.return_value

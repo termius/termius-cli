@@ -91,7 +91,7 @@ class ApplicationStorage(object):
         self.delete_strategy.delete(model)
 
     def confirm_delete(self, deleted_sets):
-        # FIXME It need more suitable name
+        # FIXME It needs more suitable name
         self.delete_strategy.confirm_delete(deleted_sets)
 
     def get(self, model_class, query_union=None, **kwargs):
