@@ -83,8 +83,8 @@ class Model(AbstractModel):
         )
 
     def mark_updated(self):
-        if model.remote_instance:
-            model.remote_instance.updaeted = True
+        if self.remote_instance:
+            self.remote_instance.updated = True
 
     # set_name = ''
     # """Key name in Application Storage."""

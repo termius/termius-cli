@@ -1,5 +1,4 @@
 import operator
-from functools import partial
 
 
 class QueryOperator(object):
@@ -35,4 +34,6 @@ class Query(object):
         ]
 
     def __call__(self, obj):
-        return self.operators_union([i(obj) for i in self.operators])
+        filters = [i(obj) for i in self.operators]
+        result = self.operators_union(filters)
+        return result
