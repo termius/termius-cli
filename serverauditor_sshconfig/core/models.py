@@ -55,7 +55,8 @@ class RemoteInstance(AbstractModel):
 
     fields = {
         'id': Field(long, False, None),
-        'updated_at': Field(str, False, None)
+        'updated': Field(bool, False, False),
+        'updated_at': Field(str, False, None),
     }
 
 
@@ -80,6 +81,10 @@ class Model(AbstractModel):
         return tuple(
             k for k, v in cls._fields().items() if issubclass(v.model, Model)
         )
+
+    def mark_updated(self):
+        if model.remote_instance:
+            model.remote_instance.updaeted = True
 
     # set_name = ''
     # """Key name in Application Storage."""

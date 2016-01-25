@@ -69,6 +69,13 @@ class HostCommand(DetailCommand):
 
         self.log_create(saved_host)
 
+    def delete(self, parsed_args):
+        if not parsed_args.entry:
+            raise ArgumentRequiredException(
+                'At least one ID or NAME Address are required.'
+            )
+        raise NotImplementedError
+
 
 class HostsCommand(ListCommand):
 

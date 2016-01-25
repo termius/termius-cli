@@ -57,12 +57,6 @@ def expand_and_format_path(paths, **kwargs):
     return [os.path.expanduser(i.format(**kwargs)) for i in paths]
 
 
-def tupled_attrgetter(*items):
-    def g(obj):
-        return tuple(resolve_attr(obj, attr) for attr in items)
-    return g
-
-
 def resolve_attr(obj, attr):
     for name in attr.split("."):
         obj = getattr(obj, name)

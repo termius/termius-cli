@@ -1,6 +1,6 @@
 from .idgenerators import UUIDGenerator
 from .driver import PersistentDict
-from ..utils import expand_and_format_path, tupled_attrgetter
+from ..utils import expand_and_format_path
 from ..exceptions import DoesNotExistException, TooManyEntriesException
 from .strategies import SaveStrategy, GetStrategy, DeleteStrategy
 from .query import Query
@@ -61,9 +61,6 @@ class ApplicationStorage(object):
     def save(self, model):
         """Save model to storage.
 
-        It'll wil call save() for mapped fields, and store only
-        it's id or ids (if mapping is many).
-
         Will return model with id and saved mapped fields Model
         instances with ids.
         """
@@ -84,6 +81,7 @@ class ApplicationStorage(object):
         assert identificator
 
         self._internal_delete(model)
+        model.mark_updated()
         return self._internal_update(model)
 
     def delete(self, model):

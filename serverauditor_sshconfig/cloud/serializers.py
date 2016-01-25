@@ -7,13 +7,11 @@ from operator import attrgetter, itemgetter
 from ..core.models import RemoteInstance
 from ..core.exceptions import DoesNotExistException
 from ..core.storage.strategies import SoftDeleteStrategy
-from ..core.models import Model
 from .models import (
     Host, Group,
     Tag, SshKey,
     SshIdentity, SshConfig,
-    Host, PFRule,
-    TagHost,
+    PFRule, TagHost,
 )
 
 ID_GETTER = itemgetter('id')
@@ -149,8 +147,8 @@ class BulkEntrySerializer(GetPrimaryKeySerializerMixin, BulkPrimaryKeySerializer
 
     def create_remote_instance(self, payload):
         remote_instance = RemoteInstance()
-        for i in RemoteInstance.fields:
-            setattr(remote_instance, i, payload.pop(i))
+        for i, field in RemoteInstance.fields.items():
+            setattr(remote_instance, i, payload.pop(i, field.default))
         return remote_instance
 
 
@@ -219,7 +217,7 @@ class BulkSerializer(GetPrimaryKeySerializerMixin, Serializer):
             internal_model = self.storage.filter(
                 serializer.model_class, any,
                 **{
-                    'remote_instance.updated_at.ge': payload['last_synced'],
+                    'remote_instance.updated': True,
                     'remote_instance': None
                 }
             )
