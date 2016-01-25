@@ -23,6 +23,7 @@ class CloudSynchronizationCommand(AbstractCommand):
             '-s', '--strategy', metavar='STRATEGY_NAME',
             help='Force to use specific strategy to merge data.'
         )
+        parser.add_argument('-p', '--password', metavar='PASSWORD')
         return parser
 
     @abc.abstractmethod
@@ -32,7 +33,9 @@ class CloudSynchronizationCommand(AbstractCommand):
     def take_action(self, parsed_args):
         encryption_salt = b64decode(self.config.get('User', 'salt'))
         hmac_salt = b64decode(self.config.get('User', 'hmac_salt'))
-        password = self.prompt_password()
+        password = parsed_args.get('password', None)
+        if password is None:
+            password = self.prompt_password()
         cryptor = RNCryptor()
         cryptor.password = password
         cryptor.encryption_salt = encryption_salt
@@ -76,6 +79,7 @@ class UseGroupCommand(AbstractCommand):
 
     def take_action(self, parsed_args):
         self.log.info('Use Group.')
+        assert False, 'Not implemented'
 
 
 class InfoCommand(AbstractCommand):
@@ -107,3 +111,4 @@ class InfoCommand(AbstractCommand):
 
     def take_action(self, parsed_args):
         self.log.info('Info about group or host.')
+        assert False, 'Not implemented'
