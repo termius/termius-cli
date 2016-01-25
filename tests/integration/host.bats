@@ -27,3 +27,13 @@ setup() {
     [ "$status" -eq 0 ]
     ! [ -z $(cat ~/.serverauditor.storage) ]
 }
+
+@test "Create with tags" {
+    run serverauditor host -L test --port 2022 --address localhost --username root --password password -t A,B,C
+    [ "$status" -eq 0 ]
+}
+
+@test "tags help by arg" {
+    run serverauditor host -L test --port 2022 --address localhost --username root --password password -t A,B,C
+    [ "$status" -eq 0 ]
+}

@@ -2,6 +2,6 @@
 
 
 @test "help arg" {
-  run serverauditor --help
-  [ "$status" -eq 0 ]
+    run serverauditor --help
+    [ "$status" -eq 0 ]
 }

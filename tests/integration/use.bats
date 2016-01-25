@@ -9,3 +9,8 @@
   run serverauditor help use
   [ "$status" -eq 0 ]
 }
+
+@test "use not existed" {
+  run serverauditor use A
+  [ "$status" -eq 0 ]
+}

@@ -56,7 +56,6 @@ setup() {
     ! [ -z $(cat ~/.serverauditor.storage) ]
 }
 
-
 @test "Not add local pfrule with invalid binding" {
     host="$(serverauditor host --label test2 --address 127.0.0.1)"
     run serverauditor pfrule --local --host $host 127.0.0.1:2222
