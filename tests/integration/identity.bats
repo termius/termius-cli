@@ -16,3 +16,20 @@
     [ "$status" -eq 0 ]
     ! [ -z $(cat ~/.serverauditor.storage) ]
 }
+
+@test "Update identity" {
+    rm ~/.serverauditor.storage || true
+    identity=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
+    run serverauditor identity -L local --username 'ROOT' --password 'pa' $identity
+    [ "$status" -eq 0 ]
+    ! [ -z $(cat ~/.serverauditor.storage) ]
+}
+
+@test "Update many identities" {
+    rm ~/.serverauditor.storage || true
+    identity1=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
+    identity2=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
+    run serverauditor identity -L local --username 'ROOT' --password 'pa' $identity1 $identity2
+    [ "$status" -eq 0 ]
+    ! [ -z $(cat ~/.serverauditor.storage) ]
+}

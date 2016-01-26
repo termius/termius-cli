@@ -13,6 +13,7 @@ class GroupCommand(DetailCommand):
     """Operate with Group object."""
 
     allowed_operations = DetailCommand.all_operations
+    model_class = Group
 
     def get_parser(self, prog_name):
         parser = super(GroupCommand, self).get_parser(prog_name)
@@ -33,28 +34,48 @@ class GroupCommand(DetailCommand):
         return parser
 
     def create(self, parsed_args):
-        if parsed_args.generate_key:
+        self.create_instance(parsed_args)
+
+    def update(self, parsed_args):
+        if not parsed_args.entry:
+            raise ArgumentRequiredException(
+                'At least one ID or NAME are required.'
+            )
+        instances = self.get_objects(parsed_args.entry)
+        for i in instances:
+            self.update_instance(parsed_args, i)
+
+    def delete(self, parsed_args):
+        if not parsed_args.entry:
+            raise ArgumentRequiredException(
+                'At least one ID or NAME are required.'
+            )
+        raise NotImplementedError
+
+    def serialize_args(self, args, instance=None):
+        if instance:
+            ssh_identity = (instance.ssh_config and instance.ssh_config.ssh_identity) or SshIdentity()
+            ssh_config = instance.ssh_config or SshConfig()
+            group = instance
+        else:
+            group, ssh_config, ssh_identity = Group(), SshConfig(),  SshIdentity()
+
+        if args.generate_key:
             raise NotImplementedError('Not implemented')
-        if parsed_args.parent_group:
+        if args.parent_group:
             raise NotImplementedError('Not implemented')
-        if parsed_args.ssh_identity:
+        if args.ssh_identity:
             raise NotImplementedError('Not implemented')
 
-        identity = SshIdentity()
-        identity.username = parsed_args.username
-        identity.password = parsed_args.password
+        ssh_identity.username = args.username
+        ssh_identity.password = args.password
 
-        config = SshConfig()
-        config.port = parsed_args.port
-        config.ssh_identity = identity
+        ssh_config.port = args.port
+        ssh_config.ssh_identity = ssh_identity
 
-        group = Group()
-        group.label = parsed_args.label
-        group.ssh_config = config
-
-        with self.storage:
-            saved_host = self.storage.save(group)
-        self.log_create(saved_host)
+        group.label = args.label
+        group.ssh_config = ssh_config
+        return group
 
 
 class GroupsCommand(ListCommand):

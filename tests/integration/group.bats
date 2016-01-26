@@ -16,3 +16,20 @@
     [ "$status" -eq 0 ]
     ! [ -z $(cat ~/.serverauditor.storage) ]
 }
+
+@test "Update group" {
+    rm ~/.serverauditor.storage || true
+    group=$(serverauditor group -L 'test group' --port 2 --username 'use r name')
+    run serverauditor group -L 'test group' --port 2 --username 'user' $group
+    [ "$status" -eq 0 ]
+    ! [ -z $(cat ~/.serverauditor.storage) ]
+}
+
+@test "Update many groups" {
+    rm ~/.serverauditor.storage || true
+    group1=$(serverauditor group -L 'test group' --port 2 --username 'use r name')
+    group2=$(serverauditor group -L 'test group' --port 2 --username 'use r name')
+    run serverauditor group -L 'test group' --port 2 --username 'user' $group1 $group2
+    [ "$status" -eq 0 ]
+    ! [ -z $(cat ~/.serverauditor.storage) ]
+}

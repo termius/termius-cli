@@ -4,6 +4,7 @@ import getpass
 
 from cliff.command import Command
 from cliff.lister import Lister
+from .exceptions import DoesNotExistException
 from .settings import Config
 from .storage import ApplicationStorage
 from .storage.strategies import (
@@ -122,6 +123,32 @@ class DetailCommand(AbstractCommand):
     def log_delete(self, entry):
         self.app.stdout.write('{}\n'.format(entry.id))
         self.log.info('Delete object.')
+
+    def get_objects(self, ids__names):
+        ids, names = self.parse_ids_names(ids__names)
+        instances = self.storage.filter(
+            self.model_class, any,
+            **{'id.rcontains': ids, 'label.rcontains': names}
+        )
+        if not instances:
+            raise DoesNotExistException("There aren't any instance.")
+        return instances
+
+    def parse_ids_names(self, ids__names):
+        ids = [int(i) for i in ids__names if i.isdigit()]
+        return ids, ids__names
+
+    def create_instance(self, args):
+        instance = self.serialize_args(args)
+        with self.storage:
+            saved_instance = self.storage.save(instance)
+        self.log_create(saved_instance)
+
+    def update_instance(self, args, instance):
+        updated_instance = self.serialize_args(args, instance)
+        with self.storage:
+            self.storage.save(updated_instance)
+            self.log_update(updated_instance)
 
 
 class ListCommand(Lister):

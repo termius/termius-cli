@@ -1,5 +1,6 @@
 from operator import attrgetter
 from ...core.commands import ListCommand, DetailCommand
+from ...core.exceptions import ArgumentRequiredException
 from ..models import Snippet
 
 
@@ -8,6 +9,7 @@ class SnippetCommand(DetailCommand):
     """Operate with Group object."""
 
     allowed_operations = DetailCommand.all_operations
+    model_class = Snippet
 
     def get_parser(self, prog_name):
         parser = super(SnippetCommand, self).get_parser(prog_name)
@@ -25,13 +27,33 @@ class SnippetCommand(DetailCommand):
         if not parsed_args.script:
             raise ArgumentRequiredException('Script is required')
 
-        snippet = Snippet()
-        snippet.script = parsed_args.script
-        snippet.label = parsed_args.label
+        self.create_instance(parsed_args)
 
-        with self.storage:
-            saved_snippet = self.storage.save(snippet)
-        self.log_create(saved_snippet)
+    def update(self, parsed_args):
+        if not parsed_args.entry:
+            raise ArgumentRequiredException(
+                'At least one ID or NAME are required.'
+            )
+        instances = self.get_objects(parsed_args.entry)
+        for i in instances:
+            self.update_instance(parsed_args, i)
+
+    def delete(self, parsed_args):
+        if not parsed_args.entry:
+            raise ArgumentRequiredException(
+                'At least one ID or NAME are required.'
+            )
+        raise NotImplementedError
+
+    def serialize_args(self, args, instance=None):
+        if instance:
+            snippet = instance
+        else:
+            snippet = Snippet()
+
+        snippet.script = args.script
+        snippet.label = args.label
+        return snippet
 
 
 class SnippetsCommand(ListCommand):

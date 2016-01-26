@@ -13,7 +13,7 @@
 @test "List pfrules in table format" {
     rm ~/.serverauditor.storage || true
     host="$(serverauditor host --label test2 --address 127.0.0.1)"
-    serverauditor pfrule --dynamic --host $host 127.0.0.1:2222
+    serverauditor pfrule --dynamic --host $host --binding 127.0.0.1:2222
     run serverauditor pfrules
     [ "$status" -eq 0 ]
     ! [ -z $(cat ~/.serverauditor.storage) ]

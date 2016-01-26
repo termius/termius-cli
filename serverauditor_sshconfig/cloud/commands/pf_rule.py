@@ -13,6 +13,7 @@ class PFRuleCommand(DetailCommand):
     """Operate with port forwarding rule object."""
 
     allowed_operations = DetailCommand.all_operations
+    model_class = PFRule
 
     @property
     def binding_parsers(self):
@@ -41,18 +42,56 @@ class PFRuleCommand(DetailCommand):
             const='L', help='Local port forwarding.'
         )
         parser.add_argument(
-            'binding', metavar='BINDINDS',
+            '--binding', metavar='BINDINDS',
             help=('Specify binding of ports and addresses '
                   '[bind_address:]port or [bind_address:]port:host:hostport')
         )
         parser.add_argument(
             'pr_rule', nargs='?', metavar='PF_RULE_ID or PF_RULE_NAME',
-            help='Pass to edit exited port Frowarding Rule.'
+            help='Pass to edit exited port Forwarding Rule.'
         )
         return parser
 
     def parse_binding(self, pf_type, binding):
         return self.binding_parsers[pf_type](binding)
+
+    def create(self, parsed_args):
+        if not parsed_args.host:
+            raise ArgumentRequiredException('Host is required.')
+
+        self.create_instance(parsed_args)
+
+    def update(self, parsed_args):
+        if not parsed_args.entry:
+            raise ArgumentRequiredException(
+                'At least one ID or NAME are required.'
+            )
+        instances = self.get_objects(parsed_args.entry)
+        for i in instances:
+            self.update_instance(parsed_args, i)
+
+    def delete(self, parsed_args):
+        if not parsed_args.entry:
+            raise ArgumentRequiredException(
+                'At least one ID or NAME are required.'
+            )
+        raise NotImplementedError
+
+    def serialize_args(self, args, instance=None):
+        if instance:
+            pfrule, host = instance, instance.host
+        else:
+            pfrule, host = PFRule(), self.get_host(args.host)
+            if not args.type:
+                raise ArgumentRequiredException('Type is required.')
+
+        pfrule.pf_type = args.type or pfrule.pf_type
+        pfrule.host = host
+        if args.binding:
+            binding_dict = self.parse_binding(pfrule.pf_type, args.binding)
+            for k, v in binding_dict.items():
+                setattr(pfrule, k, v)
+        return pfrule
 
     def get_host(self, arg):
         try:
@@ -66,28 +105,6 @@ class PFRuleCommand(DetailCommand):
             raise ArgumentRequiredException('Not found any host.')
         except TooManyEntriesException:
             raise ArgumentRequiredException('Found to many hosts.')
-
-    def get_type(self, pf_type):
-        if not pf_type:
-            raise ArgumentRequiredException('Type is required.')
-        return pf_type
-
-    def create(self, parsed_args):
-        if not parsed_args.host:
-            raise ArgumentRequiredException('Host is required.')
-        else:
-            host = self.get_host(parsed_args.host)
-
-        pf_rule = PFRule()
-        pf_rule.pf_type = self.get_type(parsed_args.type)
-        pf_rule.host = host
-        binding_dict = self.parse_binding(pf_rule.pf_type, parsed_args.binding)
-        for k, v in binding_dict.items():
-            setattr(pf_rule, k, v)
-
-        with self.storage:
-            saved_pfrule = self.storage.save(pf_rule)
-        self.log_create(saved_pfrule)
 
 
 class PFRulesCommand(ListCommand):

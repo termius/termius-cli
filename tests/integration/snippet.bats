@@ -27,3 +27,19 @@ setup() {
     [ "$status" -eq 0 ]
     ! [ -z $(cat ~/.serverauditor.storage) ]
 }
+
+@test "Update snippet" {
+    snippet=$(serverauditor snippet -L test --script 'ls')
+    run serverauditor snippet --script 'cd /' $snippet
+    [ "$status" -eq 0 ]
+    ! [ -z $(cat ~/.serverauditor.storage) ]
+}
+
+@test "Update many snippets" {
+    snippet1=$(serverauditor snippet -L test_1 --script 'ls')
+    snippet2=$(serverauditor snippet -L test_2 --script 'whoami')
+    snippet3=$(serverauditor snippet -L test_3 --script 'exit')
+    run serverauditor snippet --script 'cd /' $snippet1 $snippet2 $snippet3
+    [ "$status" -eq 0 ]
+    ! [ -z $(cat ~/.serverauditor.storage) ]
+}

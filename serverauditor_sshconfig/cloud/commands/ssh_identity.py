@@ -1,5 +1,6 @@
 from operator import attrgetter
 from ...core.commands import DetailCommand, ListCommand
+from ...core.exceptions import ArgumentRequiredException
 from ..models import SshIdentity
 
 
@@ -8,6 +9,7 @@ class SshIdentityCommand(DetailCommand):
     """Operate with ssh identity object."""
 
     allowed_operations = DetailCommand.all_operations
+    model_class = SshIdentity
 
     def get_parser(self, prog_name):
         parser = super(SshIdentityCommand, self).get_parser(prog_name)
@@ -38,22 +40,42 @@ class SshIdentityCommand(DetailCommand):
         return parser
 
     def create(self, parsed_args):
-        if parsed_args.generate_key:
+        self.create_instance(parsed_args)
+
+    def update(self, parsed_args):
+        if not parsed_args.entry:
+            raise ArgumentRequiredException(
+                'At least one ID or NAME are required.'
+            )
+        instances = self.get_objects(parsed_args.entry)
+        for i in instances:
+            self.update_instance(parsed_args, i)
+
+    def delete(self, parsed_args):
+        if not parsed_args.entry:
+            raise ArgumentRequiredException(
+                'At least one ID or NAME are required.'
+            )
+        raise NotImplementedError
+
+    def serialize_args(self, args, instance=None):
+        if instance:
+            identity = instance
+        else:
+            identity = SshIdentity()
+
+        if args.generate_key:
             raise NotImplementedError('Not implemented')
 
-        if parsed_args.identity_file:
+        if args.identity_file:
             raise NotImplementedError('Not implemented')
 
-        if parsed_args.ssh_key:
+        if args.ssh_key:
             raise NotImplementedError('Not implemented')
 
-        identity = SshIdentity()
-        identity.username = parsed_args.username
-        identity.password = parsed_args.password
-
-        with self.storage:
-            saved_host = self.storage.save(identity)
-        self.log_create(saved_host)
+        identity.username = args.username
+        identity.password = args.password
+        return identity
 
 
 class SshIdentitiesCommand(ListCommand):
