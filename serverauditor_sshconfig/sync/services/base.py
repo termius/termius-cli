@@ -1,5 +1,5 @@
-import six
 import abc
+import six
 
 
 @six.add_metaclass(abc.ABCMeta)

@@ -55,7 +55,8 @@ class RemoteInstance(AbstractModel):
 
     fields = {
         'id': Field(long, False, None),
-        'state': Field(str, False, 'created'),  # 'created' / 'updated' / 'synced'
+        # States could be one of 'created' / 'updated' / 'synced'
+        'state': Field(str, False, 'created'),
         'updated_at': Field(str, False, None),
     }
 

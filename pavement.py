@@ -85,15 +85,17 @@ setup(
 @task
 @needs('generate_setup', 'minilib', 'setuptools.command.sdist')
 def sdist():
-    """Overrides sdist to make sure that our setup.py is generated."""
+    """Override sdist to make sure that our setup.py is generated."""
     pass
 
 
 @task
 def lint():
+    """Check code style and conventions."""
     sh('prospector')
 
 
 @task
 def bats():
+    """Run tests on CLI usage."""
     sh('bats tests/integration')

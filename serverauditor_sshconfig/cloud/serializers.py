@@ -16,6 +16,7 @@ from .models import (
 
 ID_GETTER = itemgetter('id')
 
+
 def map_zip_model_fields(model, field_getter=None):
     field_getter = field_getter or attrgetter(model.fields)
     return zip(model.fields, field_getter(model))
@@ -48,7 +49,7 @@ class BulkEntryBaseSerializer(Serializer):
 class BulkPrimaryKeySerializer(BulkEntryBaseSerializer):
 
     to_model_mapping = defaultdict(
-        lambda: ID_GETTER, {int: int,}
+        lambda: ID_GETTER, {int: int, }
     )
 
     def id_from_payload(self, payload):
@@ -82,8 +83,8 @@ class GetPrimaryKeySerializerMixin(object):
         )
 
 
-
-class BulkEntrySerializer(GetPrimaryKeySerializerMixin, BulkPrimaryKeySerializer):
+class BulkEntrySerializer(GetPrimaryKeySerializerMixin,
+                          BulkPrimaryKeySerializer):
 
     def __init__(self, **kwargs):
         super(BulkEntrySerializer, self).__init__(**kwargs)
@@ -98,7 +99,9 @@ class BulkEntrySerializer(GetPrimaryKeySerializerMixin, BulkPrimaryKeySerializer
             )
             payload.update(zipped_remote_instance)
         for field, mapping in model.fields.items():
-            payload[field] = self.serialize_related_field(model, field, mapping)
+            payload[field] = self.serialize_related_field(
+                model, field, mapping
+            )
         payload['local_id'] = model.id
         return payload
 

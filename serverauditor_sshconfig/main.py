@@ -1,11 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-"""
-Copyright (c) 2015 Crystalnix.
-License BSD, see LICENSE for more details.
-"""
-
 import sys
 from serverauditor_sshconfig.app import ServerauditorApp
 

@@ -1,4 +1,4 @@
-from ..core.models import AbstractModel, Model, Field
+from ..core.models import Model, Field
 
 
 class Tag(Model):
@@ -38,7 +38,6 @@ class SshIdentity(Model):
         'label': Field(str, False, ''),
         'username': Field(str, False, ''),
         'password': Field(str, False, ''),
-        'ssh_key': Field(str, False, None),
         'is_visible': Field(str, False, False),
         'ssh_key': Field(SshKey, False, None),
     }
@@ -63,7 +62,7 @@ class Group(Model):
         'ssh_config': Field(SshConfig, False, None),
     }
     set_name = 'group_set'
-    crypto_fields = {'label',}
+    crypto_fields = {'label', }
 
 
 Group.fields['parent_group'] = Field(Group, False, None)

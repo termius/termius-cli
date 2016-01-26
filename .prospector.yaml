@@ -5,6 +5,17 @@ inherits:
 
 ignore-paths:
   - .git
+  - setup.py
+
+pep257:
+  disable:
+    - D100  # TODO remove it when done with code style fixing.
+    - D101  # TODO remove it when done with code style fixing.
+    - D102  # TODO remove it when done with code style fixing.
+    - D103  # TODO remove it when done with code style fixing.
+    - D104  # TODO remove it when done with code style fixing.
+    - D105  # TODO remove it when done with code style fixing.
+    - D203  # 1 blank line required before
 
 pylint:
   options:

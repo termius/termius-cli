@@ -1,8 +1,5 @@
 # coding: utf-8
-"""
-Copyright (c) 2013 Crystalnix.
-License BSD, see LICENSE for more details.
-"""
+
 import six
 from getpass import getpass
 from ..core.commands import AbstractCommand

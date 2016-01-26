@@ -3,7 +3,6 @@ from .core.commands import AbstractCommand
 
 
 class ConnectCommand(AbstractCommand):
-
     """Connect to specific host."""
 
     def get_parser(self, prog_name):

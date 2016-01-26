@@ -6,7 +6,6 @@ from .ssh_config import SshConfigArgs
 
 
 class HostCommand(DetailCommand):
-
     """Operate with Host object."""
 
     allowed_operations = DetailCommand.all_operations
@@ -47,11 +46,13 @@ class HostCommand(DetailCommand):
 
     def serialize_args(self, args, instance=None):
         if instance:
-            ssh_identity = (instance.ssh_config and instance.ssh_config.ssh_identity) or SshIdentity()
+            ssh_identity = (
+                instance.ssh_config and instance.ssh_config.ssh_identity
+            ) or SshIdentity()
             ssh_config = instance.ssh_config or SshConfig()
             host = instance
         else:
-            host, ssh_config, ssh_identity = Host(), SshConfig(),  SshIdentity()
+            host, ssh_config, ssh_identity = Host(), SshConfig(), SshIdentity()
 
         if args.generate_key:
             raise NotImplementedError('Not implemented')
@@ -74,7 +75,6 @@ class HostCommand(DetailCommand):
 
 
 class HostsCommand(ListCommand):
-
     """Manage host objects."""
 
     def get_parser(self, prog_name):

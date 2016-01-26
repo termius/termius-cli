@@ -8,7 +8,6 @@ class NoSuchServiceException(Exception):
 
 
 class SyncCommand(AbstractCommand):
-
     """Sync with IaaS or PaaS."""
 
     service_manager = ExtensionManager(

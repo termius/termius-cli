@@ -1,5 +1,5 @@
 import six
-from ..models import DeleteSets, Model
+from ..models import DeleteSets
 
 
 class Strategy(object):

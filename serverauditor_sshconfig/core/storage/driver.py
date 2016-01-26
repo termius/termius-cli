@@ -61,7 +61,7 @@ DRIVERS = OrderedDict((
 
 class PersistentDict(OrderedDict):
 
-    '''Persistent dictionary with an API compatible with shelve and anydbm.
+    """Persistent dictionary with an API compatible with shelve and anydbm.
 
     The dict is kept in memory, so the dictionary operations run as fast as
     a regular dictionary.
@@ -72,7 +72,7 @@ class PersistentDict(OrderedDict):
     Output file format is selectable between pickle, json, and csv.
     All three serialization formats are backed by fast C implementations.
 
-    '''
+    """
 
     def __init__(self, filename, flag='c', mode=None, format='json',
                  *args, **kwds):
@@ -92,7 +92,7 @@ class PersistentDict(OrderedDict):
         return 'rb' if format == 'pickle' else 'r'
 
     def sync(self):
-        'Write dict to disk'
+        """Write dict to disk."""
 
         def write_temp_file(filename):
             tempname = filename + '.tmp'

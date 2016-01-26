@@ -1,10 +1,5 @@
 # coding: utf-8
 
-"""
-Copyright (c) 2013 Crystalnix.
-License BSD, see LICENSE for more details.
-"""
-
 from ..core.api import API
 
 

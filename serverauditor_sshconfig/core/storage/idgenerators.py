@@ -10,7 +10,10 @@ class UUIDGenerator(object):
         """
 
     def __call__(self, model):
-        """:param core.models.Model model: generate and set id for this Model."""
+        """Generate id.
+
+        :param core.models.Model model: generate and set id for this Model.
+        """
         assert not getattr(model, model.id_name)
         identificator = uuid4().time_low
         setattr(model, model.id_name, identificator)
