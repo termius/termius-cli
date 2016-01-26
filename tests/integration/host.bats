@@ -51,6 +51,22 @@ setup() {
     ! [ -z $(cat ~/.serverauditor.storage) ]
 }
 
+@test "Delete host" {
+    host=$(serverauditor host -L test_3 --port 22 --address google.com --username root --password 'psswrd')
+    run serverauditor host --delete $host --debug
+    echo ${lines[*]}
+    [ "$status" -eq 0 ]
+    ! [ -z $(cat ~/.serverauditor.storage) ]
+}
+
+@test "Delete many hosts" {
+    host1=$(serverauditor host -L test_2 --port 22 --address google.com --username root --password 'psswrd')
+    host2=$(serverauditor host -L test_3 --port 22 --address google.com --username root --password 'psswrd')
+    run serverauditor host --delete $host1 $hots2
+    [ "$status" -eq 0 ]
+    ! [ -z $(cat ~/.serverauditor.storage) ]
+}
+
 @test "Create with tag" {
     run serverauditor host -L test --port 2022 --address localhost --username root --password password -t A
     [ "$status" -eq 0 ]

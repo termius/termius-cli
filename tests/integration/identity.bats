@@ -33,3 +33,20 @@
     [ "$status" -eq 0 ]
     ! [ -z $(cat ~/.serverauditor.storage) ]
 }
+
+@test "Delete identity" {
+    rm ~/.serverauditor.storage || true
+    identity=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
+    run serverauditor identity --delete $identity
+    [ "$status" -eq 0 ]
+    ! [ -z $(cat ~/.serverauditor.storage) ]
+}
+
+@test "Delete many identities" {
+    rm ~/.serverauditor.storage || true
+    identity1=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
+    identity2=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
+    run serverauditor identity --delete $identity1 $identity2
+    [ "$status" -eq 0 ]
+    ! [ -z $(cat ~/.serverauditor.storage) ]
+}

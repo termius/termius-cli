@@ -4,7 +4,7 @@ import getpass
 
 from cliff.command import Command
 from cliff.lister import Lister
-from .exceptions import DoesNotExistException
+from .exceptions import DoesNotExistException, ArgumentRequiredException
 from .settings import Config
 from .storage import ApplicationStorage
 from .storage.strategies import (
@@ -64,6 +64,24 @@ class DetailCommand(AbstractCommand):
         super(DetailCommand, self).__init__(*args, **kwargs)
         assert self.all_operations.intersection(self.allowed_operations)
 
+    def update(self, parsed_args):
+        if not parsed_args.entry:
+            raise ArgumentRequiredException(
+                'At least one ID or NAME are required.'
+            )
+        instances = self.get_objects(parsed_args.entry)
+        for i in instances:
+            self.update_instance(parsed_args, i)
+
+    def delete(self, parsed_args):
+        if not parsed_args.entry:
+            raise ArgumentRequiredException(
+                'At least one ID or NAME are required.'
+            )
+        instances = self.get_objects(parsed_args.entry)
+        for i in instances:
+            self.delete_instance(i)
+
     @property
     def is_allow_delete(self):
         return 'delete' in self.allowed_operations
@@ -108,7 +126,7 @@ class DetailCommand(AbstractCommand):
 
     def take_action(self, parsed_args):
         if self.is_allow_delete and parsed_args.delete:
-            entry = self.delete(parsed_args)
+            self.delete(parsed_args)
         else:
             self.take_edit(parsed_args)
 
@@ -149,6 +167,11 @@ class DetailCommand(AbstractCommand):
         with self.storage:
             self.storage.save(updated_instance)
             self.log_update(updated_instance)
+
+    def delete_instance(self, instance):
+        with self.storage:
+            self.storage.delete(instance)
+            self.log_delete(instance)
 
 
 class ListCommand(Lister):

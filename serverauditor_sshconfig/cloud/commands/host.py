@@ -45,22 +45,6 @@ class HostCommand(DetailCommand):
 
         self.create_instance(parsed_args)
 
-    def update(self, parsed_args):
-        if not parsed_args.entry:
-            raise ArgumentRequiredException(
-                'At least one ID or NAME are required.'
-            )
-        instances = self.get_objects(parsed_args.entry)
-        for i in instances:
-            self.update_instance(parsed_args, i)
-
-    def delete(self, parsed_args):
-        if not parsed_args.entry:
-            raise ArgumentRequiredException(
-                'At least one ID or NAME are required.'
-            )
-        raise NotImplementedError
-
     def serialize_args(self, args, instance=None):
         if instance:
             ssh_identity = (instance.ssh_config and instance.ssh_config.ssh_identity) or SshIdentity()

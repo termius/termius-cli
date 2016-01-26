@@ -1,7 +1,6 @@
 from operator import attrgetter
 from ...core.exceptions import (
-    InvalidArgumentException, ArgumentRequiredException,
-    TooManyEntriesException, DoesNotExistException,
+    InvalidArgumentException, TooManyEntriesException, DoesNotExistException,
 )
 from ...core.commands import DetailCommand, ListCommand
 from ..models import Group, SshConfig, SshIdentity
@@ -35,22 +34,6 @@ class GroupCommand(DetailCommand):
 
     def create(self, parsed_args):
         self.create_instance(parsed_args)
-
-    def update(self, parsed_args):
-        if not parsed_args.entry:
-            raise ArgumentRequiredException(
-                'At least one ID or NAME are required.'
-            )
-        instances = self.get_objects(parsed_args.entry)
-        for i in instances:
-            self.update_instance(parsed_args, i)
-
-    def delete(self, parsed_args):
-        if not parsed_args.entry:
-            raise ArgumentRequiredException(
-                'At least one ID or NAME are required.'
-            )
-        raise NotImplementedError
 
     def serialize_args(self, args, instance=None):
         if instance:

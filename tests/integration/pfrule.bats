@@ -69,8 +69,24 @@ setup() {
     pfrule1=$(serverauditor pfrule --remote --host $host1 --binding localhost:2:127.0.0.1:2222)
     pfrule2=$(serverauditor pfrule --remote --host $host1 --binding localhost:2:127.0.0.1:2220)
     host2="$(serverauditor host --label test3 --address 127.0.0.2)"
-    run serverauditor pfrule --host $host2 $pfrule1 pfrule2 --debug
-    echo ${lines[*]}
+    run serverauditor pfrule --host $host2 $pfrule1 $pfrule2 --debug
+    [ "$status" -eq 0 ]
+    ! [ -z $(cat ~/.serverauditor.storage) ]
+}
+
+@test "Delete local pfrule" {
+    host="$(serverauditor host --label test2 --address 127.0.0.1)"
+    pfrule=$(serverauditor pfrule --local --host $host --binding local:2:127.0.0.1:2222)
+    run serverauditor pfrule --delete $pfrule --debug
+    [ "$status" -eq 0 ]
+    ! [ -z $(cat ~/.serverauditor.storage) ]
+}
+
+@test "Delete many remote pfrules" {
+    host1="$(serverauditor host --label test2 --address 127.0.0.1)"
+    pfrule1=$(serverauditor pfrule --remote --host $host1 --binding localhost:2:127.0.0.1:2222)
+    pfrule2=$(serverauditor pfrule --remote --host $host1 --binding localhost:2:127.0.0.1:2220)
+    run serverauditor pfrule --delete $pfrule1 $pfrule2 --debug
     [ "$status" -eq 0 ]
     ! [ -z $(cat ~/.serverauditor.storage) ]
 }

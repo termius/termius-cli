@@ -55,7 +55,7 @@ class RemoteInstance(AbstractModel):
 
     fields = {
         'id': Field(long, False, None),
-        'state': Field(str, False, 'created'),  # 'created' / 'updated' / 'deleted' / 'synced'
+        'state': Field(str, False, 'created'),  # 'created' / 'updated' / 'synced'
         'updated_at': Field(str, False, None),
     }
 
@@ -84,7 +84,11 @@ class Model(AbstractModel):
 
     def mark_updated(self):
         if self.remote_instance:
-            self.remote_instance.updated = True
+            self.remote_instance.state = 'updated'
+
+    def mark_synced(self):
+        if self.remote_instance:
+            self.remote_instance.state = 'synced'
 
     # set_name = ''
     # """Key name in Application Storage."""
