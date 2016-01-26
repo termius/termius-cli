@@ -4,7 +4,6 @@ from ..models import SshIdentity
 
 
 class SshIdentityCommand(DetailCommand):
-
     """Operate with ssh identity object."""
 
     allowed_operations = DetailCommand.all_operations
@@ -62,7 +61,6 @@ class SshIdentityCommand(DetailCommand):
 
 
 class SshIdentitiesCommand(ListCommand):
-
     """Manage ssh identity objects."""
 
     def take_action(self, parsed_args):

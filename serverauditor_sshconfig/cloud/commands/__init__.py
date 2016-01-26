@@ -1,16 +1,15 @@
 from ...core.commands import AbstractCommand
 
-from .host import HostCommand, HostsCommand
-from .group import GroupCommand, GroupsCommand
-from .snippet import SnippetCommand, SnippetsCommand
-from .pf_rule import PFRuleCommand, PFRulesCommand
-from .ssh_identity import SshIdentityCommand, SshIdentitiesCommand
-from .tag import TagsCommand
-from .sync import PushCommand, PullCommand
+from .host import HostCommand, HostsCommand  # noqa
+from .group import GroupCommand, GroupsCommand  # noqa
+from .snippet import SnippetCommand, SnippetsCommand  # noqa
+from .pf_rule import PFRuleCommand, PFRulesCommand  # noqa
+from .ssh_identity import SshIdentityCommand, SshIdentitiesCommand  # noqa
+from .tag import TagsCommand  # noqa
+from .sync import PushCommand, PullCommand  # noqa
 
 
 class InfoCommand(AbstractCommand):
-
     """Show info about host or group."""
 
     def get_parser(self, prog_name):

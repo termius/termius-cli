@@ -36,8 +36,10 @@ class Serializer(object):
     @abc.abstractmethod
     def to_payload(self, model):
         """Convert Application models to REST API payload."""
+        pass
 
 
+# pylint: disable=abstract-method
 class BulkEntryBaseSerializer(Serializer):
 
     def __init__(self, model_class, **kwargs):
@@ -75,6 +77,7 @@ class BulkPrimaryKeySerializer(BulkEntryBaseSerializer):
             return '{model.set_name}/{model.id}'.format(model=model)
 
 
+# pylint: disable=too-few-public-methods
 class GetPrimaryKeySerializerMixin(object):
 
     def get_primary_key_serializer(self, model_class):
@@ -148,6 +151,7 @@ class BulkEntrySerializer(GetPrimaryKeySerializerMixin,
         )
         return model
 
+    # pylint: disable=no-self-use
     def create_remote_instance(self, payload):
         remote_instance = RemoteInstance()
         for i, field in RemoteInstance.fields.items():

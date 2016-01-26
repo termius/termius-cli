@@ -1,16 +1,14 @@
 # coding: utf-8
 import logging
+# pylint: disable=import-error
 from cliff.app import App
+# pylint: disable=import-error
 from cliff.commandmanager import CommandManager
 
-from . import __version__
+from . import get_version
 
 
-def get_version():
-    return '.'.join(map(str, __version__))
-
-
-class ServerauditorApp(App):
+class ServerauditorApp(object, App):
 
     def __init__(self):
         super(ServerauditorApp, self).__init__(

@@ -58,7 +58,7 @@ class API(object):
         return self.base_url + endpoint
 
     def login(self, username, password):
-        """Returns user's auth token."""
+        """Return user's auth token."""
         password = hash_password(password)
         response = requests.get(self.request_url("v1/token/auth/"),
                                 auth=(username, password))

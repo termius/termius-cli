@@ -1,10 +1,5 @@
 # coding: utf-8
 
-"""
-Copyright (c) 2013 Crystalnix.
-License BSD, see LICENSE for more details.
-"""
-
 import os
 import six
 from .utils import expand_and_format_path
@@ -50,5 +45,5 @@ class Config(object):
             self.config.remove_section(section)
 
     def write(self):
-        with open(self.user_config_path, 'w') as f:
-            self.config.write(f)
+        with open(self.user_config_path, 'w') as _file:
+            self.config.write(_file)

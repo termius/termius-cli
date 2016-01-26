@@ -2,6 +2,7 @@ import six
 from ..models import DeleteSets
 
 
+# pylint: disable=too-few-public-methods
 class Strategy(object):
 
     def __init__(self, storage):
@@ -37,6 +38,7 @@ class RelatedSaveStrategy(SaveStrategy):
 
 class GetStrategy(Strategy):
 
+    # pylint: disable=no-self-use
     def get(self, model):
         return model
 
@@ -60,6 +62,7 @@ class DeleteStrategy(Strategy):
     def get_delete_sets(self):
         return {}
 
+    # pylint: disable=no-self-use
     def delete(self, model):
         return model
 
@@ -91,7 +94,7 @@ class SoftDeleteStrategy(DeleteStrategy):
     def confirm_delete(self, sets):
         # FIXME It needs more suitable name
         delete_sets = self.get_delete_sets()
-        for k, v in sets.items():
-            for i in v:
-                delete_sets.delete_soft_deleted(k, i)
+        for key, value in sets.items():
+            for i in value:
+                delete_sets.delete_soft_deleted(key, i)
         self.set_delete_sets(delete_sets)

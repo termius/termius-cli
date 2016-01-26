@@ -6,6 +6,7 @@ inherits:
 ignore-paths:
   - .git
   - setup.py
+  - build
 
 pep257:
   disable:

@@ -2,7 +2,9 @@
 import logging
 import getpass
 
+# pylint: disable=import-error
 from cliff.command import Command
+# pylint: disable=import-error
 from cliff.lister import Lister
 from .exceptions import DoesNotExistException, ArgumentRequiredException
 from .settings import Config
@@ -22,8 +24,7 @@ class PasswordPromptMixin(object):
         return getpass.getpass("Serverauditor's password:")
 
 
-class AbstractCommand(PasswordPromptMixin, Command):
-
+class AbstractCommand(object, PasswordPromptMixin, Command):
     """Abstract Command with log."""
 
     log = logging.getLogger(__name__)
@@ -174,7 +175,7 @@ class DetailCommand(AbstractCommand):
             self.log_delete(instance)
 
 
-class ListCommand(Lister):
+class ListCommand(object, Lister):
 
     log = logging.getLogger(__name__)
 

@@ -2,7 +2,6 @@ from ...core.commands import ListCommand
 
 
 class TagsCommand(ListCommand):
-
     """Manage tag objects."""
 
     def get_parser(self, prog_name):

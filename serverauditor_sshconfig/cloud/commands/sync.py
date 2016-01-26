@@ -39,7 +39,6 @@ class CloudSynchronizationCommand(AbstractCommand):
 
 
 class PushCommand(CloudSynchronizationCommand):
-
     """Push data to Serverauditor cloud."""
 
     get_strategy = RelatedGetStrategy
@@ -50,7 +49,6 @@ class PushCommand(CloudSynchronizationCommand):
 
 
 class PullCommand(CloudSynchronizationCommand):
-
     """Pull data from Serverauditor cloud."""
 
     def process_sync(self, api_controller):

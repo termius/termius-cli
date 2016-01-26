@@ -1,7 +1,6 @@
 # coding: utf-8
 
 import six
-from getpass import getpass
 from ..core.commands import AbstractCommand
 from .managers import AccountManager
 
@@ -14,7 +13,6 @@ class BaseAccountCommand(AbstractCommand):
 
 
 class LoginCommand(BaseAccountCommand):
-
     """Sign into serverauditor cloud."""
 
     def prompt_username(self):
@@ -35,7 +33,6 @@ class LoginCommand(BaseAccountCommand):
 
 
 class LogoutCommand(BaseAccountCommand):
-
     """Sign out serverauditor cloud."""
 
     def get_parser(self, prog_name):
@@ -43,6 +40,6 @@ class LogoutCommand(BaseAccountCommand):
         parser.add_argument('--clear-sshconfig', action='store_true')
         return parser
 
-    def take_action(self, parsed_args):
+    def take_action(self, _):
         self.manager.logout()
         self.log.info('Sign out serverauditor cloud.')

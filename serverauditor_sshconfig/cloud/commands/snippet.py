@@ -5,7 +5,6 @@ from ..models import Snippet
 
 
 class SnippetCommand(DetailCommand):
-
     """Operate with Group object."""
 
     allowed_operations = DetailCommand.all_operations
@@ -41,7 +40,6 @@ class SnippetCommand(DetailCommand):
 
 
 class SnippetsCommand(ListCommand):
-
     """Manage snippet objects."""
 
     def take_action(self, parsed_args):

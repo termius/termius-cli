@@ -9,7 +9,6 @@ from ..models import Host, PFRule
 
 
 class PFRuleCommand(DetailCommand):
-
     """Operate with port forwarding rule object."""
 
     allowed_operations = DetailCommand.all_operations
@@ -73,8 +72,8 @@ class PFRuleCommand(DetailCommand):
         pfrule.host = host
         if args.binding:
             binding_dict = self.parse_binding(pfrule.pf_type, args.binding)
-            for k, v in binding_dict.items():
-                setattr(pfrule, k, v)
+            for key, value in binding_dict.items():
+                setattr(pfrule, key, value)
         return pfrule
 
     def get_host(self, arg):
@@ -92,7 +91,6 @@ class PFRuleCommand(DetailCommand):
 
 
 class PFRulesCommand(ListCommand):
-
     """Manage port forwarding rule objects."""
 
     def take_action(self, parsed_args):

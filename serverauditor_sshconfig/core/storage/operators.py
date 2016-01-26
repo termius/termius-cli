@@ -1,8 +1,5 @@
 
-# pylint: disable=unused-import
-from operator import (
-    eq, ne, gt, lt, le, ge, contains
-)
+from operator import *  # noqa
 
 
 def rcontains(obj, seq):

@@ -60,7 +60,6 @@ DRIVERS = OrderedDict((
 
 
 class PersistentDict(OrderedDict):
-
     """Persistent dictionary with an API compatible with shelve and anydbm.
 
     The dict is kept in memory, so the dictionary operations run as fast as
@@ -71,14 +70,13 @@ class PersistentDict(OrderedDict):
     Input file format is automatically discovered.
     Output file format is selectable between pickle, json, and csv.
     All three serialization formats are backed by fast C implementations.
-
     """
 
-    def __init__(self, filename, flag='c', mode=None, format='json',
+    def __init__(self, filename, flag='c', mode=None, _format='json',
                  *args, **kwds):
         self.flag = flag                    # r=readonly, c=create, or n=new
         self.mode = mode                    # None or an octal triple like 0644
-        self.format = format                # 'csv', 'json', or 'pickle'
+        self._format = _format                # 'csv', 'json', or 'pickle'
         self.filename = filename
         super(PersistentDict, self).__init__(*args, **kwds)
         if flag != 'n' and os.access(filename, os.R_OK):
@@ -86,14 +84,13 @@ class PersistentDict(OrderedDict):
                 self.load(fileobj)
 
     def _write_mode(self):
-        return 'wb' if self.format == 'pickle' else 'w'
+        return 'wb' if self._format == 'pickle' else 'w'
 
     def _read_mode(self):
-        return 'rb' if format == 'pickle' else 'r'
+        return 'rb' if self._format == 'pickle' else 'r'
 
     def sync(self):
         """Write dict to disk."""
-
         def write_temp_file(filename):
             tempname = filename + '.tmp'
             try:
@@ -124,9 +121,9 @@ class PersistentDict(OrderedDict):
 
     def dump(self, fileobj):
         try:
-            DRIVERS[self.format].dump(fileobj, self)
+            DRIVERS[self._format].dump(fileobj, self)
         except KeyError:
-            raise NotImplementedError('Unknown format: ' + repr(self.format))
+            raise NotImplementedError('Unknown format: ' + repr(self._format))
 
     def load(self, fileobj):
         for loader in DRIVERS.values():

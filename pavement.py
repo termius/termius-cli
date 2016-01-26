@@ -6,12 +6,9 @@ import sys
 
 sys.path.append('.')
 
+from serverauditor_sshconfig import get_version
 
-def get_version():
-    from serverauditor_sshconfig import __version__
-    return '.'.join(map(str, __version__))
-
-
+# pylint: disable=invalid-name
 requires = [
     'cliff==1.15',
     'stevedore==1.10.0',
@@ -23,6 +20,7 @@ requires = [
     'pyasn1',
 ]
 
+# pylint: disable=invalid-name
 handlers = [
     'sync = serverauditor_sshconfig.sync.commands:SyncCommand',
     'snippet = serverauditor_sshconfig.cloud.commands:SnippetCommand',

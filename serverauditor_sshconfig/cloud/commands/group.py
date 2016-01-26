@@ -1,14 +1,10 @@
 from operator import attrgetter
-from ...core.exceptions import (
-    InvalidArgumentException, TooManyEntriesException, DoesNotExistException,
-)
 from ...core.commands import DetailCommand, ListCommand
 from ..models import Group, SshConfig, SshIdentity
 from .ssh_config import SshConfigArgs
 
 
 class GroupCommand(DetailCommand):
-
     """Operate with Group object."""
 
     allowed_operations = DetailCommand.all_operations
@@ -37,11 +33,15 @@ class GroupCommand(DetailCommand):
 
     def serialize_args(self, args, instance=None):
         if instance:
-            ssh_identity = (instance.ssh_config and instance.ssh_config.ssh_identity) or SshIdentity()
+            ssh_identity = (
+                instance.ssh_config and instance.ssh_config.ssh_identity
+            ) or SshIdentity()
             ssh_config = instance.ssh_config or SshConfig()
             group = instance
         else:
-            group, ssh_config, ssh_identity = Group(), SshConfig(),  SshIdentity()
+            group, ssh_config, ssh_identity = (
+                Group(), SshConfig(), SshIdentity()
+            )
 
         if args.generate_key:
             raise NotImplementedError('Not implemented')
@@ -62,7 +62,6 @@ class GroupCommand(DetailCommand):
 
 
 class GroupsCommand(ListCommand):
-
     """Manage group objects."""
 
     def get_parser(self, prog_name):
