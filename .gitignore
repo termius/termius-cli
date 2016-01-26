@@ -12,3 +12,4 @@ dist
 *.egg-info
 /build
 .ropeproject
+.eggs

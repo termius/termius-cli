@@ -1,1 +1,5 @@
-include README.rst LICENSE requirements.txt
+include README.rst
+include LICENSE
+include setup.py
+include pavement.py
+include paver-minilib.zip
