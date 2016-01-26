@@ -1,9 +1,14 @@
 *~
+\#*
 .DS_Store
 
 .idea
+.tox
+.coverage
 
 *.pyc
 *.pyo
 dist
 *.egg-info
+/build
+.ropeproject

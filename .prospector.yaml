@@ -1,0 +1,16 @@
+inherits:
+  - strictness_veryhigh
+  - full_pep8
+  - doc_warnings
+
+ignore-paths:
+  - .git
+
+pylint:
+  options:
+    max-parents: 12
+  disable:
+    # - broad-except
+    # - pointless-except
+    # - bad-super-call
+    # - nonstandard-exception

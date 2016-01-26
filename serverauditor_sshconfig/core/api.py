@@ -4,86 +4,93 @@
 Copyright (c) 2013 Crystalnix.
 License BSD, see LICENSE for more details.
 """
+import logging
+import six
+import hashlib
+import requests
+from requests.auth import AuthBase
 
-import base64
-import json
-try:
-    import urllib.request as urllib2
-except ImportError:
-    import urllib2
 
-from .utils import to_bytes, to_str
+class ServerauditorAuth(AuthBase):
+
+    header_name = 'Authorization'
+
+    def __init__(self, username, apikey):
+        self.username = username
+        self.apikey = apikey
+
+    @property
+    def auth_header(self):
+        return "ApiKey {username}:{apikey}".format(
+            username=self.username, apikey=self.apikey
+        )
+
+    def __call__(self, request):
+        request.headers[self.header_name] = self.auth_header
+        return request
+
+    def __str__(self):
+        return unicode(self).encode('utf-8')
+
+    def __unicode__(self):
+        return '{key}: {value}'.format(
+            key=self.header_name, value=self.auth_header
+        )
+
+
+def hash_password(password):
+    password = six.b(password)
+    return hashlib.sha256(password).hexdigest()
 
 
 class API(object):
 
-    API_URL = 'https://serverauditor.com/api/v1/'
+    host = 'serverauditor.com'
+    base_url = 'https://{}/api/'.format(host)
+    logger = logging.getLogger(__name__)
 
-    def get_auth_key(self, username, password):
-        """ Returns user's auth token. """
+    def __init__(self, username=None, apikey=None):
+        if username and apikey:
+            self.auth = ServerauditorAuth(username, apikey)
+        else:
+            self.auth = None
 
-        request = urllib2.Request(self.API_URL + "token/auth/")
-        auth_str = '%s:%s' % (username, password)
-        auth = base64.encodestring(to_bytes(auth_str)).replace(b'\n', b'')
-        request.add_header("Authorization", "Basic %s" % to_str(auth))
-        response = urllib2.urlopen(request)
-        return json.loads(to_str(response.read()))
+    def set_auth(self, username, apikey):
+        self.auth = ServerauditorAuth(username, apikey)
 
-    def get_keys_and_connections(self, username, auth_key):
-        """ Gets current keys and connections.
+    def request_url(self, endpoint):
+        return self.base_url + endpoint
 
-        Sends request for getting keys and connections using username and auth_key.
-        """
+    def login(self, username, password):
+        """Returns user's auth token."""
+        password = hash_password(password)
+        response = requests.get(self.request_url("v1/token/auth/"),
+                                auth=(username, password))
+        assert response.status_code == 200
 
-        auth_header = "ApiKey %s:%s" % (username, auth_key)
+        response_payload = response.json()
+        apikey = response_payload['key']
+        self.set_auth(username, apikey)
+        return response_payload
 
-        request = urllib2.Request(self.API_URL + "terminal/ssh_key/?limit=100")
-        request.add_header("Authorization", auth_header)
-        request.add_header("Content-Type", "application/json")
-        response = urllib2.urlopen(request)
-        keys = json.loads(to_str(response.read()))['objects']
+    def post(self, endpoint, data):
+        response = requests.post(self.request_url(endpoint),
+                                 json=data, auth=self.auth)
+        assert response.status_code == 201
+        return response.json()
 
-        request = urllib2.Request(self.API_URL + "terminal/connection/?limit=100")
-        request.add_header("Authorization", auth_header)
-        request.add_header("Content-Type", "application/json")
-        response = urllib2.urlopen(request)
-        connections = json.loads(to_str(response.read()))['objects']
+    def get(self, endpoint):
+        response = requests.get(self.request_url(endpoint), auth=self.auth)
+        assert response.status_code == 200
+        return response.json()
 
-        return keys, connections
+    def delete(self, endpoint):
+        response = requests.delete(self.request_url(endpoint), auth=self.auth)
+        assert response.status_code in (200, 204)
+        return response.json()
 
-    def create_keys_and_connections(self, hosts, username, auth_key):
-        """ Creates keys and connections using hosts' configs.
-
-        Sends request for creation keys and connections using username and key.
-        """
-
-        auth_header = "ApiKey %s:%s" % (username, auth_key)
-
-        for host in hosts:
-
-            key_numbers = []
-            for ssh_key in host['ssh_key']:
-                request = urllib2.Request(self.API_URL + "terminal/ssh_key/")
-                request.add_header("Authorization", auth_header)
-                request.add_header("Content-Type", "application/json")
-                response = urllib2.urlopen(request, to_bytes(json.dumps(ssh_key)))
-                key_numbers.append(int(response.headers['Location'].rstrip('/').rsplit('/', 1)[-1]))
-
-            key = None
-            if key_numbers:
-                key = key_numbers[0]
-
-            connection = {
-                "hostname": host['hostname'],
-                "label": host['host'],
-                "ssh_key": key,
-                "ssh_password": host['password'],
-                "ssh_username": host['user'],
-                "port": host['port']
-            }
-            request = urllib2.Request(self.API_URL + "terminal/connection/")
-            request.add_header("Authorization", auth_header)
-            request.add_header("Content-Type", "application/json")
-            urllib2.urlopen(request, to_bytes(json.dumps(connection)))
-
-        return
+    def put(self, endpoint, data):
+        response = requests.put(self.request_url(endpoint),
+                                json=data, auth=self.auth)
+        assert response.status_code in (200, 204)
+        return response.json()

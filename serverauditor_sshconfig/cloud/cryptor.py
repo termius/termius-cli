@@ -16,7 +16,7 @@ from Crypto.Cipher import AES
 from Crypto.Protocol import KDF
 from Crypto import Random
 
-from .utils import bchr, bord, to_bytes, to_str
+from ..core.utils import bchr, bord, to_bytes, to_str
 
 
 class CryptorException(Exception):
@@ -161,34 +161,3 @@ class RNCryptor(object):
         ## passlib version -- the fastest version
         # from passlib.utils.pbkdf2 import pbkdf2
         # return pbkdf2(password, salt, iterations, key_length)
-
-
-def main():
-    from time import time
-
-    cryptor = RNCryptor()
-    cryptor.encryption_salt = b'1' * 8
-    cryptor.hmac_salt = b'1' * 8
-
-    passwords = 'p@s$VV0Rd', 'пароль'
-    texts = 'www.crystalnix.com', 'текст', '', '1' * 16, '2' * 15, '3' * 17
-
-    for password in passwords:
-        cryptor.password = password
-        for text in texts:
-            print('text: "{}"'.format(text))
-
-            s = time()
-            encrypted_data = cryptor.encrypt(text)
-            print('encrypted {}: "{}"'.format(time() - s, encrypted_data))
-
-            s = time()
-            decrypted_data = cryptor.decrypt(encrypted_data)
-            print('decrypted {}: "{}"\n'.format(time() - s, decrypted_data))
-
-            assert text == decrypted_data
-
-
-if __name__ == '__main__':
-
-    main()
