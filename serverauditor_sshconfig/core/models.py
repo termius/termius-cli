@@ -85,10 +85,12 @@ class Model(AbstractModel):
 
     def mark_updated(self):
         if self.remote_instance:
+            # pylint: disable=attribute-defined-outside-init
             self.remote_instance.state = 'updated'
 
     def mark_synced(self):
         if self.remote_instance:
+            # pylint: disable=attribute-defined-outside-init
             self.remote_instance.state = 'synced'
 
     # set_name = ''
