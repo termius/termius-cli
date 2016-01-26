@@ -1,10 +1,5 @@
 # coding: utf-8
 
-"""
-Copyright (c) 2013 Crystalnix.
-License BSD, see LICENSE for more details.
-"""
-
 import fnmatch
 import getpass
 import os
@@ -17,7 +12,7 @@ class SSHConfigException(Exception):
 
 
 class SSHConfig(object):
-    """ Representation of ssh config information.
+    """Representation of ssh config information.
 
     For information about the format see OpenSSH's man page.
     Based on paramiko.config.SSHConfig.
@@ -31,48 +26,49 @@ class SSHConfig(object):
         self._config = [{'host': ['*']}]
 
     def _is_file_ok(self, path):
-        """ Checks that file exists, and user have permissions for read it.
+        """Check that file exists, and user have permissions for read it.
 
         :param path: path where file is located.
         :return: True or False.
         """
-
-        return os.path.exists(path) and not os.path.isdir(path) and os.access(path, os.R_OK)
+        return (
+            os.path.exists(path) and
+            not os.path.isdir(path) and
+            os.access(path, os.R_OK)
+        )
 
     def parse(self):
-        """ Parses configuration files.
+        """Parse configuration files.
 
         Firstly, parser uses file which is located in USER_CONFIG_PATH.
         Then, file SYSTEM_CONFIG_PATH is used.
         """
-
-        def create_config_file():
-            """ Creates configuration file. """
+        def create_config_file(path):
+            """Create configuration file."""
             ssh_dir = os.path.dirname(path)
             if not os.path.exists(ssh_dir):
                 os.mkdir(ssh_dir, 0o700)
 
-            with open(path, 'w') as f:
-                f.write("# File was created by ServerAuditor\n\n")
+            with open(path, 'w') as _file:
+                _file.write("# File was created by ServerAuditor\n\n")
 
             return
 
         for path in (self.USER_CONFIG_PATH, ):  # self.SYSTEM_CONFIG_PATH):
             if not self._is_file_ok(path):
-                create_config_file()
+                create_config_file(path)
             else:
-                with open(path) as f:
-                    self._parse_file(f)
+                with open(path) as _file:
+                    self._parse_file(_file)
 
         return
 
     def _parse_file(self, file_object):
-        """ Parses separated file.
+        """Parse separated file.
 
         :raises SSHConfigException: if there is any unparsable line in file.
         :param file_object: file.
         """
-
         def get_hosts(val):
             i, length = 0, len(val)
             hosts = []
@@ -122,33 +118,36 @@ class SSHConfig(object):
         return
 
     def get_complete_hosts(self):
-        """ Returns complete hosts.
+        """Return complete hosts.
 
         :return: list of hosts which names don't have masks.
         """
-
         def is_complete(conf):
-            """ Checks that host is complete.
+            """Check that host is complete.
 
             :param conf: config.
             :return: True or False
             """
             host = conf['host']
-            is_full_name = len(host) == 1 and '*' not in host[0] and '?' not in host[0] and not host[0].startswith('!')
+            is_full_name = (
+                len(host) == 1 and
+                '*' not in host[0] and
+                '?' not in host[0] and
+                not host[0].startswith('!')
+            )
             return is_full_name
 
         return [conf['host'][0] for conf in self._config if is_complete(conf)]
 
     def get_host(self, host, substitute=False):
-        """ Returns config for host.
+        """Return config for host.
 
         :param host: host's name
         :param substitute: if True all patterns will be substituted.
         :return: config for host.
         """
-
         def is_match(patterns):
-            """ Checks that host applies patterns.
+            """Check that host applies patterns.
 
             :param patterns: list of patterns.
             :return: True or False
@@ -179,14 +178,16 @@ class SSHConfig(object):
         return settings
 
     def _substitute_variables(self, settings):
-        """ Substitutes variables in settings.
+        """Substitute variables in settings.
 
-        :raises SSHConfigException: if user does not permissions for read IdentityFile.
+        :raises SSHConfigException: when user does
+            not permissions for read IdentityFile.
         :param settings: config which will be changed.
         """
-
         if 'hostname' in settings:
-            settings['hostname'] = settings['hostname'].replace('%h', settings['host'])
+            settings['hostname'] = settings['hostname'].replace(
+                '%h', settings['host']
+            )
         else:
             settings['hostname'] = settings['host']
 
@@ -244,7 +245,9 @@ class SSHConfig(object):
                 for find, replace in replacements[k]:
                     if isinstance(settings[k], list):
                         for i in range(len(settings[k])):
-                            settings[k][i] = settings[k][i].replace(find, replace)
+                            settings[k][i] = settings[k][i].replace(
+                                find, replace
+                            )
                     else:
                         settings[k] = settings[k].replace(find, replace)
 
@@ -252,9 +255,7 @@ class SSHConfig(object):
             for i, name in enumerate(settings['identityfile']):
                 if self._is_file_ok(name):
                     name = name[name.rfind('/') + 1:]
-                    with open(settings['identityfile'][i]) as f:
-                        settings['identityfile'][i] = [name, f.read()]
-            #else:
-            #    raise SSHConfigException('Can not read IdentityFile %s' % settings['identityfile'])
+                    with open(settings['identityfile'][i]) as _file:
+                        settings['identityfile'][i] = [name, _file.read()]
 
         return
