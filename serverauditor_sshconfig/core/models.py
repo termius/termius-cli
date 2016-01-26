@@ -55,7 +55,7 @@ class RemoteInstance(AbstractModel):
 
     fields = {
         'id': Field(long, False, None),
-        'updated': Field(bool, False, False),
+        'state': Field(str, False, 'created'),  # 'created' / 'updated' / 'deleted' / 'synced'
         'updated_at': Field(str, False, None),
     }
 
@@ -116,7 +116,7 @@ class DeleteSets(AbstractModel):
         existed_set = set(existed)
         new_set = set_operator(existed_set)
         new = self.default_field_value(new_set)
-        setattr(self, model.set_name, new)
+        setattr(self, self.set_name, new)
 
     def soft_delete(self, model):
         if not model.remote_instance:

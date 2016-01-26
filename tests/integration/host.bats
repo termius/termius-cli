@@ -28,12 +28,35 @@ setup() {
     ! [ -z $(cat ~/.serverauditor.storage) ]
 }
 
-@test "Create with tags" {
-    run serverauditor host -L test --port 2022 --address localhost --username root --password password -t A,B,C
+@test "Update host" {
+    host=$(serverauditor host -L test_3 --port 22 --address google.com --username root --password 'psswrd')
+    run serverauditor host -L test_3 --port 22 --address google --username root --password '' $host
+    [ "$status" -eq 0 ]
+    ! [ -z $(cat ~/.serverauditor.storage) ]
+}
+
+@test "Update many hosts" {
+    host1=$(serverauditor host -L test_2 --port 22 --address google.com --username root --password 'psswrd')
+    host2=$(serverauditor host -L test_3 --port 22 --address google.com --username root --password 'psswrd')
+    run serverauditor host -L test_3 --port 22 --address google --username root --password '' $host1 $hots2
+    [ "$status" -eq 0 ]
+    ! [ -z $(cat ~/.serverauditor.storage) ]
+}
+
+@test "Update hosts with same name" {
+    host1=$(serverauditor host -L test_3 --port 22 --address google.com --username root --password 'psswrd')
+    host2=$(serverauditor host -L test_3 --port 22 --address google.com --username root --password 'psswrd')
+    run serverauditor host -L test_3 --port 22 --address google --username root --password '' 'test_3'
+    [ "$status" -eq 0 ]
+    ! [ -z $(cat ~/.serverauditor.storage) ]
+}
+
+@test "Create with tag" {
+    run serverauditor host -L test --port 2022 --address localhost --username root --password password -t A
     [ "$status" -eq 0 ]
 }
 
-@test "tags help by arg" {
+@test "Create with 3 tags" {
     run serverauditor host -L test --port 2022 --address localhost --username root --password password -t A,B,C
     [ "$status" -eq 0 ]
 }

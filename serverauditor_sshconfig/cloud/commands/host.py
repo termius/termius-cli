@@ -1,5 +1,5 @@
 from operator import attrgetter
-from ...core.exceptions import ArgumentRequiredException
+from ...core.exceptions import ArgumentRequiredException, DoesNotExistException
 from ...core.commands import DetailCommand, ListCommand
 from ..models import Host, SshConfig, SshIdentity
 from .ssh_config import SshConfigArgs
@@ -42,32 +42,23 @@ class HostCommand(DetailCommand):
         if not parsed_args.address:
             raise ArgumentRequiredException('Address is required.')
 
-        if parsed_args.generate_key:
-            raise NotImplementedError('Not implemented')
-
-        if parsed_args.group:
-            raise NotImplementedError('Not implemented')
-
-        if parsed_args.ssh_identity:
-            raise NotImplementedError('Not implemented')
-
-        identity = SshIdentity()
-        identity.username = parsed_args.username
-        identity.password = parsed_args.password
-
-        config = SshConfig()
-        config.port = parsed_args.port
-        config.ssh_identity = identity
-
-        host = Host()
-        host.label = parsed_args.label
-        host.address = parsed_args.address
-        host.ssh_config = config
-
+        host = self.serialize_args(parsed_args)
         with self.storage:
             saved_host = self.storage.save(host)
 
         self.log_create(saved_host)
+
+    def update(self, parsed_args):
+        if not parsed_args.entry:
+            raise ArgumentRequiredException(
+                'At least one ID or NAME Address are required.'
+            )
+        instances = self.get_objects(parsed_args.entry)
+        with self.storage:
+            for i in instances:
+                updated_instance = self.serialize_args(parsed_args, i)
+                self.storage.save(updated_instance)
+                self.log_update(updated_instance)
 
     def delete(self, parsed_args):
         if not parsed_args.entry:
@@ -75,6 +66,47 @@ class HostCommand(DetailCommand):
                 'At least one ID or NAME Address are required.'
             )
         raise NotImplementedError
+
+    def serialize_args(self, args, instance=None):
+        if instance:
+            identity = (instance.ssh_config and instance.ssh_config.ssh_identity) or SshIdentity()
+            config = instance.ssh_config or SshConfig()
+            host = instance
+        else:
+            host, config, identity = Host(), SshConfig(),  SshIdentity()
+
+        if args.generate_key:
+            raise NotImplementedError('Not implemented')
+
+        if args.group:
+            raise NotImplementedError('Not implemented')
+
+        if args.ssh_identity:
+            raise NotImplementedError('Not implemented')
+
+        identity.username = args.username
+        identity.password = args.password
+
+        config.port = args.port
+        config.ssh_identity = identity
+
+        host.label = args.label
+        host.address = args.address
+        host.ssh_config = config
+        return host
+
+    def get_objects(self, ids__names):
+        ids, names = self.parse_ids_names(ids__names)
+        instances = self.storage.filter(
+            Host, any, **{'id.rcontains': ids, 'label.rcontains': names}
+        )
+        if not instances:
+            raise DoesNotExistException("There aren't any instance.")
+        return instances
+
+    def parse_ids_names(self, ids__names):
+        ids = [int(i) for i in ids__names if i.isdigit()]
+        return ids, ids__names
 
 
 class HostsCommand(ListCommand):

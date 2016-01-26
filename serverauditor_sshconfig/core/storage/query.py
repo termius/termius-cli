@@ -1,20 +1,20 @@
-import operator
+from . import operators
 
 
 class QueryOperator(object):
 
-    operators = ['eq', 'ne', 'gt', 'lt', 'le', 'ge']
+    operators = ['eq', 'ne', 'gt', 'lt', 'le', 'ge', 'rcontains', 'contains']
 
     def __init__(self, field, value):
         splited_field = field.split('.')
         operator_name = splited_field[-1]
         if operator_name not in self.operators:
             operator_name = 'eq'
-            self.get_field = operator.attrgetter(field)
+            self.get_field = operators.attrgetter(field)
         else:
-            self.get_field = operator.attrgetter('.'.join(splited_field[:-1]))
+            self.get_field = operators.attrgetter('.'.join(splited_field[:-1]))
 
-        self.operator = getattr(operator, operator_name)
+        self.operator = getattr(operators, operator_name)
         self.value = value
 
     def __call__(self, obj):
