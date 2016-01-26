@@ -9,23 +9,6 @@ from .tag import TagsCommand
 from .sync import PushCommand, PullCommand
 
 
-class UseGroupCommand(AbstractCommand):
-
-    """Change group."""
-
-    def get_parser(self, prog_name):
-        parser = super(UseGroupCommand, self).get_parser(prog_name)
-        parser.add_argument(
-            'group', metavar='GROUP_ID or GROUP_NAME',
-            help='This group name will be used as default group.'
-        )
-        return parser
-
-    def take_action(self, parsed_args):
-        self.log.info('Use Group.')
-        assert False, 'Not implemented'
-
-
 class InfoCommand(AbstractCommand):
 
     """Show info about host or group."""

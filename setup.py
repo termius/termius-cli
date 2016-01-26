@@ -53,7 +53,6 @@ setup(
         ],
         'serverauditor.handlers': [
             'sync = serverauditor_sshconfig.sync.commands:SyncCommand',
-            'use = serverauditor_sshconfig.cloud.commands:UseGroupCommand',
             'snippet = serverauditor_sshconfig.cloud.commands:SnippetCommand',
             'snippets = serverauditor_sshconfig.cloud.commands:SnippetsCommand',
             'host = serverauditor_sshconfig.cloud.commands:HostCommand',
