@@ -7,6 +7,7 @@ ignore-paths:
   - .git
   - setup.py
   - build
+  - serverauditor_sshconfig/core/ssh_config.py  # it's too complex
 
 pep257:
   disable:
@@ -21,8 +22,4 @@ pep257:
 pylint:
   options:
     max-parents: 12
-  disable:
-    # - broad-except
-    # - pointless-except
-    # - bad-super-call
-    # - nonstandard-exception
+
