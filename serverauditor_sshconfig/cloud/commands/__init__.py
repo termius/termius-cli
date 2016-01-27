@@ -1,19 +1,24 @@
+# -*- coding: utf-8 -*-
+"""Package with sync-cloud commands."""
 from ...core.commands import AbstractCommand
 
-from .host import HostCommand, HostsCommand
-from .group import GroupCommand, GroupsCommand
-from .snippet import SnippetCommand, SnippetsCommand
-from .pf_rule import PFRuleCommand, PFRulesCommand
-from .ssh_identity import SshIdentityCommand, SshIdentitiesCommand
-from .tag import TagsCommand
-from .sync import PushCommand, PullCommand
+from .host import HostCommand, HostsCommand  # noqa
+from .group import GroupCommand, GroupsCommand  # noqa
+from .snippet import SnippetCommand, SnippetsCommand  # noqa
+from .pf_rule import PFRuleCommand, PFRulesCommand  # noqa
+from .ssh_identity import SshIdentityCommand, SshIdentitiesCommand  # noqa
+from .tag import TagsCommand  # noqa
+from .sync import PushCommand, PullCommand  # noqa
 
 
 class InfoCommand(AbstractCommand):
-
     """Show info about host or group."""
 
     def get_parser(self, prog_name):
+        """Create command line argument parser.
+
+        Use it to add extra options to argument parser.
+        """
         parser = super(InfoCommand, self).get_parser(prog_name)
         parser.add_argument(
             '-G', '--group', dest='entry_type',
@@ -36,6 +41,8 @@ class InfoCommand(AbstractCommand):
         parser.add_argument('id_or_name', metavar='ID or NAME')
         return parser
 
+    # pylint: disable=unused-argument
     def take_action(self, parsed_args):
+        """Process CLI call."""
         self.log.info('Info about group or host.')
         assert False, 'Not implemented'

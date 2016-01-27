@@ -1,17 +1,15 @@
-from paver.easy import *  # noqa
-from paver.setuputils import setup
-from setuptools import find_packages
-
+# -*- coding: utf-8 -*-
+"""Config-like for paver tool."""
 import sys
+from setuptools import find_packages
+from paver.easy import task, sh, needs  # noqa
+from paver.setuputils import setup  # noqa
 
 sys.path.append('.')
+from serverauditor_sshconfig import get_version  # noqa
 
 
-def get_version():
-    from serverauditor_sshconfig import __version__
-    return '.'.join(map(str, __version__))
-
-
+# pylint: disable=invalid-name
 requires = [
     'cliff==1.15',
     'stevedore==1.10.0',
@@ -23,6 +21,7 @@ requires = [
     'pyasn1',
 ]
 
+# pylint: disable=invalid-name
 handlers = [
     'sync = serverauditor_sshconfig.sync.commands:SyncCommand',
     'snippet = serverauditor_sshconfig.cloud.commands:SnippetCommand',
@@ -85,15 +84,17 @@ setup(
 @task
 @needs('generate_setup', 'minilib', 'setuptools.command.sdist')
 def sdist():
-    """Overrides sdist to make sure that our setup.py is generated."""
+    """Override sdist to make sure that our setup.py is generated."""
     pass
 
 
 @task
 def lint():
+    """Check code style and conventions."""
     sh('prospector')
 
 
 @task
 def bats():
+    """Run tests on CLI usage."""
     sh('bats tests/integration')

@@ -1,7 +1,14 @@
+# -*- coding: utf-8 -*-
+"""Module with Sshconfig's args helper."""
+from ..models import SshConfig, SshIdentity
+
 
 class SshConfigArgs(object):
+    """Class for ssh config argument adding and serializing."""
 
+    # pylint: disable=no-self-use
     def add_agrs(self, parser):
+        """Add to arg parser ssh config options."""
         parser.add_argument(
             '-p', '--port',
             type=int, metavar='PORT',
@@ -42,3 +49,24 @@ class SshConfigArgs(object):
             help='Create and assign automatically snippet.'
         )
         return parser
+
+    def serialize_args(self, args, instance):
+        """Convert args to instance."""
+        if instance:
+            ssh_identity = (
+                instance.ssh_identity
+            ) or SshIdentity()
+            ssh_config = instance or SshConfig()
+        else:
+            ssh_config, ssh_identity = SshConfig(), SshIdentity()
+
+        if args.generate_key:
+            raise NotImplementedError('Not implemented')
+
+        if args.ssh_identity:
+            raise NotImplementedError('Not implemented')
+
+        ssh_identity.username = args.username
+        ssh_identity.password = args.password
+        ssh_config.port = args.port
+        return ssh_config

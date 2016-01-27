@@ -1,16 +1,12 @@
 #!/usr/bin/env python
-# coding: utf-8
-
-"""
-Copyright (c) 2015 Crystalnix.
-License BSD, see LICENSE for more details.
-"""
-
+# -*- coding: utf-8 -*-
+"""Entrypoint for CLI tool."""
 import sys
 from serverauditor_sshconfig.app import ServerauditorApp
 
 
 def main(argv=sys.argv[1:]):
+    """Process call from terminal."""
     app = ServerauditorApp()
     return app.run(argv)
 

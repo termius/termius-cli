@@ -1,16 +1,21 @@
+# -*- coding: utf-8 -*-
+"""Module for ssh identity command."""
 from operator import attrgetter
 from ...core.commands import DetailCommand, ListCommand
 from ..models import SshIdentity
 
 
 class SshIdentityCommand(DetailCommand):
-
     """Operate with ssh identity object."""
 
     allowed_operations = DetailCommand.all_operations
     model_class = SshIdentity
 
     def get_parser(self, prog_name):
+        """Create command line argument parser.
+
+        Use it to add extra options to argument parser.
+        """
         parser = super(SshIdentityCommand, self).get_parser(prog_name)
         parser.add_argument(
             '--generate-key', action='store_true',
@@ -26,7 +31,7 @@ class SshIdentityCommand(DetailCommand):
         )
         parser.add_argument(
             '-i', '--identity-file',
-            metavar='PRIVATE_KEY', help="Private key."
+            metavar='PRIVATE_KEY', help='Private key.'
         )
         parser.add_argument(
             '-k', '--ssh-key',
@@ -39,9 +44,12 @@ class SshIdentityCommand(DetailCommand):
         return parser
 
     def create(self, parsed_args):
+        """Handle create new instance command."""
         self.create_instance(parsed_args)
 
+    # pylint: disable=no-self-use
     def serialize_args(self, args, instance=None):
+        """Convert args to instance."""
         if instance:
             identity = instance
         else:
@@ -62,10 +70,11 @@ class SshIdentityCommand(DetailCommand):
 
 
 class SshIdentitiesCommand(ListCommand):
-
     """Manage ssh identity objects."""
 
+    # pylint: disable=unused-argument
     def take_action(self, parsed_args):
+        """Process CLI call."""
         ssh_identities = self.storage.get_all(SshIdentity)
         fields = SshIdentity.allowed_fields()
         getter = attrgetter(*fields)

@@ -1,7 +1,10 @@
-from ..core.models import AbstractModel, Model, Field
+# -*- coding: utf-8 -*-
+"""Module with user data models."""
+from ..core.models import Model, Field
 
 
 class Tag(Model):
+    """Model for tag."""
 
     fields = {
         'label': Field(str, False, '')
@@ -11,6 +14,7 @@ class Tag(Model):
 
 
 class Snippet(Model):
+    """Model for snippet."""
 
     fields = {
         'label': Field(str, False, ''),
@@ -21,6 +25,7 @@ class Snippet(Model):
 
 
 class SshKey(Model):
+    """Model for ssh key."""
 
     fields = {
         'label': Field(str, False, ''),
@@ -33,12 +38,12 @@ class SshKey(Model):
 
 
 class SshIdentity(Model):
+    """Model for ssh identity."""
 
     fields = {
         'label': Field(str, False, ''),
         'username': Field(str, False, ''),
         'password': Field(str, False, ''),
-        'ssh_key': Field(str, False, None),
         'is_visible': Field(str, False, False),
         'ssh_key': Field(SshKey, False, None),
     }
@@ -47,6 +52,7 @@ class SshIdentity(Model):
 
 
 class SshConfig(Model):
+    """Model for ssh config."""
 
     fields = {
         'port': Field(int, False, None),
@@ -57,19 +63,21 @@ class SshConfig(Model):
 
 
 class Group(Model):
+    """Model for group."""
 
     fields = {
         'label': Field(str, False, ''),
         'ssh_config': Field(SshConfig, False, None),
     }
     set_name = 'group_set'
-    crypto_fields = {'label',}
+    crypto_fields = {'label', }
 
 
 Group.fields['parent_group'] = Field(Group, False, None)
 
 
 class Host(Model):
+    """Model for host."""
 
     fields = {
         'label': Field(str, False, ''),
@@ -82,6 +90,7 @@ class Host(Model):
 
 
 class TagHost(Model):
+    """Model for relation host and tags."""
 
     fields = {
         'host': Field(Host, False, None),
@@ -91,6 +100,7 @@ class TagHost(Model):
 
 
 class PFRule(Model):
+    """Model for port forwarding."""
 
     fields = {
         'label': Field(str, False, ''),

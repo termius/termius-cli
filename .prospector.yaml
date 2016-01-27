@@ -5,12 +5,19 @@ inherits:
 
 ignore-paths:
   - .git
+  - setup.py
+  - build
+  - serverauditor_sshconfig/core/ssh_config.py  # it's too complex
+  - serverauditor_sshconfig/core/cryptor.py  # it's too complex
+
+  # TODO Remove this file in production
+  - serverauditor_sshconfig/sync/services/aws.py
+
+pep257:
+  disable:
+    - D203  # 1 blank line required before
 
 pylint:
   options:
     max-parents: 12
-  disable:
-    # - broad-except
-    # - pointless-except
-    # - bad-super-call
-    # - nonstandard-exception
+
