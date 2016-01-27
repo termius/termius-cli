@@ -1,5 +1,5 @@
-# coding: utf-8
-
+# -*- coding: utf-8 -*-
+"""Module with cryptor implementation."""
 from __future__ import print_function
 
 import base64
@@ -13,11 +13,70 @@ from Crypto import Random
 from ..core.utils import bchr, bord, to_bytes, to_str
 
 
-class CryptorException(Exception):
-    pass
+class CryptoSettings(object):
+    """Store cryptor settings."""
+
+    def __init__(self):
+        """Construct new cryptor settings."""
+        self._password = None
+        self._encryption_salt = None
+        self._hmac_salt = None
+        self._encryption_key = None
+        self._hmac_key = None
+
+    @property
+    def password(self):
+        """Get password."""
+        return self._password
+
+    @password.setter
+    def password(self, value):
+        """Set password."""
+        self._password = to_bytes(value)
+
+    @property
+    def encryption_salt(self):
+        """Get salt for encryption key."""
+        return self._encryption_salt
+
+    @encryption_salt.setter
+    def encryption_salt(self, value):
+        """Set salt for encryption key."""
+        self._encryption_salt = to_bytes(value)
+
+    @property
+    def hmac_salt(self):
+        """Get salt for hmac key."""
+        return self._hmac_salt
+
+    @hmac_salt.setter
+    def hmac_salt(self, value):
+        """Set salt for hmac key."""
+        self._hmac_salt = to_bytes(value)
+
+    @property
+    def initialization_vector(self):
+        """Generate random bytes."""
+        return Random.new().read(self.AES_BLOCK_SIZE)
+
+    @property
+    def encryption_key(self):
+        """Get encryption key."""
+        if not getattr(self, '_encryption_key', None):
+            self._encryption_key = pbkdf2(
+                self.password, self.encryption_salt
+            )
+        return self._encryption_key
+
+    @property
+    def hmac_key(self):
+        """Get hmac key."""
+        if not getattr(self, '_hmac_key', None):
+            self._hmac_key = pbkdf2(self.password, self.hmac_salt)
+        return self._hmac_key
 
 
-class RNCryptor(object):
+class RNCryptor(CryptoSettings):
     """RNCryptor is a symmetric-key encryption schema.
 
     NB. You must set encryption_salt, hmac_salt and password
@@ -28,15 +87,9 @@ class RNCryptor(object):
     AES_MODE = AES.MODE_CBC
     SALT_SIZE = 8
 
-    def __init__(self):
-        self._password = None
-        self._encryption_salt = None
-        self._hmac_salt = None
-        self._encryption_key = None
-        self._hmac_key = None
-
     # pylint: disable=no-self-use
     def pre_decrypt_data(self, data):
+        """Patch ciphertext."""
         data = to_bytes(data)
         return base64.decodestring(data)
 
@@ -50,6 +103,7 @@ class RNCryptor(object):
         return to_str(data)
 
     def decrypt(self, data):
+        """Decrypt data."""
         data = self.pre_decrypt_data(data)
 
         length = len(data)
@@ -64,13 +118,13 @@ class RNCryptor(object):
 
         if ((encryption_salt != self.encryption_salt or
              hmac_salt != self.hmac_salt)):
-            raise CryptorException("Bad encryption salt or hmac salt!")
+            raise CryptorException('Bad encryption salt or hmac salt!')
 
         encryption_key = self.encryption_key
         hmac_key = self.hmac_key
 
         if self._hmac(hmac_key, data[:length - 32]) != hmac:
-            raise CryptorException("Bad data!")
+            raise CryptorException('Bad data!')
 
         decrypted_data = self._aes_decrypt(
             encryption_key, initialization_vector, cipher_text
@@ -87,10 +141,12 @@ class RNCryptor(object):
 
     # pylint: disable=no-self-use
     def post_encrypt_data(self, data):
+        """Patch ciphertext."""
         data = base64.encodestring(data)
         return to_str(data)
 
     def encrypt(self, data):
+        """Encrypt data."""
         data = self.pre_encrypt_data(data)
 
         encryption_salt = self.encryption_salt
@@ -116,48 +172,6 @@ class RNCryptor(object):
 
         return self.post_encrypt_data(encrypted_data)
 
-    @property
-    def password(self):
-        return self._password
-
-    @password.setter
-    def password(self, value):
-        self._password = to_bytes(value)
-
-    @property
-    def encryption_salt(self):
-        return self._encryption_salt
-
-    @encryption_salt.setter
-    def encryption_salt(self, value):
-        self._encryption_salt = to_bytes(value)
-
-    @property
-    def hmac_salt(self):
-        return self._hmac_salt
-
-    @hmac_salt.setter
-    def hmac_salt(self, value):
-        self._hmac_salt = to_bytes(value)
-
-    @property
-    def initialization_vector(self):
-        return Random.new().read(self.AES_BLOCK_SIZE)
-
-    @property
-    def encryption_key(self):
-        if not getattr(self, '_encryption_key', None):
-            self._encryption_key = self._pbkdf2(
-                self.password, self.encryption_salt
-            )
-        return self._encryption_key
-
-    @property
-    def hmac_key(self):
-        if not getattr(self, '_hmac_key', None):
-            self._hmac_key = self._pbkdf2(self.password, self.hmac_salt)
-        return self._hmac_key
-
     def _aes_encrypt(self, key, initialization_vector, text):
         return AES.new(key, self.AES_MODE, initialization_vector).encrypt(text)
 
@@ -167,10 +181,19 @@ class RNCryptor(object):
     def _hmac(self, key, data):
         return python_hmac.new(key, data, hashlib.sha256).digest()
 
-    def _pbkdf2(self, password, salt, iterations=10000, key_length=32):
-        return KDF.PBKDF2(password, salt, dkLen=key_length, count=iterations,
-                          prf=preudorandom)
+
+class CryptorException(Exception):
+    """Raise cryptor face some problem with encrypting and decrypting."""
+
+    pass
+
+
+def pbkdf2(password, salt, iterations=10000, key_length=32):
+    """Generate key."""
+    return KDF.PBKDF2(password, salt, dkLen=key_length, count=iterations,
+                      prf=preudorandom)
 
 
 def preudorandom(password, salt):
+    """Generate random for password and salt."""
     return python_hmac.new(password, salt, hashlib.sha1).digest()

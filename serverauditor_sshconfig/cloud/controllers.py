@@ -1,10 +1,14 @@
+# -*- coding: utf-8 -*-
+"""Module for sync api controller."""
 from .serializers import BulkSerializer
 from ..core.api import API
 
 
 class CryptoController(object):
+    """Controller for encrypting/decrypting data."""
 
     def __init__(self, cryptor):
+        """Construct new crypto Controller."""
         self.cryptor = cryptor
 
     # pylint: disable=no-self-use
@@ -16,19 +20,23 @@ class CryptoController(object):
         return model
 
     def encrypt(self, model):
+        """Encrypt fields."""
         return self._mutate_fields(model, self.cryptor.encrypt)
 
     def decrypt(self, model):
+        """Decrypt fields."""
         return self._mutate_fields(model, self.cryptor.decrypt)
 
 
 class ApiController(object):
+    """Controller to call API."""
 
     mapping = dict(
         bulk=dict(url='v2/terminal/bulk/', serializer=BulkSerializer)
     )
 
     def __init__(self, storage, config, cryptor):
+        """Create new API controller."""
         self.config = config
         username = self.config.get('User', 'username')
         apikey = self.config.get('User', 'apikey')
@@ -48,6 +56,7 @@ class ApiController(object):
         return model
 
     def get_bulk(self):
+        """Get remote instances."""
         mapped = self.mapping['bulk']
         model = self._get(mapped)
         self.config.set('CloudSynchronization', 'last_synced',
@@ -67,6 +76,7 @@ class ApiController(object):
         return response_model
 
     def post_bulk(self):
+        """Send local instances."""
         mapped = self.mapping['bulk']
         model = {}
         model['last_synced'] = self.config.get(

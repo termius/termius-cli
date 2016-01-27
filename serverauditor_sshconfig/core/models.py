@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+"""Module with general model implementation."""
 import copy
 from collections import namedtuple
 
@@ -6,6 +8,7 @@ Field = namedtuple('Field', ('model', 'many', 'default'))
 
 
 class AbstractModel(dict):
+    """Base class for all models."""
 
     fields = dict()
     _mandatory_fields = dict()
@@ -19,6 +22,7 @@ class AbstractModel(dict):
 
     @classmethod
     def allowed_fields(cls):
+        """Return list of fields for application usage."""
         return cls._fields().keys()
 
     @classmethod
@@ -27,32 +31,39 @@ class AbstractModel(dict):
             raise AttributeError
 
     def __getattr__(self, name):
+        """Get field from self."""
         self._validate_attr(name)
         default = self._fields()[name].default
         return self.get(name, default)
 
     def __setattr__(self, name, value):
+        """Set field to self."""
         self._validate_attr(name)
         self[name] = value
 
     def __delattr__(self, name):
+        """Delete key from self."""
         self._validate_attr(name)
         del self[name]
 
     def copy(self):
+        """Wrap dict.copy into model."""
         return self.__copy__()
 
     def __copy__(self):
+        """Wrap dict.copy into model."""
         newone = type(self)()
         newone.update(self)
         return newone
 
     # pylint: disable=unused-argument
     def __deepcopy__(self, requesteddeepcopy):
+        """Wrap dict.deepcopy into model."""
         return type(self)(copy.deepcopy(super(AbstractModel, self)))
 
 
 class RemoteInstance(AbstractModel):
+    """Class that represent model sync revision."""
 
     fields = {
         'id': Field(long, False, None),
@@ -63,6 +74,7 @@ class RemoteInstance(AbstractModel):
 
 
 class Model(AbstractModel):
+    """Base model with relations."""
 
     _mandatory_fields = {
         'id': Field(long, False, None),
@@ -70,6 +82,7 @@ class Model(AbstractModel):
     }
 
     def __init__(self, *args, **kwargs):
+        """Create new model and patch remote instance."""
         # The simplest way to make lint not raise
         #   access-member-before-definition
         self.remote_instance = None
@@ -83,16 +96,19 @@ class Model(AbstractModel):
 
     @classmethod
     def fk_field_names(cls):
+        """Return name list for relation fields."""
         return tuple(
             k for k, v in cls._fields().items() if issubclass(v.model, Model)
         )
 
     def mark_updated(self):
+        """Mark revision as outdated."""
         if self.remote_instance:
             # pylint: disable=attribute-defined-outside-init
             self.remote_instance.state = 'updated'
 
     def mark_synced(self):
+        """Mark revision as updated."""
         if self.remote_instance:
             # pylint: disable=attribute-defined-outside-init
             self.remote_instance.state = 'synced'
@@ -100,13 +116,14 @@ class Model(AbstractModel):
     # set_name = ''
     # """Key name in Application Storage."""
     crypto_fields = {}
-    """Set of fields for enrpyption and decryption on cloud."""
+    """Set of fields for encryption and decryption on cloud."""
 
     id_name = 'id'
     """Name of field to be used as identificator."""
 
 
 class DeleteSets(AbstractModel):
+    """Class to keep deleted model remote references."""
 
     fields = {
         'tag_set': Field(list, False, None),
@@ -123,13 +140,15 @@ class DeleteSets(AbstractModel):
     default_field_value = list
 
     def update_field(self, field, set_operator):
+        """Update the one of deleted_set."""
         existed = getattr(self, field) or self.default_field_value()
         existed_set = set(existed)
         new_set = set_operator(existed_set)
         new = self.default_field_value(new_set)
         setattr(self, self.set_name, new)
 
-    def soft_delete(self, model):
+    def store(self, model):
+        """Add model id to deleted_sets."""
         if not model.remote_instance:
             return
 
@@ -138,7 +157,8 @@ class DeleteSets(AbstractModel):
 
         self.update_field(model.set_name, union)
 
-    def delete_soft_deleted(self, set_name, identity):
+    def remove(self, set_name, identity):
+        """Remove id from deleted_sets."""
         if not identity:
             return
 

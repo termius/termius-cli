@@ -1,8 +1,11 @@
+# -*- coding: utf-8 -*-
+""""Package to keep storage id generating logic."""
 from uuid import uuid4
 
 
 # pylint: disable=too-few-public-methods
 class UUIDGenerator(object):
+    """ID generator based on uuid4."""
 
     def __init__(self, storage):
         """Contruct IDGenerator.

@@ -1,4 +1,5 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+"""Module for connect command."""
 from .core.commands import AbstractCommand
 
 
@@ -6,6 +7,10 @@ class ConnectCommand(AbstractCommand):
     """Connect to specific host."""
 
     def get_parser(self, prog_name):
+        """Create command line argument parser.
+
+        Use it to add extra options to argument parser.
+        """
         parser = super(ConnectCommand, self).get_parser(prog_name)
         parser.add_argument(
             '-G', '--group', metavar='GROUP_ID or GROUP_NAME',
@@ -23,4 +28,5 @@ class ConnectCommand(AbstractCommand):
         return parser
 
     def take_action(self, parsed_args):
+        """Process CLI call."""
         self.log.info('Connect to host %s.', parsed_args['host'])

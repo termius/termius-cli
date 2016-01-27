@@ -1,12 +1,13 @@
-from paver.easy import *  # noqa
-from paver.setuputils import setup
-from setuptools import find_packages
-
+# -*- coding: utf-8 -*-
+"""Config-like for paver tool."""
 import sys
+from setuptools import find_packages
+from paver.easy import task, sh, needs  # noqa
+from paver.setuputils import setup  # noqa
 
 sys.path.append('.')
+from serverauditor_sshconfig import get_version  # noqa
 
-from serverauditor_sshconfig import get_version
 
 # pylint: disable=invalid-name
 requires = [

@@ -1,15 +1,18 @@
-# coding: utf-8
-
+# -*- coding: utf-8 -*-
+"""Module with Account manager."""
 from ..core.api import API
 
 
 class AccountManager(object):
+    """Class to keep logic for login and logout."""
 
     def __init__(self, config):
+        """Create new account manager."""
         self.config = config
         self.api = API()
 
     def login(self, username, password):
+        """Retrieve apikey and crypto settings from server."""
         response = self.api.login(username, password)
         self.config.set('User', 'username', username)
         apikey = response['key']
@@ -21,5 +24,6 @@ class AccountManager(object):
         self.config.write()
 
     def logout(self):
+        """Remove apikey and other credentials."""
         self.config.remove_section('User')
         self.config.write()

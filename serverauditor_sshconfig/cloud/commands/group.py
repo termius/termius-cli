@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+"""Module with Group commands."""
 from operator import attrgetter
 from ...core.commands import DetailCommand, ListCommand
 from ..models import Group
@@ -11,10 +13,15 @@ class GroupCommand(DetailCommand):
     model_class = Group
 
     def __init__(self, *args, **kwargs):
+        """Construct new group command."""
         super(GroupCommand, self).__init__(self, *args, **kwargs)
         self.ssh_config_args = SshConfigArgs()
 
     def get_parser(self, prog_name):
+        """Create command line argument parser.
+
+        Use it to add extra options to argument parser.
+        """
         parser = super(GroupCommand, self).get_parser(prog_name)
         parser.add_argument(
             '--generate-key', action='store_true',
@@ -32,10 +39,12 @@ class GroupCommand(DetailCommand):
         return parser
 
     def create(self, parsed_args):
+        """Handle create new instance command."""
         self.create_instance(parsed_args)
 
     # pylint: disable=no-self-use
     def serialize_args(self, args, instance=None):
+        """Convert args to instance."""
         if instance:
             ssh_config = self.ssh_config_args.serialize_args(
                 args, instance.ssh_config
@@ -57,6 +66,10 @@ class GroupsCommand(ListCommand):
     """Manage group objects."""
 
     def get_parser(self, prog_name):
+        """Create command line argument parser.
+
+        Use it to add extra options to argument parser.
+        """
         parser = super(GroupsCommand, self).get_parser(prog_name)
         parser.add_argument(
             '-r', '--recursive', action='store_true',
@@ -71,6 +84,7 @@ class GroupsCommand(ListCommand):
 
     # pylint: disable=unused-argument
     def take_action(self, parsed_args):
+        """Process CLI call."""
         assert False, 'Filtering and recursive not implemented.'
         groups = self.storage.get_all(Group)
         fields = Group.allowed_fields()

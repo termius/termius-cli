@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+"""Package with sync-cloud commands."""
 from ...core.commands import AbstractCommand
 
 from .host import HostCommand, HostsCommand  # noqa
@@ -13,6 +15,10 @@ class InfoCommand(AbstractCommand):
     """Show info about host or group."""
 
     def get_parser(self, prog_name):
+        """Create command line argument parser.
+
+        Use it to add extra options to argument parser.
+        """
         parser = super(InfoCommand, self).get_parser(prog_name)
         parser.add_argument(
             '-G', '--group', dest='entry_type',
@@ -37,5 +43,6 @@ class InfoCommand(AbstractCommand):
 
     # pylint: disable=unused-argument
     def take_action(self, parsed_args):
+        """Process CLI call."""
         self.log.info('Info about group or host.')
         assert False, 'Not implemented'

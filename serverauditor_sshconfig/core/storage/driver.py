@@ -1,16 +1,22 @@
+# -*- coding: utf-8 -*-
+"""Module for low level of application storage.
+
+Driver means "dict converter to stream".
+"""
 import abc
-import six
+import os
+from collections import OrderedDict
+
 import pickle
 import json
 import csv
-import os
 import shutil
-
-from collections import OrderedDict
+import six
 
 
 @six.add_metaclass(abc.ABCMeta)
 class Driver(object):
+    """Base class for any storage driver."""
 
     @abc.abstractmethod
     def dump(self, stream, obj_data):
@@ -23,31 +29,40 @@ class Driver(object):
 
 
 class PickleDriver(Driver):
+    """Pickle driver for dict."""
 
     def dump(self, stream, obj_data):
+        """Dump obj_data to stream."""
         pickle.dump(dict(obj_data), stream, 2)
 
     def load(self, stream):
+        """Load obj_data from stream."""
         super(PickleDriver, self).load(stream)
         return pickle.load(stream)
 
 
 class JSONDriver(Driver):
+    """JSON driver for dict."""
 
     def dump(self, stream, obj_data):
+        """Dump obj_data to stream."""
         json.dump(obj_data, stream, separators=(',', ':'))
 
     def load(self, stream):
+        """Load obj_data from stream."""
         super(JSONDriver, self).load(stream)
         return json.load(stream)
 
 
 class CSVDriver(Driver):
+    """CSV driver for dict."""
 
     def dump(self, stream, obj_data):
+        """Dump obj_data to stream."""
         csv.writer(stream).writerows(obj_data.items())
 
     def load(self, stream):
+        """Load obj_data from stream."""
         super(CSVDriver, self).load(stream)
         return csv.reader(stream)
 
@@ -74,9 +89,16 @@ class PersistentDict(OrderedDict):
 
     def __init__(self, filename, flag='c', mode=None, _format='json',
                  *args, **kwds):
-        self.flag = flag                    # r=readonly, c=create, or n=new
-        self.mode = mode                    # None or an octal triple like 0644
-        self._format = _format                # 'csv', 'json', or 'pickle'
+        """Construct new dict.
+
+        :param str flag: one of ('readonly', 'create', 'new')
+        :param mode: file mode for result file,
+            None or an octal triple like 0644
+        :oaram _format: one of ('csv', 'json', 'pickle')
+        """
+        self.flag = flag
+        self.mode = mode
+        self._format = _format
         self.filename = filename
         super(PersistentDict, self).__init__(*args, **kwds)
         if flag != 'n' and os.access(filename, os.R_OK):
@@ -111,21 +133,26 @@ class PersistentDict(OrderedDict):
             move_file_and_set_mode(tempname, self.filename, self.mode)
 
     def close(self):
+        """Close storage."""
         self.sync()
 
     def __enter__(self):
+        """Process entering transaction."""
         return self
 
     def __exit__(self, *exc_info):
+        """Process exiting transaction."""
         self.close()
 
     def dump(self, fileobj):
+        """Write self to fileobj."""
         try:
             DRIVERS[self._format].dump(fileobj, self)
         except KeyError:
             raise NotImplementedError('Unknown format: ' + repr(self._format))
 
     def load(self, fileobj):
+        """Populate self with fileobj content."""
         for loader in DRIVERS.values():
             try:
                 return self.update(loader.load(fileobj))

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+"""Module with Host commands."""
 from operator import attrgetter
 from ...core.exceptions import ArgumentRequiredException
 from ...core.commands import DetailCommand, ListCommand
@@ -12,10 +14,15 @@ class HostCommand(DetailCommand):
     model_class = Host
 
     def __init__(self, *args, **kwargs):
+        """Construct new host command."""
         super(HostCommand, self).__init__(self, *args, **kwargs)
         self.ssh_config_args = SshConfigArgs()
 
     def get_parser(self, prog_name):
+        """Create command line argument parser.
+
+        Use it to add extra options to argument parser.
+        """
         parser = super(HostCommand, self).get_parser(prog_name)
         parser.add_argument(
             '--generate-key', action='store_true',
@@ -42,6 +49,7 @@ class HostCommand(DetailCommand):
         return parser
 
     def create(self, parsed_args):
+        """Handle create new instance command."""
         if not parsed_args.address:
             raise ArgumentRequiredException('Address is required.')
 
@@ -49,6 +57,7 @@ class HostCommand(DetailCommand):
 
     # pylint: disable=no-self-use
     def serialize_args(self, args, instance=None):
+        """Convert args to instance."""
         if instance:
             ssh_config = self.ssh_config_args.serialize_args(
                 args, instance.ssh_config
@@ -71,6 +80,10 @@ class HostsCommand(ListCommand):
     """Manage host objects."""
 
     def get_parser(self, prog_name):
+        """Create command line argument parser.
+
+        Use it to add extra options to argument parser.
+        """
         parser = super(HostsCommand, self).get_parser(prog_name)
         parser.add_argument(
             '-t', '--tags', metavar='TAG_LIST',
@@ -84,6 +97,7 @@ class HostsCommand(ListCommand):
 
     # pylint: disable=unused-argument
     def take_action(self, parsed_args):
+        """Process CLI call."""
         assert False, 'Filtering by tags and groups not implemented.'
         hosts = self.storage.get_all(Host)
         fields = Host.allowed_fields()

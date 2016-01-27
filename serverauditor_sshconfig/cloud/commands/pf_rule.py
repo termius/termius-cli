@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+"""Module with PFRule commands."""
 import re
 from operator import attrgetter
 from ...core.exceptions import (
@@ -17,6 +19,7 @@ class PFRuleCommand(DetailCommand):
     @property
     # pylint: disable=no-self-use
     def binding_parsers(self):
+        """Return binding parser per type abbreviation."""
         return {
             'D': BindingParser.dynamic,
             'L': BindingParser.local,
@@ -24,6 +27,10 @@ class PFRuleCommand(DetailCommand):
         }
 
     def get_parser(self, prog_name):
+        """Create command line argument parser.
+
+        Use it to add extra options to argument parser.
+        """
         parser = super(PFRuleCommand, self).get_parser(prog_name)
         parser.add_argument(
             '-H', '--host', metavar='HOST_ID or HOST_NAME',
@@ -53,15 +60,18 @@ class PFRuleCommand(DetailCommand):
         return parser
 
     def parse_binding(self, pf_type, binding):
+        """Parse binding string to dict."""
         return self.binding_parsers[pf_type](binding)
 
     def create(self, parsed_args):
+        """Handle create new instance command."""
         if not parsed_args.host:
             raise ArgumentRequiredException('Host is required.')
 
         self.create_instance(parsed_args)
 
     def serialize_args(self, args, instance=None):
+        """Convert args to instance."""
         if instance:
             pfrule, host = instance, instance.host
         else:
@@ -78,6 +88,7 @@ class PFRuleCommand(DetailCommand):
         return pfrule
 
     def get_host(self, arg):
+        """Retrieve host from storage."""
         try:
             host_id = int(arg)
         except ValueError:
@@ -96,6 +107,7 @@ class PFRulesCommand(ListCommand):
 
     # pylint: disable=unused-argument
     def take_action(self, parsed_args):
+        """Process CLI call."""
         pf_rules = self.storage.get_all(PFRule)
         fields = PFRule.allowed_fields()
         getter = attrgetter(*fields)
@@ -103,10 +115,16 @@ class PFRulesCommand(ListCommand):
 
 
 class InvalidBinding(InvalidArgumentException):
+    """Raise it when binding can not be parsed."""
+
     pass
 
 
 class BindingParser(object):
+    """Binding string parser.
+
+    Binding string is string like '[localhost:]localport:hostanme:remote port'.
+    """
 
     local_pf_re = re.compile(
         r'^((?P<bound_address>[\w.]+):)?(?P<local_port>\d+)'
@@ -119,7 +137,7 @@ class BindingParser(object):
     )
 
     @classmethod
-    def parse(cls, regexp, binding_str):
+    def _parse(cls, regexp, binding_str):
         matched = regexp.match(binding_str)
         if not matched:
             raise InvalidBinding('Invalid binding format.')
@@ -127,9 +145,12 @@ class BindingParser(object):
 
     @classmethod
     def local(cls, binding_str):
-        return cls.parse(cls.local_pf_re, binding_str)
+        """Parse local port forwarding binding string to dict."""
+        return cls._parse(cls.local_pf_re, binding_str)
     remote = local
+    """Parse remote port forwarding binding string to dict."""
 
     @classmethod
     def dynamic(cls, binding_str):
-        return cls.parse(cls.dynamic_pf_re, binding_str)
+        """Parse dynamic port forwarding binding string to dict."""
+        return cls._parse(cls.dynamic_pf_re, binding_str)

@@ -1,6 +1,8 @@
-import six
+# -*- coding: utf-8 -*-
+"""Module for pull and push command."""
 import abc
 from base64 import b64decode
+import six
 from ...core.commands import AbstractCommand
 from ..controllers import ApiController
 from ..cryptor import RNCryptor
@@ -9,8 +11,13 @@ from ...core.storage.strategies import RelatedGetStrategy
 
 @six.add_metaclass(abc.ABCMeta)
 class CloudSynchronizationCommand(AbstractCommand):
+    """Base class for pull and push commands."""
 
     def get_parser(self, prog_name):
+        """Create command line argument parser.
+
+        Use it to add extra options to argument parser.
+        """
         parser = super(CloudSynchronizationCommand, self).get_parser(prog_name)
         parser.add_argument(
             '-s', '--strategy', metavar='STRATEGY_NAME',
@@ -21,9 +28,11 @@ class CloudSynchronizationCommand(AbstractCommand):
 
     @abc.abstractmethod
     def process_sync(self, api_controller):
+        """Do sync staff here."""
         pass
 
     def take_action(self, parsed_args):
+        """Process CLI call."""
         encryption_salt = b64decode(self.config.get('User', 'salt'))
         hmac_salt = b64decode(self.config.get('User', 'hmac_salt'))
         password = parsed_args.get('password', None)
@@ -44,6 +53,7 @@ class PushCommand(CloudSynchronizationCommand):
     get_strategy = RelatedGetStrategy
 
     def process_sync(self, api_controller):
+        """Push outdated local instances."""
         api_controller.post_bulk()
         self.log.info('Push data to Serverauditor cloud.')
 
@@ -52,5 +62,6 @@ class PullCommand(CloudSynchronizationCommand):
     """Pull data from Serverauditor cloud."""
 
     def process_sync(self, api_controller):
+        """Pull updated remote instances."""
         api_controller.get_bulk()
         self.log.info('Pull data from Serverauditor cloud.')

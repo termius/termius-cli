@@ -8,6 +8,10 @@ ignore-paths:
   - setup.py
   - build
   - serverauditor_sshconfig/core/ssh_config.py  # it's too complex
+  - serverauditor_sshconfig/core/cryptor.py  # it's too complex
+
+  # TODO Remove this file in production
+  - serverauditor_sshconfig/sync/services/aws.py
 
 pep257:
   disable:

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+"""Module with Snippet commands."""
 from operator import attrgetter
 from ...core.commands import ListCommand, DetailCommand
 from ...core.exceptions import ArgumentRequiredException
@@ -11,6 +13,10 @@ class SnippetCommand(DetailCommand):
     model_class = Snippet
 
     def get_parser(self, prog_name):
+        """Create command line argument parser.
+
+        Use it to add extra options to argument parser.
+        """
         parser = super(SnippetCommand, self).get_parser(prog_name)
         parser.add_argument(
             '-s', '--script', metavar='SCRIPT',
@@ -23,6 +29,7 @@ class SnippetCommand(DetailCommand):
         return parser
 
     def create(self, parsed_args):
+        """Handle create new instance command."""
         if not parsed_args.script:
             raise ArgumentRequiredException('Script is required')
 
@@ -30,6 +37,7 @@ class SnippetCommand(DetailCommand):
 
     # pylint: disable=no-self-use
     def serialize_args(self, args, instance=None):
+        """Convert args to instance."""
         if instance:
             snippet = instance
         else:
@@ -45,6 +53,7 @@ class SnippetsCommand(ListCommand):
 
     # pylint: disable=unused-argument
     def take_action(self, parsed_args):
+        """Process CLI call."""
         groups = self.storage.get_all(Snippet)
         fields = Snippet.allowed_fields()
         getter = attrgetter(*fields)
