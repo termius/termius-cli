@@ -20,6 +20,7 @@ from .storage.strategies import (
 
 
 class PasswordPromptMixin(object):
+    # pylint: disable=no-self-use
     def prompt_password(self):
         return getpass.getpass("Serverauditor's password:")
 
@@ -153,6 +154,7 @@ class DetailCommand(AbstractCommand):
             raise DoesNotExistException("There aren't any instance.")
         return instances
 
+    # pylint: disable=no-self-use
     def parse_ids_names(self, ids__names):
         ids = [int(i) for i in ids__names if i.isdigit()]
         return ids, ids__names

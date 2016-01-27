@@ -7,6 +7,7 @@ class CryptoController(object):
     def __init__(self, cryptor):
         self.cryptor = cryptor
 
+    # pylint: disable=no-self-use
     def _mutate_fields(self, model, mutator):
         for i in model.crypto_fields:
             crypto_field = getattr(model, i)

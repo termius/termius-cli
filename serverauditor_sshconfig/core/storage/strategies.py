@@ -11,6 +11,7 @@ class Strategy(object):
 
 class SaveStrategy(Strategy):
 
+    # pylint: disable=no-self-use
     def save_submodel(self, submodel, mapping):
         if isinstance(submodel, six.integer_types):
             return submodel

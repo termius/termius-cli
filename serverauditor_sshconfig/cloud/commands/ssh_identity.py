@@ -40,6 +40,7 @@ class SshIdentityCommand(DetailCommand):
     def create(self, parsed_args):
         self.create_instance(parsed_args)
 
+    # pylint: disable=no-self-use
     def serialize_args(self, args, instance=None):
         if instance:
             identity = instance

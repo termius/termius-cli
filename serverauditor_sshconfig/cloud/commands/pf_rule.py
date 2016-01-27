@@ -15,6 +15,7 @@ class PFRuleCommand(DetailCommand):
     model_class = PFRule
 
     @property
+    # pylint: disable=no-self-use
     def binding_parsers(self):
         return {
             'D': BindingParser.dynamic,

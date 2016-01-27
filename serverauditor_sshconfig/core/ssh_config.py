@@ -25,6 +25,7 @@ class SSHConfig(object):
     def __init__(self):
         self._config = [{'host': ['*']}]
 
+    # pylint: disable=no-self-use
     def _is_file_ok(self, path):
         """Check that file exists, and user have permissions for read it.
 
@@ -165,13 +166,13 @@ class SSHConfig(object):
 
         matches = [h for h in self._config if is_match(h['host'])]
         settings = {'host': host}
-        for m in matches:
-            for k, v in m.items():
-                if k not in settings:
-                    if isinstance(v, list):
-                        settings[k] = v[:]
+        for match in matches:
+            for key, value in match.items():
+                if key not in settings:
+                    if isinstance(value, list):
+                        settings[key] = value[:]
                     else:
-                        settings[k] = v
+                        settings[key] = value
 
         if substitute:
             self._substitute_variables(settings)

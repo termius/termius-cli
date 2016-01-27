@@ -1,6 +1,7 @@
 
 class SshConfigArgs(object):
 
+    # pylint: disable=no-self-use
     def add_agrs(self, parser):
         parser.add_argument(
             '-p', '--port',

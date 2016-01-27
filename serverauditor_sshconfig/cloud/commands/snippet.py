@@ -28,6 +28,7 @@ class SnippetCommand(DetailCommand):
 
         self.create_instance(parsed_args)
 
+    # pylint: disable=no-self-use
     def serialize_args(self, args, instance=None):
         if instance:
             snippet = instance

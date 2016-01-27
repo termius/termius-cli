@@ -15,6 +15,7 @@ class BaseAccountCommand(AbstractCommand):
 class LoginCommand(BaseAccountCommand):
     """Sign into serverauditor cloud."""
 
+    # pylint: disable=no-self-use
     def prompt_username(self):
         return six.moves.input("Serverauditor's username: ")
 
