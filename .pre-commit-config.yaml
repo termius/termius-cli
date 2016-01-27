@@ -1,0 +1,20 @@
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  sha: 64943e86417774b9d6ba63c74e00f8cc3e2119e0
+  hooks:
+    - id: check-ast
+    - id: check-added-large-files
+    - id: check-case-conflict
+    - id: check-docstring-first
+    - id: check-merge-conflict
+    - id: check-yaml
+    - id: debug-statements
+    - id: detect-private-key
+    - id: double-quote-string-fixer
+    - id: fix-encoding-pragma
+    - id: trailing-whitespace
+    - id: name-tests-test
+
+- repo: https://github.com/guykisel/prospector-mirror
+  sha: 00fbd80101566b1b9c873c71f2ab7b95b8bd0a7d
+  hooks:
+    - id: prospector
