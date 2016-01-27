@@ -16,5 +16,7 @@ class TagsCommand(ListCommand):
         )
         return parser
 
+    # pylint: disable=unused-argument
     def take_action(self, parsed_args):
         self.log.info('Tag objects.')
+        assert False, 'Not implemented'

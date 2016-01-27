@@ -19,6 +19,7 @@ from .storage.strategies import (
 )
 
 
+# pylint: disable=too-few-public-methods
 class PasswordPromptMixin(object):
     # pylint: disable=no-self-use
     def prompt_password(self):
@@ -177,6 +178,7 @@ class DetailCommand(AbstractCommand):
             self.log_delete(instance)
 
 
+# pylint: disable=too-few-public-methods
 class ListCommand(object, Lister):
 
     log = logging.getLogger(__name__)
@@ -188,10 +190,5 @@ class ListCommand(object, Lister):
 
     def get_parser(self, prog_name):
         parser = super(ListCommand, self).get_parser(prog_name)
-        parser.add_argument(
-            '-l', '--list', action='store_true',
-            help=('List hosts in current group with id, name, group in path '
-                  'format, tags, username, address and port.')
-        )
         parser.add_argument('--log-file', help="Path to log file.")
         return parser

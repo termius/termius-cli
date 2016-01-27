@@ -11,7 +11,7 @@ class Strategy(object):
 
 class SaveStrategy(Strategy):
 
-    # pylint: disable=no-self-use
+    # pylint: disable=no-self-use,unused-argument
     def save_submodel(self, submodel, mapping):
         if isinstance(submodel, six.integer_types):
             return submodel
@@ -60,6 +60,7 @@ class RelatedGetStrategy(GetStrategy):
 
 class DeleteStrategy(Strategy):
 
+    # pylint: disable=no-self-use
     def get_delete_sets(self):
         return {}
 

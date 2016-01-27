@@ -94,6 +94,7 @@ class PFRuleCommand(DetailCommand):
 class PFRulesCommand(ListCommand):
     """Manage port forwarding rule objects."""
 
+    # pylint: disable=unused-argument
     def take_action(self, parsed_args):
         pf_rules = self.storage.get_all(PFRule)
         fields = PFRule.allowed_fields()

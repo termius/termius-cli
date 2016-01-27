@@ -129,6 +129,6 @@ class PersistentDict(OrderedDict):
         for loader in DRIVERS.values():
             try:
                 return self.update(loader.load(fileobj))
-            except Exception:
-                pass
+            except Exception:  # pylint: disable=broad-except
+                continue
         raise ValueError('File not in a supported format')

@@ -1,6 +1,7 @@
 from . import operators
 
 
+# pylint: disable=too-few-public-methods
 class QueryOperator(object):
 
     operators = ['eq', 'ne', 'gt', 'lt', 'le', 'ge', 'rcontains', 'contains']
@@ -25,6 +26,7 @@ class QueryOperator(object):
         return self.operator(field, self.value)
 
 
+# pylint: disable=too-few-public-methods
 class Query(object):
 
     def __init__(self, union=None, **kwargs):

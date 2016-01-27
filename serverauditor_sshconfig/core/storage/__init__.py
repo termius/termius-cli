@@ -1,3 +1,4 @@
+from collections import namedtuple
 from .idgenerators import UUIDGenerator
 from .driver import PersistentDict
 from ..utils import expand_and_format_path
@@ -6,6 +7,7 @@ from .strategies import SaveStrategy, GetStrategy, DeleteStrategy
 from .query import Query
 
 
+# pylint: disable=too-few-public-methods
 class InternalModelContructor(object):
 
     def __init__(self, strategy):
@@ -15,11 +17,15 @@ class InternalModelContructor(object):
         return model_class(raw_data)
 
 
+# pylint: disable=too-few-public-methods
 class ModelContructor(InternalModelContructor):
 
     def __call__(self, raw_data, model_class):
         model = super(ModelContructor, self).__call__(raw_data, model_class)
         return self.strategy.get(model)
+
+
+Strategies = namedtuple('Strategies', ('getter', 'saver', 'deleter'))
 
 
 class ApplicationStorage(object):
@@ -35,15 +41,16 @@ class ApplicationStorage(object):
         self.driver = PersistentDict(self._path)
         self.id_generator = UUIDGenerator(self)
 
-        self.save_strategy = self.make_strategy(save_strategy, SaveStrategy)
-        self.get_strategy = self.make_strategy(get_strategy, GetStrategy)
-        self.delete_strategy = self.make_strategy(delete_strategy,
-                                                  DeleteStrategy)
+        self.strategies = Strategies(
+            self.make_strategy(get_strategy, GetStrategy),
+            self.make_strategy(save_strategy, SaveStrategy),
+            self.make_strategy(delete_strategy, DeleteStrategy)
+        )
 
         self.internal_model_constructor = InternalModelContructor(
-            self.get_strategy)
+            self.strategies.getter)
         self.model_constructor = ModelContructor(
-            self.get_strategy)
+            self.strategies.getter)
 
     def make_strategy(self, strategy_class, default):
         strategy_class = strategy_class or default
@@ -64,7 +71,7 @@ class ApplicationStorage(object):
         Will return model with id and saved mapped fields Model
         instances with ids.
         """
-        model = self.save_strategy.save(model)
+        model = self.strategy.saver.save(model)
         if getattr(model, model.id_name):
             saved_model = self.update(model)
         else:
@@ -86,11 +93,11 @@ class ApplicationStorage(object):
 
     def delete(self, model):
         self._internal_delete(model)
-        self.delete_strategy.delete(model)
+        self.strategies.deleter.delete(model)
 
     def confirm_delete(self, deleted_sets):
         # FIXME It needs more suitable name
-        self.delete_strategy.confirm_delete(deleted_sets)
+        self.strategies.deleter.confirm_delete(deleted_sets)
 
     def get(self, model_class, query_union=None, **kwargs):
         founded_models = self.filter(model_class, query_union, **kwargs)

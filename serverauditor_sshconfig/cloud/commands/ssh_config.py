@@ -1,3 +1,5 @@
+from ..models import SshConfig, SshIdentity
+
 
 class SshConfigArgs(object):
 
@@ -43,3 +45,23 @@ class SshConfigArgs(object):
             help='Create and assign automatically snippet.'
         )
         return parser
+
+    def serialize_args(self, args, instance):
+        if instance:
+            ssh_identity = (
+                instance.ssh_identity
+            ) or SshIdentity()
+            ssh_config = instance or SshConfig()
+        else:
+            ssh_config, ssh_identity = SshConfig(), SshIdentity()
+
+        if args.generate_key:
+            raise NotImplementedError('Not implemented')
+
+        if args.ssh_identity:
+            raise NotImplementedError('Not implemented')
+
+        ssh_identity.username = args.username
+        ssh_identity.password = args.password
+        ssh_config.port = args.port
+        return ssh_config

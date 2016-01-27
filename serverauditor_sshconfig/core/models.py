@@ -47,6 +47,7 @@ class AbstractModel(dict):
         newone.update(self)
         return newone
 
+    # pylint: disable=unused-argument
     def __deepcopy__(self, requesteddeepcopy):
         return type(self)(copy.deepcopy(super(AbstractModel, self)))
 
@@ -69,12 +70,15 @@ class Model(AbstractModel):
     }
 
     def __init__(self, *args, **kwargs):
+        # The simplest way to make lint not raise
+        #   access-member-before-definition
+        self.remote_instance = None
         super(Model, self).__init__(*args, **kwargs)
-        is_need_to_patch_remote_instance = (
+        is_need_to_patch_remote = (
             self.remote_instance and
             not isinstance(self.remote_instance, RemoteInstance)
         )
-        if is_need_to_patch_remote_instance:
+        if is_need_to_patch_remote:
             self.remote_instance = RemoteInstance(self.remote_instance)
 
     @classmethod

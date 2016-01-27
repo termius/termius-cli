@@ -35,6 +35,7 @@ class InfoCommand(AbstractCommand):
         parser.add_argument('id_or_name', metavar='ID or NAME')
         return parser
 
+    # pylint: disable=unused-argument
     def take_action(self, parsed_args):
         self.log.info('Info about group or host.')
         assert False, 'Not implemented'

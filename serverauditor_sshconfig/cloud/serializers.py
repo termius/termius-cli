@@ -207,7 +207,7 @@ class BulkSerializer(GetPrimaryKeySerializerMixin, Serializer):
                 try:
                     deleted_set.append(serializer.to_model(i))
                 except DoesNotExistException:
-                    pass
+                    continue
             models['deleted_sets'][set_name] = deleted_set
 
             self.process_model_entries(

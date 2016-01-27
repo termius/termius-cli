@@ -64,6 +64,7 @@ class SshIdentityCommand(DetailCommand):
 class SshIdentitiesCommand(ListCommand):
     """Manage ssh identity objects."""
 
+    # pylint: disable=unused-argument
     def take_action(self, parsed_args):
         ssh_identities = self.storage.get_all(SshIdentity)
         fields = SshIdentity.allowed_fields()

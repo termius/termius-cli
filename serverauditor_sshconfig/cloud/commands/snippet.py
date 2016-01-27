@@ -43,6 +43,7 @@ class SnippetCommand(DetailCommand):
 class SnippetsCommand(ListCommand):
     """Manage snippet objects."""
 
+    # pylint: disable=unused-argument
     def take_action(self, parsed_args):
         groups = self.storage.get_all(Snippet)
         fields = Snippet.allowed_fields()

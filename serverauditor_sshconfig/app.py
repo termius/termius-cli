@@ -8,6 +8,7 @@ from cliff.commandmanager import CommandManager
 from . import get_version
 
 
+# pylint: disable=too-few-public-methods
 class ServerauditorApp(object, App):
 
     def __init__(self):

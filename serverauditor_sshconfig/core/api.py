@@ -7,6 +7,7 @@ import requests
 from requests.auth import AuthBase
 
 
+# pylint: disable=too-few-public-methods
 class ServerauditorAuth(AuthBase):
 
     header_name = 'Authorization'

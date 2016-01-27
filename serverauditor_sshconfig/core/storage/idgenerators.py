@@ -1,6 +1,7 @@
 from uuid import uuid4
 
 
+# pylint: disable=too-few-public-methods
 class UUIDGenerator(object):
 
     def __init__(self, storage):
@@ -8,6 +9,7 @@ class UUIDGenerator(object):
 
         :param ApplicationStorage storage: Storage instance
         """
+        self.storage = storage
 
     def __call__(self, model):
         """Generate id.
