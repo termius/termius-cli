@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Module for single entry transformers."""
 from collections import defaultdict
 from operator import attrgetter
 from ....core.models import RemoteInstance
@@ -8,6 +9,7 @@ from .utils import id_getter, map_zip_model_fields
 
 
 def id_getter_wrapper():
+    """Generate id getter."""
     return id_getter
 
 
@@ -127,7 +129,7 @@ class BulkEntrySerializer(GetPrimaryKeySerializerMixin,
         try:
             model = self.get_model(payload)
         except DoesNotExistException:
-            model = self.initialize_model(payload)
+            model = self.initialize_model()
 
         model.id = payload.get('local_id', model.id)
         return model
@@ -137,10 +139,11 @@ class BulkEntrySerializer(GetPrimaryKeySerializerMixin,
         return super(BulkEntrySerializer, self).to_model(payload)
 
     def render_relation_field(self, mapping, value):
+        """Convert relation mapping and value to whole model."""
         serializer = self.get_primary_key_serializer(mapping.model)
         return serializer.to_model(value)
 
-    def initialize_model(self, payload):
+    def initialize_model(self):
         """Generate new model using payload."""
         model = self.model_class()
         return model

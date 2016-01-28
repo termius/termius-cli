@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 """Module for Application storage."""
+import logging
 from collections import namedtuple
 from .idgenerators import UUIDGenerator
 from .driver import PersistentDict
 from ..utils import expand_and_format_path
 from ..exceptions import DoesNotExistException, TooManyEntriesException
-from .strategies import SaveStrategy, GetStrategy, DeleteStrategy
+from .strategies import SaveStrategy, GetStrategy, SoftDeleteStrategy
 from .query import Query
 
 
@@ -43,6 +44,7 @@ class ApplicationStorage(object):
 
     path = '~/.{application_name}.storage'
     defaultstorage = list
+    logger = logging.getLogger(__name__)
 
     def __init__(self, application_name, save_strategy=None,
                  get_strategy=None, delete_strategy=None, **kwargs):
@@ -56,7 +58,7 @@ class ApplicationStorage(object):
         self.strategies = Strategies(
             self.make_strategy(get_strategy, GetStrategy),
             self.make_strategy(save_strategy, SaveStrategy),
-            self.make_strategy(delete_strategy, DeleteStrategy)
+            self.make_strategy(delete_strategy, SoftDeleteStrategy)
         )
 
         self.internal_model_constructor = InternalModelContructor(
@@ -107,7 +109,7 @@ class ApplicationStorage(object):
 
     def confirm_delete(self, deleted_sets):
         """Remove intersection with deleted_sets from storage."""
-        self.strategies.deleter.confirm_delete(deleted_sets)
+        self.strategies.deleter.remove_intersection(deleted_sets)
 
     def get(self, model_class, query_union=None, **kwargs):
         """Get single model with passed lookups.

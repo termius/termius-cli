@@ -6,7 +6,7 @@ import six
 from ...core.commands import AbstractCommand
 from ..client.controllers import ApiController
 from ..client.cryptor import RNCryptor
-from ...core.storage.strategies import RelatedGetStrategy
+from ...core.storage.strategies import RelatedGetStrategy, SyncSaveStrategy
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -51,6 +51,7 @@ class PushCommand(CloudSynchronizationCommand):
     """Push data to Serverauditor cloud."""
 
     get_strategy = RelatedGetStrategy
+    save_strategy = SyncSaveStrategy
 
     def process_sync(self, api_controller):
         """Push outdated local instances."""
@@ -60,6 +61,8 @@ class PushCommand(CloudSynchronizationCommand):
 
 class PullCommand(CloudSynchronizationCommand):
     """Pull data from Serverauditor cloud."""
+
+    save_strategy = SyncSaveStrategy
 
     def process_sync(self, api_controller):
         """Pull updated remote instances."""

@@ -61,7 +61,8 @@ class RelatedSaveStrategy(SaveStrategy):
         """Do not save any, barely return relation id."""
         return self.storage.save(submodel).id
 
-class SaveStrategy(SaveStrategy):
+
+class SyncSaveStrategy(SaveStrategy):
     """Saver strategy for synced models."""
 
     def mark_model(self, model):
@@ -107,7 +108,7 @@ class DeleteStrategy(Strategy):
         """Return what it gets."""
         return model
 
-    def confirm_delete(self, deleted_sets):
+    def remove_intersection(self, deleted_sets):
         """Confirm delete (Need to create more suitable description)."""
         pass
 
@@ -144,6 +145,5 @@ class SoftDeleteStrategy(DeleteStrategy):
         """Remove from deleted_sets intersection with sets passed."""
         delete_sets = self.get_delete_sets()
         for set_name, id_list in sets.items():
-            for i in id_list:
-                delete_sets.remove(set_name, i)
+            delete_sets.remove_all(set_name, id_list)
         self.set_delete_sets(delete_sets)

@@ -71,7 +71,6 @@ class ApiController(object):
 
         payload = serializer.to_payload(request_model)
         response = self.api.post(mapped['url'], payload)
-
         response_model = serializer.to_model(response)
         return response_model
 

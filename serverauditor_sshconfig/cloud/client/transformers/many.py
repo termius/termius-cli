@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Module with many then 1 entry transformers."""
 from collections import OrderedDict
 from ....core.exceptions import DoesNotExistException
 from ....core.storage.strategies import SoftDeleteStrategy
@@ -58,7 +59,7 @@ class BulkSerializer(GetPrimaryKeySerializerMixin, Serializer):
             self.process_model_entries(
                 models[set_name], models['deleted_sets'][set_name]
             )
-        self.storage.confirm_delete(models['deleted_sets'])
+        self.storage.confirm_delete(deleted_sets)
         return models
 
     def to_payload(self, model):
