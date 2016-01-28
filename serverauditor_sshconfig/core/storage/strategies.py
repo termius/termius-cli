@@ -34,6 +34,10 @@ class SaveStrategy(Strategy):
         """
         return field and self.save_submodel(field, mapping)
 
+    def mark_model(self, model):
+        """Change model state before saving."""
+        model.mark_updated()
+
     def save(self, model):
         """Do extra action when model saved.
 
@@ -56,6 +60,13 @@ class RelatedSaveStrategy(SaveStrategy):
     def save_submodel(self, submodel, mapping):
         """Do not save any, barely return relation id."""
         return self.storage.save(submodel).id
+
+class SaveStrategy(SaveStrategy):
+    """Saver strategy for synced models."""
+
+    def mark_model(self, model):
+        """Change model state before saving."""
+        model.mark_synced()
 
 
 class GetStrategy(Strategy):

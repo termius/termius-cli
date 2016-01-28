@@ -68,9 +68,13 @@ class RemoteInstance(AbstractModel):
     fields = {
         'id': Field(int, False, None),
         # States could be one of 'created' / 'updated' / 'synced'
-        'state': Field(str, False, 'created'),
+        'state': Field(str, False, 'synced'),
         'updated_at': Field(str, False, None),
     }
+
+    def init_from_payload(self, response_payload):
+        for i, field in self.fields.items():
+            setattr(self, i, response_payload.pop(i, field.default))
 
 
 class Model(AbstractModel):

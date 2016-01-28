@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Module for sync api controller."""
-from .serializers import BulkSerializer
-from ..core.api import API
+from .transformers.many import BulkSerializer
+from ...core.api import API
 
 
 class CryptoController(object):

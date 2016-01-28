@@ -4,8 +4,8 @@ import abc
 from base64 import b64decode
 import six
 from ...core.commands import AbstractCommand
-from ..controllers import ApiController
-from ..cryptor import RNCryptor
+from ..client.controllers import ApiController
+from ..client.cryptor import RNCryptor
 from ...core.storage.strategies import RelatedGetStrategy
 
 
@@ -35,7 +35,7 @@ class CloudSynchronizationCommand(AbstractCommand):
         """Process CLI call."""
         encryption_salt = b64decode(self.config.get('User', 'salt'))
         hmac_salt = b64decode(self.config.get('User', 'hmac_salt'))
-        password = parsed_args.get('password', None)
+        password = parsed_args.password
         if password is None:
             password = self.prompt_password()
         cryptor = RNCryptor()

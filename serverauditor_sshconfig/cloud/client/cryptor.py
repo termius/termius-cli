@@ -10,7 +10,7 @@ from Crypto.Cipher import AES
 from Crypto.Protocol import KDF
 from Crypto import Random
 
-from ..core.utils import bchr, bord, to_bytes, to_str
+from ...core.utils import bchr, bord, to_bytes, to_str
 
 
 class CryptoSettings(object):

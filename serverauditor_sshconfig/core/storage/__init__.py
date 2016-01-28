@@ -97,7 +97,7 @@ class ApplicationStorage(object):
         assert identificator
 
         self._internal_delete(model)
-        model.mark_updated()
+        self.strategies.saver.mark_model(model)
         return self._internal_update(model)
 
     def delete(self, model):
