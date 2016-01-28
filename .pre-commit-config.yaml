@@ -14,7 +14,7 @@
     - id: trailing-whitespace
     - id: name-tests-test
 
-- repo: https://github.com/guykisel/prospector-mirror
-  sha: 00fbd80101566b1b9c873c71f2ab7b95b8bd0a7d
+- repo: https://github.com/pre-commit/pre-commit
+  sha: cdf726bbedb15f33ca60fdc397fec379946755fc
   hooks:
-    - id: prospector
+    - id: validate_config

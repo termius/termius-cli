@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from mock import patch, Mock
 from unittest import TestCase
 from serverauditor_sshconfig.core.storage.query import Query

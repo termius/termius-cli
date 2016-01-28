@@ -91,7 +91,7 @@ class RNCryptor(CryptoSettings):
     def pre_decrypt_data(self, data):
         """Patch ciphertext."""
         data = to_bytes(data)
-        return base64.decodestring(data)
+        return base64.b64decode(data)
 
     # pylint: disable=no-self-use
     def post_decrypt_data(self, data):
@@ -142,7 +142,7 @@ class RNCryptor(CryptoSettings):
     # pylint: disable=no-self-use
     def post_encrypt_data(self, data):
         """Patch ciphertext."""
-        data = base64.encodestring(data)
+        data = base64.b64encode(data)
         return to_str(data)
 
     def encrypt(self, data):

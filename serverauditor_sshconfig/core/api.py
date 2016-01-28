@@ -30,16 +30,6 @@ class ServerauditorAuth(AuthBase):
         request.headers[self.header_name] = self.auth_header
         return request
 
-    def __str__(self):
-        """Convert it to string."""
-        return unicode(self).encode('utf-8')
-
-    def __unicode__(self):
-        """Convert it to string."""
-        return '{key}: {value}'.format(
-            key=self.header_name, value=self.auth_header
-        )
-
 
 def hash_password(password):
     """Generate hash from password."""

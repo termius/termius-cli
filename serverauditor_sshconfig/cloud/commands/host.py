@@ -15,7 +15,7 @@ class HostCommand(DetailCommand):
 
     def __init__(self, *args, **kwargs):
         """Construct new host command."""
-        super(HostCommand, self).__init__(self, *args, **kwargs)
+        super(HostCommand, self).__init__(*args, **kwargs)
         self.ssh_config_args = SshConfigArgs()
 
     def get_parser(self, prog_name):

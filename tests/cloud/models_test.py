@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import six
 from collections import OrderedDict
 from mock import patch, Mock

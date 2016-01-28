@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 import tempfile
+from six import integer_types
 from mock import patch
 from unittest import TestCase
 from serverauditor_sshconfig.cloud.models import (
@@ -60,20 +62,20 @@ class IDStrategyCase(StrategyCase):
 
         saved_sshidentity = self.storage.save(self.sshidentity)
         self.assertIsNotNone(saved_sshidentity.id)
-        self.assertIsInstance(saved_sshidentity.ssh_key, long)
+        self.assertIsInstance(saved_sshidentity.ssh_key, integer_types)
         self.sshconfig.ssh_identity = saved_sshidentity.id
 
         saved_sshconfig = self.storage.save(self.sshconfig)
         self.assertIsNotNone(saved_sshconfig.id)
-        self.assertIsInstance(saved_sshconfig.ssh_identity, long)
+        self.assertIsInstance(saved_sshconfig.ssh_identity, integer_types)
         self.host.ssh_config = saved_sshconfig.id
         saved_group = self.storage.save(self.group)
         self.assertIsNotNone(saved_group.id)
         self.host.group = saved_group.id
 
         saved_host = self.storage.save(self.host)
-        self.assertIsInstance(saved_host.ssh_config, long)
-        self.assertIsInstance(saved_host.group, long)
+        self.assertIsInstance(saved_host.ssh_config, integer_types)
+        self.assertIsInstance(saved_host.group, integer_types)
         self.assertIsNotNone(saved_host.id)
 
     def test_get_strategy(self):
@@ -193,8 +195,8 @@ class RelatedStrategyCase(StrategyCase):
         saved_host = self.storage.save(self.host)
 
         self.assertIsNotNone(saved_host.id)
-        self.assertIsInstance(saved_host.ssh_config, long)
-        self.assertIsInstance(saved_host.group, long)
+        self.assertIsInstance(saved_host.ssh_config, integer_types)
+        self.assertIsInstance(saved_host.group, integer_types)
 
         saved_group = self.storage.get(Group, id=saved_host.group)
         self.assertIsNotNone(saved_group.id)
@@ -202,14 +204,14 @@ class RelatedStrategyCase(StrategyCase):
         saved_sshconfig = self.storage.get(SshConfig, id=saved_host.ssh_config)
         self.assertIsNotNone(saved_sshconfig.id)
         self.assertIsInstance(saved_sshconfig.ssh_identity, SshIdentity)
-        self.assertIsInstance(saved_sshconfig.ssh_identity.id, long)
+        self.assertIsInstance(saved_sshconfig.ssh_identity.id, integer_types)
 
         saved_sshidentity = self.storage.get(
             SshIdentity, id=saved_sshconfig.ssh_identity.id
         )
         self.assertIsNotNone(saved_sshidentity.id)
         self.assertIsInstance(saved_sshidentity.ssh_key, SshKey)
-        self.assertIsInstance(saved_sshidentity.ssh_key.id, long)
+        self.assertIsInstance(saved_sshidentity.ssh_key.id, integer_types)
 
         saved_sshkey = self.storage.get(
             SshKey, id=saved_sshidentity.ssh_key.id
@@ -234,21 +236,21 @@ class RelatedStrategyCase(StrategyCase):
         self.assertEqual(got_host.label, self.host.label)
 
         self.assertIsInstance(got_host.group, Group)
-        self.assertIsInstance(got_host.group.id, long)
+        self.assertIsInstance(got_host.group.id, integer_types)
         self.assertEqual(got_host.group.label, self.group.label)
 
         self.assertIsInstance(got_host.ssh_config, SshConfig)
-        self.assertIsInstance(got_host.ssh_config.id, long)
+        self.assertIsInstance(got_host.ssh_config.id, integer_types)
         self.assertEqual(got_host.ssh_config.port, self.sshconfig.port)
 
         self.assertIsInstance(got_host.ssh_config.ssh_identity, SshIdentity)
-        self.assertIsInstance(got_host.ssh_config.ssh_identity.id, long)
+        self.assertIsInstance(got_host.ssh_config.ssh_identity.id, integer_types)
         self.assertEqual(got_host.ssh_config.ssh_identity.label,
                          self.sshidentity.label)
 
         self.assertIsInstance(got_host.ssh_config.ssh_identity.ssh_key, SshKey)
         self.assertIsInstance(got_host.ssh_config.ssh_identity.ssh_key.id,
-                              long)
+                              integer_types)
         self.assertEqual(got_host.ssh_config.ssh_identity.ssh_key.label,
                          self.sshkey.label)
 
@@ -265,12 +267,12 @@ class RelatedStrategyCase(StrategyCase):
         self.assertEqual(got_sshconfig.port, self.sshconfig.port)
 
         self.assertIsInstance(got_sshconfig.ssh_identity, SshIdentity)
-        self.assertIsInstance(got_sshconfig.ssh_identity.id, long)
+        self.assertIsInstance(got_sshconfig.ssh_identity.id, integer_types)
         self.assertEqual(got_sshconfig.ssh_identity.label,
                          self.sshidentity.label)
 
         self.assertIsInstance(got_sshconfig.ssh_identity.ssh_key, SshKey)
-        self.assertIsInstance(got_sshconfig.ssh_identity.ssh_key.id, long)
+        self.assertIsInstance(got_sshconfig.ssh_identity.ssh_key.id, integer_types)
         self.assertEqual(got_sshconfig.ssh_identity.ssh_key.label,
                          self.sshkey.label)
 
@@ -282,7 +284,7 @@ class RelatedStrategyCase(StrategyCase):
         self.assertEqual(got_sshidentity.label, self.sshidentity.label)
 
         self.assertIsInstance(got_sshidentity.ssh_key, SshKey)
-        self.assertIsInstance(got_sshidentity.ssh_key.id, long)
+        self.assertIsInstance(got_sshidentity.ssh_key.id, integer_types)
         self.assertEqual(got_sshidentity.ssh_key.label, self.sshkey.label)
 
         got_sshkey = self.storage.get(
@@ -312,21 +314,21 @@ class RelatedStrategyCase(StrategyCase):
         self.assertEqual(got_host.label, self.host.label)
 
         self.assertIsInstance(got_host.group, Group)
-        self.assertIsInstance(got_host.group.id, long)
+        self.assertIsInstance(got_host.group.id, integer_types)
         self.assertEqual(got_host.group.label, self.group.label)
 
         self.assertIsInstance(got_host.ssh_config, SshConfig)
-        self.assertIsInstance(got_host.ssh_config.id, long)
+        self.assertIsInstance(got_host.ssh_config.id, integer_types)
         self.assertEqual(got_host.ssh_config.port, self.sshconfig.port)
 
         self.assertIsInstance(got_host.ssh_config.ssh_identity, SshIdentity)
-        self.assertIsInstance(got_host.ssh_config.ssh_identity.id, long)
+        self.assertIsInstance(got_host.ssh_config.ssh_identity.id, integer_types)
         self.assertEqual(got_host.ssh_config.ssh_identity.label,
                          self.sshidentity.label)
 
         self.assertIsInstance(got_host.ssh_config.ssh_identity.ssh_key, SshKey)
         self.assertIsInstance(got_host.ssh_config.ssh_identity.ssh_key.id,
-                              long)
+                              integer_types)
         self.assertEqual(got_host.ssh_config.ssh_identity.ssh_key.label,
                          self.sshkey.label)
 
@@ -345,12 +347,12 @@ class RelatedStrategyCase(StrategyCase):
         self.assertEqual(got_sshconfig.port, self.sshconfig.port)
 
         self.assertIsInstance(got_sshconfig.ssh_identity, SshIdentity)
-        self.assertIsInstance(got_sshconfig.ssh_identity.id, long)
+        self.assertIsInstance(got_sshconfig.ssh_identity.id, integer_types)
         self.assertEqual(got_sshconfig.ssh_identity.label,
                          self.sshidentity.label)
 
         self.assertIsInstance(got_sshconfig.ssh_identity.ssh_key, SshKey)
-        self.assertIsInstance(got_sshconfig.ssh_identity.ssh_key.id, long)
+        self.assertIsInstance(got_sshconfig.ssh_identity.ssh_key.id, integer_types)
         self.assertEqual(got_sshconfig.ssh_identity.ssh_key.label,
                          self.sshkey.label)
 
@@ -362,7 +364,7 @@ class RelatedStrategyCase(StrategyCase):
         self.assertEqual(got_sshidentity.label, self.sshidentity.label)
 
         self.assertIsInstance(got_sshidentity.ssh_key, SshKey)
-        self.assertIsInstance(got_sshidentity.ssh_key.id, long)
+        self.assertIsInstance(got_sshidentity.ssh_key.id, integer_types)
         self.assertEqual(got_sshidentity.ssh_key.label, self.sshkey.label)
 
         got_sshkies = self.storage.get_all(SshKey)

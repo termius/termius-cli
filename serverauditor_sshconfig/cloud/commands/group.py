@@ -14,7 +14,7 @@ class GroupCommand(DetailCommand):
 
     def __init__(self, *args, **kwargs):
         """Construct new group command."""
-        super(GroupCommand, self).__init__(self, *args, **kwargs)
+        super(GroupCommand, self).__init__(*args, **kwargs)
         self.ssh_config_args = SshConfigArgs()
 
     def get_parser(self, prog_name):

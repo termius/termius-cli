@@ -97,4 +97,4 @@ def lint():
 @task
 def bats():
     """Run tests on CLI usage."""
-    sh('bats tests/integration')
+    sh('bats --tap tests/integration')

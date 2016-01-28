@@ -66,7 +66,7 @@ class RemoteInstance(AbstractModel):
     """Class that represent model sync revision."""
 
     fields = {
-        'id': Field(long, False, None),
+        'id': Field(int, False, None),
         # States could be one of 'created' / 'updated' / 'synced'
         'state': Field(str, False, 'created'),
         'updated_at': Field(str, False, None),
@@ -77,7 +77,7 @@ class Model(AbstractModel):
     """Base model with relations."""
 
     _mandatory_fields = {
-        'id': Field(long, False, None),
+        'id': Field(int, False, None),
         'remote_instance': Field(RemoteInstance, False, None)
     }
 

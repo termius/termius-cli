@@ -78,7 +78,7 @@ class ApplicationStorage(object):
         Will return model with id and saved mapped fields Model
         instances with ids.
         """
-        model = self.strategy.saver.save(model)
+        model = self.strategies.saver.save(model)
         if getattr(model, model.id_name):
             saved_model = self.update(model)
         else:
