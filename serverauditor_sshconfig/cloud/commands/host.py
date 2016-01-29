@@ -66,6 +66,9 @@ class HostCommand(DetailCommand):
             host = Host()
             ssh_config = self.ssh_config_args.serialize_args(args, None)
 
+        if args.tags:
+            raise NotImplementedError()
+
         host.label = args.label
         host.address = args.address
         host.ssh_config = ssh_config
