@@ -3,7 +3,7 @@
 from operator import attrgetter
 from ...core.exceptions import ArgumentRequiredException
 from ...core.commands import DetailCommand, ListCommand
-from ..models import Host
+from ..models import Host, Group
 from .ssh_config import SshConfigArgs
 
 
@@ -67,12 +67,10 @@ class HostCommand(DetailCommand):
             host = Host()
             ssh_config = self.ssh_config_args.serialize_args(args, None)
 
-        if args.group:
-            raise NotImplementedError('Not implemented')
-
         host.label = args.label
         host.address = args.address
         host.ssh_config = ssh_config
+        host.group = self.get_relation(Group, args.group)
         return host
 
 

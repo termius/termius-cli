@@ -54,11 +54,10 @@ class GroupCommand(DetailCommand):
             group = Group()
             ssh_config = self.ssh_config_args.serialize_args(args, None)
 
-        if args.parent_group:
-            raise NotImplementedError('Not implemented')
-
         group.label = args.label
         group.ssh_config = ssh_config
+        if args.parent_group:
+            group.parent_group = self.get_relation(Group, args.parent_group)
         return group
 
 

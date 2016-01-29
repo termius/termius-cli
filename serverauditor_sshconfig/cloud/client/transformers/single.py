@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Module for single entry transformers."""
+import logging
 from collections import defaultdict
 from operator import attrgetter
 from ....core.models import RemoteInstance
@@ -27,6 +28,7 @@ class BulkEntryBaseSerializer(Serializer):
 class BulkPrimaryKeySerializer(BulkEntryBaseSerializer):
     """Serializer for primary key payloads."""
 
+    logger = logging.getLogger(__name__)
     to_model_mapping = defaultdict(id_getter_wrapper, {int: int, })
 
     def id_from_payload(self, payload):
@@ -167,10 +169,12 @@ class CryptoBulkEntrySerializer(BulkEntrySerializer):
     def to_model(self, payload):
         """Decrypt model after serialization."""
         model = super(CryptoBulkEntrySerializer, self).to_model(payload)
-        return self.crypto_controller.decrypt(model)
+        descrypted_model = self.crypto_controller.decrypt(model)
+        self.storage.save(descrypted_model)
 
     def to_payload(self, model):
         """Encrypt model before deserialization."""
         encrypted_model = self.crypto_controller.encrypt(model)
         return super(CryptoBulkEntrySerializer, self).to_payload(
-            encrypted_model)
+            encrypted_model
+        )

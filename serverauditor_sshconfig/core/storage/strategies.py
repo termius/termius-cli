@@ -90,7 +90,9 @@ class RelatedGetStrategy(GetStrategy):
             mapping = model.fields[field]
             submodel_id = getattr(result, field)
             if submodel_id:
-                submodel = self.storage.get(mapping.model, id=submodel_id)
+                submodel = self.storage.get_single_by_id(
+                    mapping.model, submodel_id
+                )
                 setattr(result, field, submodel)
         return result
 
