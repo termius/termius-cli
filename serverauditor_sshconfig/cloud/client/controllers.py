@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Module for sync api controller."""
-from .transformers.many import BulkSerializer
+from .transformers.many import BulkTransformer
 from ...core.api import API
 
 
@@ -32,7 +32,7 @@ class ApiController(object):
     """Controller to call API."""
 
     mapping = dict(
-        bulk=dict(url='v2/terminal/bulk/', serializer=BulkSerializer)
+        bulk=dict(url='v2/terminal/bulk/', transformer=BulkTransformer)
     )
 
     def __init__(self, storage, config, cryptor):
@@ -47,12 +47,12 @@ class ApiController(object):
         self.crypto_controller = CryptoController(cryptor)
 
     def _get(self, mapped):
-        serializer = mapped['serializer'](
+        transformer = mapped['transformer'](
             storage=self.storage, crypto_controller=self.crypto_controller
         )
         response = self.api.get(mapped['url'])
 
-        model = serializer.to_model(response)
+        model = transformer.to_model(response)
         return model
 
     def get_bulk(self):
@@ -65,13 +65,13 @@ class ApiController(object):
 
     def _post(self, mapped, request_model):
         request_model = request_model
-        serializer = mapped['serializer'](
+        transformer = mapped['transformer'](
             storage=self.storage, crypto_controller=self.crypto_controller
         )
 
-        payload = serializer.to_payload(request_model)
+        payload = transformer.to_payload(request_model)
         response = self.api.post(mapped['url'], payload)
-        response_model = serializer.to_model(response)
+        response_model = transformer.to_model(response)
         return response_model
 
     def post_bulk(self):

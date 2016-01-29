@@ -5,7 +5,7 @@ from collections import defaultdict
 from operator import attrgetter
 from ....core.models import RemoteInstance
 from ....core.exceptions import DoesNotExistException
-from .base import Serializer
+from .base import Transformer
 from .utils import id_getter, map_zip_model_fields
 
 
@@ -15,18 +15,18 @@ def id_getter_wrapper():
 
 
 # pylint: disable=abstract-method
-class BulkEntryBaseSerializer(Serializer):
-    """Base serializer for one model."""
+class BulkEntryBaseTransformer(Transformer):
+    """Base Transformer for one model."""
 
     def __init__(self, model_class, **kwargs):
-        """Create new entry serializer."""
-        super(BulkEntryBaseSerializer, self).__init__(**kwargs)
+        """Create new entry transformer."""
+        super(BulkEntryBaseTransformer, self).__init__(**kwargs)
         assert model_class
         self.model_class = model_class
 
 
-class BulkPrimaryKeySerializer(BulkEntryBaseSerializer):
-    """Serializer for primary key payloads."""
+class BulkPrimaryKeyTransformer(BulkEntryBaseTransformer):
+    """Transformer for primary key payloads."""
 
     logger = logging.getLogger(__name__)
     to_model_mapping = defaultdict(id_getter_wrapper, {int: int, })
@@ -58,23 +58,23 @@ class BulkPrimaryKeySerializer(BulkEntryBaseSerializer):
 
 
 # pylint: disable=too-few-public-methods
-class GetPrimaryKeySerializerMixin(object):
-    """Mixin to get primary get serializer."""
+class GetPrimaryKeyTransformerMixin(object):
+    """Mixin to get primary get Transformer."""
 
-    def get_primary_key_serializer(self, model_class):
-        """Create new primary key serializer."""
-        return BulkPrimaryKeySerializer(
+    def get_primary_key_transformer(self, model_class):
+        """Create new primary key Transformer."""
+        return BulkPrimaryKeyTransformer(
             storage=self.storage, model_class=model_class
         )
 
 
-class BulkEntrySerializer(GetPrimaryKeySerializerMixin,
-                          BulkPrimaryKeySerializer):
-    """Serializer for complete model."""
+class BulkEntryTransformer(GetPrimaryKeyTransformerMixin,
+                           BulkPrimaryKeyTransformer):
+    """Transformer for complete model."""
 
     def __init__(self, **kwargs):
-        """Create new serializer."""
-        super(BulkEntrySerializer, self).__init__(**kwargs)
+        """Create new Transformer."""
+        super(BulkEntryTransformer, self).__init__(**kwargs)
         self.attrgetter = attrgetter(*self.model_class.fields)
         self.remote_instance_attrgetter = attrgetter(*RemoteInstance.fields)
 
@@ -98,9 +98,9 @@ class BulkEntrySerializer(GetPrimaryKeySerializerMixin,
         return payload
 
     def serialize_related_field(self, model, field, mapping):
-        """Serializer relation to payload."""
-        related_serializer = self.get_primary_key_serializer(mapping.model)
-        fk_payload = related_serializer.to_payload(getattr(model, field))
+        """Transformer relation to payload."""
+        related_transformer = self.get_primary_key_transformer(mapping.model)
+        fk_payload = related_transformer.to_payload(getattr(model, field))
         return fk_payload
 
     def to_model(self, payload):
@@ -138,12 +138,12 @@ class BulkEntrySerializer(GetPrimaryKeySerializerMixin,
 
     def get_model(self, payload):
         """Get model for payload."""
-        return super(BulkEntrySerializer, self).to_model(payload)
+        return super(BulkEntryTransformer, self).to_model(payload)
 
     def render_relation_field(self, mapping, value):
         """Convert relation mapping and value to whole model."""
-        serializer = self.get_primary_key_serializer(mapping.model)
-        return serializer.to_model(value)
+        transformer = self.get_primary_key_transformer(mapping.model)
+        return transformer.to_model(value)
 
     def initialize_model(self):
         """Generate new model using payload."""
@@ -158,23 +158,23 @@ class BulkEntrySerializer(GetPrimaryKeySerializerMixin,
         return instance
 
 
-class CryptoBulkEntrySerializer(BulkEntrySerializer):
-    """Entry serializer that encrypt model and decrypt payload."""
+class CryptoBulkEntryTransformer(BulkEntryTransformer):
+    """Entry Transformer that encrypt model and decrypt payload."""
 
     def __init__(self, crypto_controller, **kwargs):
-        """Construct new crypto serializer for bulk entry."""
-        super(CryptoBulkEntrySerializer, self).__init__(**kwargs)
+        """Construct new crypto Transformer for bulk entry."""
+        super(CryptoBulkEntryTransformer, self).__init__(**kwargs)
         self.crypto_controller = crypto_controller
 
     def to_model(self, payload):
         """Decrypt model after serialization."""
-        model = super(CryptoBulkEntrySerializer, self).to_model(payload)
+        model = super(CryptoBulkEntryTransformer, self).to_model(payload)
         descrypted_model = self.crypto_controller.decrypt(model)
         self.storage.save(descrypted_model)
 
     def to_payload(self, model):
         """Encrypt model before deserialization."""
         encrypted_model = self.crypto_controller.encrypt(model)
-        return super(CryptoBulkEntrySerializer, self).to_payload(
+        return super(CryptoBulkEntryTransformer, self).to_payload(
             encrypted_model
         )

@@ -3,12 +3,12 @@
 
 
 # pylint: disable=too-few-public-methods
-class CryptoChildSerializerCreatorMixin(object):
+class CryptoChildTransformerCreatorMixin(object):
     """Add method to create new crypto controller."""
 
-    def create_child_serializer(self, model_class):
-        """Generate specific set serializer."""
-        return self.child_serializer_class(
+    def create_child_transformer(self, model_class):
+        """Generate specific set transformer."""
+        return self.child_transformer_class(
             model_class=model_class, storage=self.storage,
             crypto_controller=self.crypto_controller
         )
