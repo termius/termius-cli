@@ -5,6 +5,7 @@ from ..exceptions import (
     DoesNotExistException, ArgumentRequiredException,
     TooManyEntriesException
 )
+from .utils import parse_ids_names
 
 
 # pylint: disable=too-few-public-methods
@@ -43,6 +44,22 @@ class GetRelationMixin(object):
         raise ArgumentRequiredException(
             'Found too many {} instances.'.format(model_class)
         )
+
+
+class GetObjectsMixin(object):
+    def get_objects(self, ids__names):
+        """Get model list.
+
+        Models will match id and label with passed ids__names list.
+        """
+        ids, names = parse_ids_names(ids__names)
+        instances = self.storage.filter(
+            self.model_class, any,
+            **{'id.rcontains': ids, 'label.rcontains': names}
+        )
+        if not instances:
+            raise DoesNotExistException("There aren't any instance.")
+        return instances
 
 
 class InstanceOpertionMixin(object):

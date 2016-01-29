@@ -7,11 +7,12 @@ from ..storage.strategies import (
     RelatedSaveStrategy,
     RelatedGetStrategy,
 )
-from .mixins import GetRelationMixin, InstanceOpertionMixin
+from .mixins import GetRelationMixin, GetObjectsMixin, InstanceOpertionMixin
 from .base import AbstractCommand
 
 
-class DetailCommand(GetRelationMixin, InstanceOpertionMixin, AbstractCommand):
+class DetailCommand(GetRelationMixin, GetObjectsMixin,
+                    InstanceOpertionMixin, AbstractCommand):
     """Command for operating with models by id or names."""
 
     save_strategy = RelatedSaveStrategy
@@ -107,23 +108,3 @@ class DetailCommand(GetRelationMixin, InstanceOpertionMixin, AbstractCommand):
                 self.create(parsed_args)
             elif self.is_allow_update and parsed_args.entry:
                 self.update(parsed_args)
-
-    def get_objects(self, ids__names):
-        """Get model list.
-
-        Models will match id and label with passed ids__names list.
-        """
-        ids, names = self.parse_ids_names(ids__names)
-        instances = self.storage.filter(
-            self.model_class, any,
-            **{'id.rcontains': ids, 'label.rcontains': names}
-        )
-        if not instances:
-            raise DoesNotExistException("There aren't any instance.")
-        return instances
-
-    # pylint: disable=no-self-use
-    def parse_ids_names(self, ids__names):
-        """Parse ids__models list."""
-        ids = [int(i) for i in ids__names if i.isdigit()]
-        return ids, ids__names

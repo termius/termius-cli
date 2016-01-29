@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 """Module for tag command."""
 from ...core.commands import ListCommand
+from ...core.commands.mixins import GetObjectsMixin
+from ..models import Tag
 
 
-class TagsCommand(ListCommand):
+class TagsCommand(GetObjectsMixin, ListCommand):
     """Manage tag objects."""
+
+    model_class = Tag
 
     def get_parser(self, prog_name):
         """Create command line argument parser.
@@ -25,5 +29,5 @@ class TagsCommand(ListCommand):
     # pylint: disable=unused-argument
     def take_action(self, parsed_args):
         """Process CLI call."""
-        self.log.info('Tag objects.')
-        assert False, 'Not implemented'
+        tags = self.get_objects(parsed_args.tags)
+        return self.prepare_result(tags)
