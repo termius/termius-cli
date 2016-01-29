@@ -47,7 +47,8 @@ class AbstractCommand(PasswordPromptMixin, Command):
         self.storage = ApplicationStorage(
             self.app.NAME,
             save_strategy=self.save_strategy,
-            get_strategy=self.get_strategy
+            get_strategy=self.get_strategy,
+            delete_strategy=self.delete_strategy
         )
 
     def get_parser(self, prog_name):

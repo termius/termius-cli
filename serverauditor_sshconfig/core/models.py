@@ -68,9 +68,14 @@ class RemoteInstance(AbstractModel):
     fields = {
         'id': Field(int, False, None),
         # States could be one of 'created' / 'updated' / 'synced'
-        'state': Field(str, False, 'created'),
+        'state': Field(str, False, 'synced'),
         'updated_at': Field(str, False, None),
     }
+
+    def init_from_payload(self, response_payload):
+        """Update remote instance field with response payload ones."""
+        for i, field in self.fields.items():
+            setattr(self, i, response_payload.pop(i, field.default))
 
 
 class Model(AbstractModel):
@@ -145,7 +150,7 @@ class DeleteSets(AbstractModel):
         existed_set = set(existed)
         new_set = set_operator(existed_set)
         new = self.default_field_value(new_set)
-        setattr(self, self.set_name, new)
+        setattr(self, field, new)
 
     def store(self, model):
         """Add model id to deleted_sets."""
@@ -157,12 +162,12 @@ class DeleteSets(AbstractModel):
 
         self.update_field(model.set_name, union)
 
-    def remove(self, set_name, identity):
+    def remove_all(self, set_name, identities):
         """Remove id from deleted_sets."""
-        if not identity:
+        if not identities:
             return
 
         def intersection(existed_set):
-            return existed_set.intersection({identity})
+            return existed_set - set(identities)
 
         self.update_field(set_name, intersection)
