@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """Module with Host commands."""
-from operator import attrgetter
 from ...core.exceptions import ArgumentRequiredException
 from ...core.commands import DetailCommand, ListCommand
 from ..models import Host, Group
@@ -16,7 +15,7 @@ class HostCommand(DetailCommand):
     def __init__(self, *args, **kwargs):
         """Construct new host command."""
         super(HostCommand, self).__init__(*args, **kwargs)
-        self.ssh_config_args = SshConfigArgs()
+        self.ssh_config_args = SshConfigArgs(self)
 
     def get_parser(self, prog_name):
         """Create command line argument parser.
@@ -70,12 +69,15 @@ class HostCommand(DetailCommand):
         host.label = args.label
         host.address = args.address
         host.ssh_config = ssh_config
-        host.group = self.get_relation(Group, args.group)
+        if args.group:
+            host.group = self.get_relation(Group, args.group)
         return host
 
 
 class HostsCommand(ListCommand):
     """Manage host objects."""
+
+    model_class = Host
 
     def get_parser(self, prog_name):
         """Create command line argument parser.
@@ -96,8 +98,13 @@ class HostsCommand(ListCommand):
     # pylint: disable=unused-argument
     def take_action(self, parsed_args):
         """Process CLI call."""
-        assert False, 'Filtering by tags and groups not implemented.'
-        hosts = self.storage.get_all(Host)
-        fields = Host.allowed_fields()
-        getter = attrgetter(*fields)
-        return fields, [getter(i) for i in hosts]
+        assert False, 'Filtering by tags not implemented.'
+        group_id = self.get_group_id(parsed_args)
+        hosts = self.get_hosts(group_id)
+        return self.prepare_result(hosts)
+
+    def get_hosts(self, group_id):
+        return self.storage.filter(Host, **{'group': group_id})
+
+    def get_group_id(self, args):
+        return args.group and self.get_relation(Group, args.group).id

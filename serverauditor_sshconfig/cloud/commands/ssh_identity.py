@@ -2,7 +2,7 @@
 """Module for ssh identity command."""
 from operator import attrgetter
 from ...core.commands import DetailCommand, ListCommand
-from ..models import SshIdentity
+from ..models import SshIdentity, SshKey
 
 
 class SshIdentityCommand(DetailCommand):
@@ -62,10 +62,11 @@ class SshIdentityCommand(DetailCommand):
             raise NotImplementedError('Not implemented')
 
         if args.ssh_key:
-            raise NotImplementedError('Not implemented')
+            identity.ssh_key = self.get_relation(SshKey, args.ssh_key)
 
         identity.username = args.username
         identity.password = args.password
+        identity.is_visible = True
         return identity
 
 

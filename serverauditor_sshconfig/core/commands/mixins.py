@@ -30,10 +30,54 @@ class GetRelationMixin(object):
             return self.storage.get(model_class, query_union=any,
                                     id=relation_id, label=arg)
         except DoesNotExistException:
-            raise ArgumentRequiredException(
-                'Not found any {} instance.'.format(model_class)
-            )
+            self.fail_not_exist(model_class)
         except TooManyEntriesException:
-            raise ArgumentRequiredException(
-                'Found to many {} instances.'.format(model_class)
-            )
+            self.fail_too_many(model_class)
+
+    def fail_not_exist(self, model_class):
+        raise ArgumentRequiredException(
+            'Not found any {} instance.'.format(model_class)
+        )
+
+    def fail_too_many(self, model_class):
+        raise ArgumentRequiredException(
+            'Found too many {} instances.'.format(model_class)
+        )
+
+
+class InstanceOpertionMixin(object):
+
+    def create_instance(self, args):
+        """Create new model entry."""
+        instance = self.serialize_args(args)
+        with self.storage:
+            saved_instance = self.storage.save(instance)
+        self.log_create(saved_instance)
+
+    def update_instance(self, args, instance):
+        """Update model entry."""
+        updated_instance = self.serialize_args(args, instance)
+        with self.storage:
+            self.storage.save(updated_instance)
+            self.log_update(updated_instance)
+
+    def delete_instance(self, instance):
+        """Delete model entry."""
+        with self.storage:
+            self.storage.delete(instance)
+            self.log_delete(instance)
+
+    def log_create(self, entry):
+        """Log creating new model entry."""
+        self.app.stdout.write('{}\n'.format(entry.id))
+        self.log.info('Create object.')
+
+    def log_update(self, entry):
+        """Log updating model entry."""
+        self.app.stdout.write('{}\n'.format(entry.id))
+        self.log.info('Update object.')
+
+    def log_delete(self, entry):
+        """Log deleting model entry."""
+        self.app.stdout.write('{}\n'.format(entry.id))
+        self.log.info('Delete object.')

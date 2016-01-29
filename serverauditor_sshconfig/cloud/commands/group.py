@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """Module with Group commands."""
-from operator import attrgetter
 from ...core.commands import DetailCommand, ListCommand
 from ..models import Group
 from .ssh_config import SshConfigArgs
@@ -15,7 +14,7 @@ class GroupCommand(DetailCommand):
     def __init__(self, *args, **kwargs):
         """Construct new group command."""
         super(GroupCommand, self).__init__(*args, **kwargs)
-        self.ssh_config_args = SshConfigArgs()
+        self.ssh_config_args = SshConfigArgs(self)
 
     def get_parser(self, prog_name):
         """Create command line argument parser.
@@ -64,6 +63,8 @@ class GroupCommand(DetailCommand):
 class GroupsCommand(ListCommand):
     """Manage group objects."""
 
+    model_class = Group
+
     def get_parser(self, prog_name):
         """Create command line argument parser.
 
@@ -84,8 +85,23 @@ class GroupsCommand(ListCommand):
     # pylint: disable=unused-argument
     def take_action(self, parsed_args):
         """Process CLI call."""
-        assert False, 'Filtering and recursive not implemented.'
-        groups = self.storage.get_all(Group)
-        fields = Group.allowed_fields()
-        getter = attrgetter(*fields)
-        return fields, [getter(i) for i in groups]
+        parent_group_id = self.get_parent_group_id(parsed_args)
+        groups = self.get_groups(parent_group_id)
+        if parsed_args.recursive:
+            groups = self.collect_group_recursivle(groups)
+        return self.prepare_result(groups)
+
+    def get_groups(self, group_id):
+        return self.storage.filter(
+            Group, **{'parent_group': group_id}
+        )
+
+    def get_parent_group_id(self, args):
+        return args.group and self.get_relation(Group, args.group).id
+
+    def collect_group_recursivle(self, top_groups):
+        return reduce(self._collect_subgroup, top_groups, [])
+
+    def _collect_subgroup(self, accumulator, group):
+        children = self.get_groups(group.id)
+        return accumulator + [group] + self.collect_group_recursivle(children)

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Module with base commands for list entries."""
 import logging
+from operator import attrgetter
 # pylint: disable=import-error
 from cliff.lister import Lister
 from ..settings import Config
@@ -28,3 +29,8 @@ class ListCommand(GetRelationMixin, Lister):
         parser = super(ListCommand, self).get_parser(prog_name)
         parser.add_argument('--log-file', help='Path to log file.')
         return parser
+
+    def prepare_result(self, found_list):
+        fields = self.model_class.allowed_fields()
+        getter = attrgetter(*fields)
+        return fields, [getter(i) for i in found_list]
