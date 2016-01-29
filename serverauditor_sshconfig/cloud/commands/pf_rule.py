@@ -4,7 +4,6 @@ import re
 from operator import attrgetter
 from ...core.exceptions import (
     InvalidArgumentException, ArgumentRequiredException,
-    TooManyEntriesException, DoesNotExistException,
 )
 from ...core.commands import DetailCommand, ListCommand
 from ..models import Host, PFRule
@@ -75,7 +74,7 @@ class PFRuleCommand(DetailCommand):
         if instance:
             pfrule, host = instance, instance.host
         else:
-            pfrule, host = PFRule(), self.get_host(args.host)
+            pfrule, host = PFRule(), self.get_relation(Host, args.host)
             if not args.type:
                 raise ArgumentRequiredException('Type is required.')
 
@@ -86,20 +85,6 @@ class PFRuleCommand(DetailCommand):
             for key, value in binding_dict.items():
                 setattr(pfrule, key, value)
         return pfrule
-
-    def get_host(self, arg):
-        """Retrieve host from storage."""
-        try:
-            host_id = int(arg)
-        except ValueError:
-            host_id = None
-        try:
-            return self.storage.get(Host, query_union=any,
-                                    id=host_id, label=arg)
-        except DoesNotExistException:
-            raise ArgumentRequiredException('Not found any host.')
-        except TooManyEntriesException:
-            raise ArgumentRequiredException('Found to many hosts.')
 
 
 class PFRulesCommand(ListCommand):

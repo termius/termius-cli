@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-"""Serializers (read controllers) is like django rest framework serializers."""
+"""Transformers is like django rest framework transformer."""
 import abc
 import six
 
 
 @six.add_metaclass(abc.ABCMeta)
-class Serializer(object):
-    """Base serializer."""
+class Transformer(object):
+    """Base transformer."""
 
     def __init__(self, storage):
-        """Create new Serializer."""
+        """Create new Transformer."""
         assert storage
         self.storage = storage
 

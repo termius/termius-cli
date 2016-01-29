@@ -20,6 +20,13 @@ setup() {
     ! [ -z $(cat ~/.serverauditor.storage) ]
 }
 
+@test "Add host to group" {
+    group=$(serverauditor group --port 2022)
+    run serverauditor host -L test --group $group --address localhost --debug
+    [ "$status" -eq 0 ]
+    ! [ -z $(cat ~/.serverauditor.storage) ]
+}
+
 @test "Add many hosts" {
     run serverauditor host -L test_1 --port 2022 --address 127.0.0.1 --username root --password 'pa$$word'
     run serverauditor host -L test_2 --port 2222 --address google.com --username root --password 'password'
@@ -31,6 +38,14 @@ setup() {
 @test "Update host" {
     host=$(serverauditor host -L test_3 --port 22 --address google.com --username root --password 'psswrd')
     run serverauditor host -L test_3 --port 22 --address google --username root --password '' $host
+    [ "$status" -eq 0 ]
+    ! [ -z $(cat ~/.serverauditor.storage) ]
+}
+
+@test "Update host add to group" {
+    group=$(serverauditor group --port 2022)
+    host=$(serverauditor host --address localhost -L test)
+    run serverauditor host --group $group $host
     [ "$status" -eq 0 ]
     ! [ -z $(cat ~/.serverauditor.storage) ]
 }

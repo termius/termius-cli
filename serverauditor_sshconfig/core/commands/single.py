@@ -1,72 +1,21 @@
 # -*- coding: utf-8 -*-
-"""Module with base CLI commands."""
-import logging
-import getpass
-
-# pylint: disable=import-error
-from cliff.command import Command
-# pylint: disable=import-error
-from cliff.lister import Lister
-from .exceptions import DoesNotExistException, ArgumentRequiredException
-from .settings import Config
-from .storage import ApplicationStorage
-from .storage.strategies import (
-    SaveStrategy,
-    GetStrategy,
-    DeleteStrategy,
+"""Module with base commands per entries."""
+from ..exceptions import (
+    DoesNotExistException, ArgumentRequiredException,
+)
+from ..storage.strategies import (
     RelatedSaveStrategy,
     RelatedGetStrategy,
-    SoftDeleteStrategy,
 )
+from .mixins import GetRelationMixin, InstanceOpertionMixin
+from .base import AbstractCommand
 
 
-# pylint: disable=too-few-public-methods
-class PasswordPromptMixin(object):
-    """Mixin to command to call account password prompt."""
-
-    # pylint: disable=no-self-use
-    def prompt_password(self):
-        """Ask user to enter password in secure way."""
-        return getpass.getpass("Serverauditor's password:")
-
-
-# pylint: disable=abstract-method
-class AbstractCommand(PasswordPromptMixin, Command):
-    """Abstract Command with log."""
-
-    log = logging.getLogger(__name__)
-
-    save_strategy = SaveStrategy
-    get_strategy = GetStrategy
-    delete_strategy = DeleteStrategy
-
-    def __init__(self, app, app_args, cmd_name=None):
-        """Construct new command."""
-        super(AbstractCommand, self).__init__(app, app_args, cmd_name)
-        self.config = Config(self.app.NAME)
-        self.storage = ApplicationStorage(
-            self.app.NAME,
-            save_strategy=self.save_strategy,
-            get_strategy=self.get_strategy,
-            delete_strategy=self.delete_strategy
-        )
-
-    def get_parser(self, prog_name):
-        """Create command line argument parser.
-
-        Use it to add extra options to argument parser.
-        """
-        parser = super(AbstractCommand, self).get_parser(prog_name)
-        parser.add_argument('--log-file', help='Path to log file.')
-        return parser
-
-
-class DetailCommand(AbstractCommand):
+class DetailCommand(GetRelationMixin, InstanceOpertionMixin, AbstractCommand):
     """Command for operating with models by id or names."""
 
     save_strategy = RelatedSaveStrategy
     get_strategy = RelatedGetStrategy
-    delete_strategy = SoftDeleteStrategy
 
     all_operations = {'delete', 'update', 'create'}
     allowed_operations = set()
@@ -159,21 +108,6 @@ class DetailCommand(AbstractCommand):
             elif self.is_allow_update and parsed_args.entry:
                 self.update(parsed_args)
 
-    def log_create(self, entry):
-        """Log creating new model entry."""
-        self.app.stdout.write('{}\n'.format(entry.id))
-        self.log.info('Create object.')
-
-    def log_update(self, entry):
-        """Log updating model entry."""
-        self.app.stdout.write('{}\n'.format(entry.id))
-        self.log.info('Update object.')
-
-    def log_delete(self, entry):
-        """Log deleting model entry."""
-        self.app.stdout.write('{}\n'.format(entry.id))
-        self.log.info('Delete object.')
-
     def get_objects(self, ids__names):
         """Get model list.
 
@@ -193,45 +127,3 @@ class DetailCommand(AbstractCommand):
         """Parse ids__models list."""
         ids = [int(i) for i in ids__names if i.isdigit()]
         return ids, ids__names
-
-    def create_instance(self, args):
-        """Create new model entry."""
-        instance = self.serialize_args(args)
-        with self.storage:
-            saved_instance = self.storage.save(instance)
-        self.log_create(saved_instance)
-
-    def update_instance(self, args, instance):
-        """Update model entry."""
-        updated_instance = self.serialize_args(args, instance)
-        with self.storage:
-            self.storage.save(updated_instance)
-            self.log_update(updated_instance)
-
-    def delete_instance(self, instance):
-        """Delete model entry."""
-        with self.storage:
-            self.storage.delete(instance)
-            self.log_delete(instance)
-
-
-# pylint: disable=too-few-public-methods, abstract-method
-class ListCommand(Lister):
-    """Command for listing storage content."""
-
-    log = logging.getLogger(__name__)
-
-    def __init__(self, app, app_args, cmd_name=None):
-        """Create new command instance."""
-        super(ListCommand, self).__init__(app, app_args, cmd_name)
-        self.config = Config(self.app.NAME)
-        self.storage = ApplicationStorage(self.app.NAME)
-
-    def get_parser(self, prog_name):
-        """Create command line argument parser.
-
-        Use it to add extra options to argument parser.
-        """
-        parser = super(ListCommand, self).get_parser(prog_name)
-        parser.add_argument('--log-file', help='Path to log file.')
-        return parser

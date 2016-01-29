@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 """Module with Sshconfig's args helper."""
 from ..models import SshConfig, SshIdentity
+from ...core.exceptions import InvalidArgumentException
 
 
 class SshConfigArgs(object):
     """Class for ssh config argument adding and serializing."""
+
+    def __init__(self, command):
+        self.command = command
 
     # pylint: disable=no-self-use
     def add_agrs(self, parser):
@@ -60,13 +64,24 @@ class SshConfigArgs(object):
         else:
             ssh_config, ssh_identity = SshConfig(), SshIdentity()
 
+        self.invalid_parameter_set(args)
+
         if args.generate_key:
             raise NotImplementedError('Not implemented')
 
         if args.ssh_identity:
-            raise NotImplementedError('Not implemented')
+            ssh_identity = self.command.get_relation(
+                SshIdentity, args.ssh_identity
+            )
+            if not ssh_identity.is_visible:
+                self.command.fail_not_exist(SshIdentity)
 
         ssh_identity.username = args.username
         ssh_identity.password = args.password
         ssh_config.port = args.port
+        ssh_config.ssh_identity = ssh_identity
         return ssh_config
+
+    def invalid_parameter_set(self, args):
+        if (args.password or args.username) and args.ssh_identity:
+            raise InvalidArgumentException()

@@ -118,11 +118,17 @@ class ApplicationStorage(object):
             list = storage.get(Model, any, **{'field.ge': 1, 'field.le': 5}
         """
         founded_models = self.filter(model_class, query_union, **kwargs)
-        if not founded_models:
-            raise DoesNotExistException
-        elif len(founded_models) != 1:
-            raise TooManyEntriesException
-        return founded_models[0]
+        single_model = self._validate_the_single_model(founded_models)
+        return single_model
+
+    def get_single_by_id(self, model_class, identificator):
+        """Retrieve single entry by id from storage."""
+        assert identificator
+        query = Query(all, id=identificator)
+        internal_models = self._internal_get_all(model_class)
+        founded_models = [i for i in internal_models if query(i)]
+        single_model = self._validate_the_single_model(founded_models)
+        return self.model_constructor(single_model, model_class)
 
     def filter(self, model_class, query_union=None, **kwargs):
         """Filter model list with passed lookups.
@@ -186,3 +192,11 @@ class ApplicationStorage(object):
         """Create new strategy."""
         strategy_class = strategy_class or default
         return strategy_class(self)
+
+    # pylint: disable=no-self-use
+    def _validate_the_single_model(self, founded_models):
+        if not founded_models:
+            raise DoesNotExistException
+        elif len(founded_models) != 1:
+            raise TooManyEntriesException
+        return founded_models[0]

@@ -75,7 +75,7 @@ class API(object):
         """Send authorized post request."""
         response = requests.post(self.request_url(endpoint),
                                  json=data, auth=self.auth)
-        assert response.status_code == 201
+        assert response.status_code == 201, response.text
         return response.json()
 
     def get(self, endpoint):
