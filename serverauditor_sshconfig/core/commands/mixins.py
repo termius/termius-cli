@@ -35,18 +35,24 @@ class GetRelationMixin(object):
         except TooManyEntriesException:
             self.fail_too_many(model_class)
 
+    # pylint: disable=no-self-use
     def fail_not_exist(self, model_class):
+        """Raise an error about not existed instance."""
         raise ArgumentRequiredException(
             'Not found any {} instance.'.format(model_class)
         )
 
+    # pylint: disable=no-self-use
     def fail_too_many(self, model_class):
+        """Raise an error about too many instances."""
         raise ArgumentRequiredException(
             'Found too many {} instances.'.format(model_class)
         )
 
 
 class GetObjectsMixin(object):
+    """Mixin with method to list objects with ids or name list."""
+
     def get_objects(self, ids__names):
         """Get model list.
 
@@ -63,12 +69,15 @@ class GetObjectsMixin(object):
 
 
 class InstanceOpertionMixin(object):
+    """Mixin with methods to create, update and delete operations."""
 
     def create_instance(self, args):
         """Create new model entry."""
         instance = self.serialize_args(args)
         with self.storage:
             saved_instance = self.storage.save(instance)
+            instance.id = saved_instance.id
+            self.update_children(instance, args)
         self.log_create(saved_instance)
 
     def update_instance(self, args, instance):
@@ -76,7 +85,15 @@ class InstanceOpertionMixin(object):
         updated_instance = self.serialize_args(args, instance)
         with self.storage:
             self.storage.save(updated_instance)
+            self.update_children(updated_instance, args)
             self.log_update(updated_instance)
+
+    def update_children(self, instance, args):
+        """Update children of instance.
+
+        It's called while create and update instance.
+        """
+        pass
 
     def delete_instance(self, instance):
         """Delete model entry."""

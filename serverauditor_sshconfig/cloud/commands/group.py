@@ -92,14 +92,17 @@ class GroupsCommand(ListCommand):
         return self.prepare_result(groups)
 
     def get_groups(self, group_id):
+        """Retrieve all child groups of passed group."""
         return self.storage.filter(
             Group, **{'parent_group': group_id}
         )
 
     def get_parent_group_id(self, args):
+        """Return parent group id  or None from command line arguments."""
         return args.group and self.get_relation(Group, args.group).id
 
     def collect_group_recursivle(self, top_groups):
+        """Return all child groups of top_groups."""
         return reduce(self._collect_subgroup, top_groups, [])
 
     def _collect_subgroup(self, accumulator, group):

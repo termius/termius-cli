@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """Module with base commands per entries."""
-from ..exceptions import (
-    DoesNotExistException, ArgumentRequiredException,
-)
+from ..exceptions import ArgumentRequiredException
 from ..storage.strategies import (
     RelatedSaveStrategy,
     RelatedGetStrategy,
