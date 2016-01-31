@@ -1,0 +1,5 @@
+mock
+nose
+coverage
+prospector[with_pyroma]
+paver
