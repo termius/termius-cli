@@ -31,6 +31,7 @@ class ListCommand(GetRelationMixin, Lister):
         return parser
 
     def prepare_result(self, found_list):
+        """Return tuple with data in format for Lister."""
         fields = self.model_class.allowed_fields()
         getter = attrgetter(*fields)
         return fields, [getter(i) for i in found_list]

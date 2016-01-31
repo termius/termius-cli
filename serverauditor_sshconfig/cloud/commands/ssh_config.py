@@ -8,6 +8,7 @@ class SshConfigArgs(object):
     """Class for ssh config argument adding and serializing."""
 
     def __init__(self, command):
+        """Contruct new ssh config argument helper."""
         self.command = command
 
     # pylint: disable=no-self-use
@@ -83,5 +84,6 @@ class SshConfigArgs(object):
         return ssh_config
 
     def invalid_parameter_set(self, args):
+        """Raise an error when passed invalid parameters set."""
         if (args.password or args.username) and args.ssh_identity:
             raise InvalidArgumentException()

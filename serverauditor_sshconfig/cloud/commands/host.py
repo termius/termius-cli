@@ -2,7 +2,8 @@
 """Module with Host commands."""
 from ...core.exceptions import ArgumentRequiredException
 from ...core.commands import DetailCommand, ListCommand
-from ..models import Host, Group
+from ..models import Host, Group, TagHost
+from .taghost import TagListArgs
 from .ssh_config import SshConfigArgs
 
 
@@ -16,6 +17,7 @@ class HostCommand(DetailCommand):
         """Construct new host command."""
         super(HostCommand, self).__init__(*args, **kwargs)
         self.ssh_config_args = SshConfigArgs(self)
+        self.taglist_args = TagListArgs(self)
 
     def get_parser(self, prog_name):
         """Create command line argument parser.
@@ -54,6 +56,11 @@ class HostCommand(DetailCommand):
 
         self.create_instance(parsed_args)
 
+    def update_children(self, instance, args):
+        """Create new model entry."""
+        if args.tags is not None:
+            self.update_tag_list(instance, args.tags)
+
     # pylint: disable=no-self-use
     def serialize_args(self, args, instance=None):
         """Convert args to instance."""
@@ -66,9 +73,6 @@ class HostCommand(DetailCommand):
             host = Host()
             ssh_config = self.ssh_config_args.serialize_args(args, None)
 
-        if args.tags:
-            raise NotImplementedError()
-
         host.label = args.label
         host.address = args.address
         host.ssh_config = ssh_config
@@ -76,11 +80,21 @@ class HostCommand(DetailCommand):
             host.group = self.get_relation(Group, args.group)
         return host
 
+    def update_tag_list(self, host, tag_csv):
+        """Update tag list for host instance."""
+        tag_instanes = self.taglist_args.get_or_create_tag_instances(tag_csv)
+        self.taglist_args.update_taghosts(host, tag_instanes)
+
 
 class HostsCommand(ListCommand):
     """Manage host objects."""
 
     model_class = Host
+
+    def __init__(self, *args, **kwargs):
+        """Construct new hosts command."""
+        super(HostsCommand, self).__init__(*args, **kwargs)
+        self.taglist_args = TagListArgs(self)
 
     def get_parser(self, prog_name):
         """Create command line argument parser.
@@ -101,13 +115,32 @@ class HostsCommand(ListCommand):
     # pylint: disable=unused-argument
     def take_action(self, parsed_args):
         """Process CLI call."""
-        assert False, 'Filtering by tags not implemented.'
         group_id = self.get_group_id(parsed_args)
         hosts = self.get_hosts(group_id)
-        return self.prepare_result(hosts)
+        filtered_hosts = self.filter_host_by_tags(hosts, parsed_args)
+        return self.prepare_result(filtered_hosts)
 
     def get_hosts(self, group_id):
+        """Get host list by group id."""
         return self.storage.filter(Host, **{'group': group_id})
 
     def get_group_id(self, args):
+        """Get group id by group id or label."""
         return args.group and self.get_relation(Group, args.group).id
+
+    def filter_host_by_tags(self, hosts, args):
+        """Filter host list by tag csv list."""
+        if args.tags:
+            tags = self.taglist_args.get_tag_instances(args.tags)
+            tag_ids = [i.id for i in tags]
+            host_ids = [i.id for i in hosts]
+            taghost_instances = self.storage.filter(TagHost, all, **{
+                'tag.rcontains': tag_ids
+            })
+            filtered_host_id = {i.host for i in taghost_instances}
+            intersected_host_ids = set(host_ids) and filtered_host_id
+            return self.storage.filter(
+                Host, **{'id.rcontains': intersected_host_ids}
+            )
+        else:
+            return hosts

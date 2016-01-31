@@ -20,3 +20,29 @@ setup() {
     [ "$status" -eq 0 ]
     ! [ -z $(cat ~/.serverauditor.storage) ]
 }
+
+@test "List hosts filter by tag" {
+    serverauditor host -L test --port 2022 --address localhost --username root --password password -t A
+
+    run serverauditor hosts --tags A
+    [ "$status" -eq 0 ]
+    ! [ -z $(cat ~/.serverauditor.storage) ]
+}
+
+@test "List hosts in group" {
+    group=$(serverauditor group --port 2022)
+    serverauditor host -L test --group $group --address localhost --username root --password password
+
+    run serverauditor hosts --group $group
+    [ "$status" -eq 0 ]
+    ! [ -z $(cat ~/.serverauditor.storage) ]
+}
+
+@test "List hosts in group filter by tag" {
+    group=$(serverauditor group --port 2022)
+    serverauditor host -L test --group $group --address localhost --username root --password password -t A
+
+    run serverauditor hosts --tags A --group $group
+    [ "$status" -eq 0 ]
+    ! [ -z $(cat ~/.serverauditor.storage) ]
+}
