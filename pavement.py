@@ -72,6 +72,14 @@ setup(
             'serverauditor = serverauditor_sshconfig.main:main'
         ],
         'serverauditor.handlers': handlers,
+        'serverauditor.info.formatters': [
+            'ssh = serverauditor_sshconfig.formatters.ssh:SshFormatter',
+            'table = cliff.formatters.table:TableFormatter',
+            'shell = cliff.formatters.shell:ShellFormatter',
+            'value = cliff.formatters.value:ValueFormatter',
+            'yaml = cliff.formatters.yaml_format:YAMLFormatter',
+            'json = cliff.formatters.json_format:JSONFormatter',
+        ],
         'serverauditor.sync.services': [
             # WARNING! It should be removed in production!
             # Other projects should add such endpoint to add services.
