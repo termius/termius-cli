@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Module with Group commands."""
+import functools
 from ...core.commands import DetailCommand, ListCommand
 from ..models import Group
 from .ssh_config import SshConfigArgs
@@ -103,7 +104,7 @@ class GroupsCommand(ListCommand):
 
     def collect_group_recursivle(self, top_groups):
         """Return all child groups of top_groups."""
-        return reduce(self._collect_subgroup, top_groups, [])
+        return functools.reduce(self._collect_subgroup, top_groups, [])
 
     def _collect_subgroup(self, accumulator, group):
         children = self.get_groups(group.id)
