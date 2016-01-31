@@ -47,6 +47,7 @@ class SshIdentity(Model):
         'is_visible': Field(str, False, False),
         'ssh_key': Field(SshKey, False, None),
     }
+    mergable_fields = {'username', 'password', 'ssh_key'}
     set_name = 'sshidentity_set'
     crypto_fields = {'label', 'username', 'password'}
 
@@ -56,8 +57,16 @@ class SshConfig(Model):
 
     fields = {
         'port': Field(int, False, None),
+        'color_scheme': Field(str, False, None),
+        'charset': Field(str, False, None),
+        'font_size': Field(str, False, None),
         'ssh_identity': Field(SshIdentity, False, None),
         'startup_snippet': Field(Snippet, False, None),
+    }
+    mergable_fields = {
+        'port', 'color_scheme',
+        'font_size', 'charset',
+        'startup_snippet'
     }
     set_name = 'sshconfig_set'
 

@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 """Module with base commands for list entries."""
 import logging
-from operator import attrgetter
 # pylint: disable=import-error
 from cliff.lister import Lister
 from ..settings import Config
 from ..storage import ApplicationStorage
-from .mixins import GetRelationMixin
+from .mixins import GetRelationMixin, PrepareResultMixin
 
 
 # pylint: disable=too-few-public-methods, abstract-method
-class ListCommand(GetRelationMixin, Lister):
+class ListCommand(GetRelationMixin, PrepareResultMixin, Lister):
     """Command for listing storage content."""
 
     log = logging.getLogger(__name__)
@@ -29,9 +28,3 @@ class ListCommand(GetRelationMixin, Lister):
         parser = super(ListCommand, self).get_parser(prog_name)
         parser.add_argument('--log-file', help='Path to log file.')
         return parser
-
-    def prepare_result(self, found_list):
-        """Return tuple with data in format for Lister."""
-        fields = self.model_class.allowed_fields()
-        getter = attrgetter(*fields)
-        return fields, [getter(i) for i in found_list]

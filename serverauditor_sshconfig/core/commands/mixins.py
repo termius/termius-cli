@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Module with different CLI commands mixins."""
 import getpass
+from operator import attrgetter
 from ..exceptions import (
     DoesNotExistException, ArgumentRequiredException,
     TooManyEntriesException
@@ -48,6 +49,15 @@ class GetRelationMixin(object):
         raise ArgumentRequiredException(
             'Found too many {} instances.'.format(model_class)
         )
+
+
+class PrepareResultMixin(object):
+
+    def prepare_result(self, found_list):
+        """Return tuple with data in format for Lister."""
+        fields = self.model_class.allowed_fields()
+        getter = attrgetter(*fields)
+        return fields, [getter(i) for i in found_list]
 
 
 class GetObjectsMixin(object):
