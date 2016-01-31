@@ -59,7 +59,7 @@ class InfoCommand(GetRelationMixin, ShowOne, AbstractCommand):
         ssh_config.ssh_identity = ssh_identity_merger.merge()
         return (
             ssh_config.allowed_fields() + ['address',],
-            attrgetter(*ssh_config.allowed_fields())(ssh_config) + (getattr(instance, 'address'),),
+            attrgetter(*ssh_config.allowed_fields())(ssh_config) + (getattr(instance, 'address', ''),),
         )
 
     def get_info_instance(self, args):
