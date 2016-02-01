@@ -14,6 +14,9 @@ ignore-paths:
   # TODO Remove this file in production
   - serverauditor_sshconfig/sync/services/aws.py
 
+ignore-patterns:
+  - (^|/)(?!serverauditor_sshconfig)?(/|$)
+
 pep257:
   disable:
     - D203  # 1 blank line required before
