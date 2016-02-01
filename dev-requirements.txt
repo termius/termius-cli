@@ -3,3 +3,5 @@ nose
 coverage
 prospector[with_pyroma]
 paver
+ptpython
+pudb
