@@ -2,19 +2,25 @@
 """Module with cryptor implementation."""
 from __future__ import print_function
 
+import os
 import base64
 import hashlib
 import hmac as python_hmac
 
-from Crypto.Cipher import AES
-from Crypto.Protocol import KDF
-from Crypto import Random
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.backends import default_backend
 
 from ...core.utils import bchr, bord, to_bytes, to_str
 
 
 class CryptoSettings(object):
     """Store cryptor settings."""
+
+    backend = default_backend()
+    AES_BLOCK_SIZE = algorithms.AES.block_size
+    SALT_SIZE = 8
 
     def __init__(self):
         """Construct new cryptor settings."""
@@ -57,13 +63,13 @@ class CryptoSettings(object):
     @property
     def initialization_vector(self):
         """Generate random bytes."""
-        return Random.new().read(self.AES_BLOCK_SIZE)
+        return os.urandom(self.AES_BLOCK_SIZE)
 
     @property
     def encryption_key(self):
         """Get encryption key."""
         if not getattr(self, '_encryption_key', None):
-            self._encryption_key = pbkdf2(
+            self._encryption_key = self.pbkdf2(
                 self.password, self.encryption_salt
             )
         return self._encryption_key
@@ -72,8 +78,26 @@ class CryptoSettings(object):
     def hmac_key(self):
         """Get hmac key."""
         if not getattr(self, '_hmac_key', None):
-            self._hmac_key = pbkdf2(self.password, self.hmac_salt)
+            self._hmac_key = self.pbkdf2(self.password, self.hmac_salt)
         return self._hmac_key
+
+    def pbkdf2(self, password, salt, iterations=10000, key_length=32):
+        """Generate key."""
+        key_generator = PBKDF2HMAC(
+            algorithm=hashes.SHA1, length=key_length,
+            salt=salt, iterations=iterations,
+            backend=self.backend
+        )
+        return key_generator.derive(password)
+
+    def get_cipher(self, key, initialization_vector):
+        """Generate cipher for AES algorithm."""
+        cipher = Cipher(
+            algorithms.AES(key),
+            modes.CBC(initialization_vector),
+            backend=self.backend
+        )
+        return cipher
 
 
 class RNCryptor(CryptoSettings):
@@ -82,10 +106,6 @@ class RNCryptor(CryptoSettings):
     NB. You must set encryption_salt, hmac_salt and password
     after creation of RNCryptor's instance.
     """
-
-    AES_BLOCK_SIZE = AES.block_size
-    AES_MODE = AES.MODE_CBC
-    SALT_SIZE = 8
 
     # pylint: disable=no-self-use
     def pre_decrypt_data(self, data):
@@ -173,10 +193,14 @@ class RNCryptor(CryptoSettings):
         return self.post_encrypt_data(encrypted_data)
 
     def _aes_encrypt(self, key, initialization_vector, text):
-        return AES.new(key, self.AES_MODE, initialization_vector).encrypt(text)
+        encryptor = self.get_cipher(key, initialization_vector).encryptor()
+        ciphertext = encryptor.update(text) + encryptor.finalize()
+        return ciphertext
 
-    def _aes_decrypt(self, key, initialization_vector, text):
-        return AES.new(key, self.AES_MODE, initialization_vector).decrypt(text)
+    def _aes_decrypt(self, key, initialization_vector, ciphertext):
+        decryptor = self.get_cipher(key, initialization_vector).decryptor()
+        text = decryptor.update(ciphertext) + decryptor.finalize()
+        return text
 
     def _hmac(self, key, data):
         return python_hmac.new(key, data, hashlib.sha256).digest()
@@ -186,14 +210,3 @@ class CryptorException(Exception):
     """Raise cryptor face some problem with encrypting and decrypting."""
 
     pass
-
-
-def pbkdf2(password, salt, iterations=10000, key_length=32):
-    """Generate key."""
-    return KDF.PBKDF2(password, salt, dkLen=key_length, count=iterations,
-                      prf=preudorandom)
-
-
-def preudorandom(password, salt):
-    """Generate random for password and salt."""
-    return python_hmac.new(password, salt, hashlib.sha1).digest()

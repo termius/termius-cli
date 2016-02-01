@@ -14,7 +14,7 @@ requires = [
     'cliff==1.15',
     'stevedore==1.10.0',
     'requests==2.7.0',
-    'pycrypto==2.6',
+    'cryptography==1.2.2',
     'six==1.10.0',
     'pyopenssl',
     'ndg-httpsclient',
