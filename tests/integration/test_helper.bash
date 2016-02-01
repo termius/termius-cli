@@ -1,15 +1,15 @@
 
 login_serverauditor () {
-    if [ "$Serverauditor_username" == '' ] || [ "$Serverauditor_password" == '' ];then
-      skip '$Serverauditor_username and $Serverauditor_password are not set!'
+    if [ "$SERVERAUDITOR_USERNAME" == '' ] || [ "$SERVERAUDITOR_PASSWORD" == '' ];then
+      skip '$SERVERAUDITOR_USERNAME and $SERVERAUDITOR_PASSWORD are not set!'
     fi
 
-    serverauditor login --username $Serverauditor_username -p $Serverauditor_password
+    serverauditor login --username $SERVERAUDITOR_USERNAME -p $SERVERAUDITOR_PASSWORD
 }
 
 pull_serverauditor() {
     login_serverauditor
 
-    serverauditor pull -p $Serverauditor_password
+    serverauditor pull -p $SERVERAUDITOR_PASSWORD
 
 }
