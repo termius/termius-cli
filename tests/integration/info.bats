@@ -19,7 +19,8 @@
 
 @test "info host use ssh formatter" {
     host=$(serverauditor host -L test --port 2022 --address localhost --username root --password password)
-    run serverauditor info $host -f ssh
+    run serverauditor info $host -f ssh --debug
+    echo "${lines[*]}"
     [ "$status" -eq 0 ]
 }
 
@@ -27,13 +28,13 @@
 @test "info group use default formatter" {
     group=$(serverauditor group -L test --port 2022)
     run serverauditor info --group $group --debug
-    echo ${lines[*]}
     [ "$status" -eq 0 ]
 }
 
 @test "info group use ssh formatter" {
     group=$(serverauditor group -L test --port 2022)
     run serverauditor info --group $group -f ssh
+    echo "${lines[*]}"
     [ "$status" -eq 0 ]
 }
 

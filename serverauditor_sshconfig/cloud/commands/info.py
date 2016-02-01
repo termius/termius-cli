@@ -98,10 +98,11 @@ class InfoCommand(GetRelationMixin, ShowOne, AbstractCommand):
 
         Warning there is one additional field - 'address'.
         """
-        keys = ssh_config.allowed_fields() + ['address']
+        ssh_config_fields = ssh_config.allowed_fields()
+        keys = tuple(ssh_config_fields) + ('address',)
         values = (
-            attrgetter(*ssh_config.allowed_fields())(ssh_config) +
-            (getattr(instance, 'address', ''),),
+            attrgetter(*ssh_config_fields)(ssh_config) +
+            (getattr(instance, 'address', ''),)
         )
         return (keys, values)
 
