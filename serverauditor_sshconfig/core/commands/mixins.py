@@ -52,6 +52,7 @@ class GetRelationMixin(object):
 
 
 class PrepareResultMixin(object):
+    """Mixin with method to transform dict-list to 2-size tuple."""
 
     def prepare_result(self, found_list):
         """Return tuple with data in format for Lister."""
