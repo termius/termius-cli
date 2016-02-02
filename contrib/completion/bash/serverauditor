@@ -1,0 +1,65 @@
+_serverauditor()
+{
+  local cur prev words
+  COMPREPLY=()
+  _get_comp_words_by_ref -n : cur prev words
+
+  # Command data:
+  cmds='complete connect group groups help host hosts identities identity info login logout pfrule pfrules pull push snippet snippets sync tags'
+  cmds_complete='-h --help --name --shell'
+  cmds_connect='-h --help --log-file -G --group --ssh'
+  cmds_group='-h --help --log-file -d --delete -I --interactive -L --label --generate-key --ssh -g --parent-group -p --port -S --strict-key-check -s --snippet --ssh-identity -k --keep-alive-packages -u --username -P --password -i --identity-file'
+  cmds_groups='-h --help -f --format -c --column --max-width --noindent --quote --log-file -r --recursive'
+  cmds_help='-h --help'
+  cmds_host='-h --help --log-file -d --delete -I --interactive -L --label --generate-key --ssh -t --tags -g --group -a --address -p --port -S --strict-key-check -s --snippet --ssh-identity -k --keep-alive-packages -u --username -P --password -i --identity-file'
+  cmds_hosts='-h --help -f --format -c --column --max-width --noindent --quote --log-file -t --tags -g --group'
+  cmds_identities='-h --help -f --format -c --column --max-width --noindent --quote --log-file'
+  cmds_identity='-h --help --log-file -d --delete -I --interactive -L --label --generate-key -u --username -p --password -i --identity-file -k --ssh-key'
+  cmds_info='-h --help --log-file -f --format -c --column --variable --prefix --noindent --address --max-width -G --group -H --host -M --no-merge --ssh'
+  cmds_login='-h --help --log-file -u --username -p --password --sync-sshconfig'
+  cmds_logout='-h --help --log-file --clear-sshconfig'
+  cmds_pfrule='-h --help --log-file -d --delete -I --interactive -L --label -H --host --dynamic --remote --local --binding'
+  cmds_pfrules='-h --help -f --format -c --column --max-width --noindent --quote --log-file'
+  cmds_pull='-h --help --log-file -s --strategy -p --password'
+  cmds_push='-h --help --log-file -s --strategy -p --password'
+  cmds_snippet='-h --help --log-file -d --delete -I --interactive -L --label -s --script'
+  cmds_snippets='-h --help -f --format -c --column --max-width --noindent --quote --log-file'
+  cmds_sync='-h --help --log-file -c --credentials'
+  cmds_tags='-h --help -f --format -c --column --max-width --noindent --quote --log-file -d --delete'
+
+  cmd=""
+  words[0]=""
+  completed="${cmds}"
+  for var in "${words[@]:1}"
+  do
+    if [[ ${var} == -* ]] ; then
+      break
+    fi
+    if [ -z "${cmd}" ] ; then
+      proposed="${var}"
+    else
+      proposed="${cmd}_${var}"
+    fi
+    local i="cmds_${proposed}"
+    local comp="${!i}"
+    if [ -z "${comp}" ] ; then
+      break
+    fi
+    if [[ ${comp} == -* ]] ; then
+      if [[ ${cur} != -* ]] ; then
+        completed=""
+        break
+      fi
+    fi
+    cmd="${proposed}"
+    completed="${comp}"
+  done
+
+  if [ -z "${completed}" ] ; then
+    COMPREPLY=( $( compgen -f -- "$cur" ) $( compgen -d -- "$cur" ) )
+  else
+    COMPREPLY=( $(compgen -W "${completed}" -- ${cur}) )
+  fi
+  return 0
+}
+complete -F _serverauditor serverauditor

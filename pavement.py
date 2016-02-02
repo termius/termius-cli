@@ -2,12 +2,15 @@
 """Config-like for paver tool."""
 import sys
 from setuptools import find_packages
-from paver.easy import task, sh, needs  # noqa
+from paver.easy import task, sh, needs, path  # noqa
 from paver.setuputils import setup  # noqa
 
 sys.path.append('.')
 from serverauditor_sshconfig import get_version  # noqa
 
+
+# pylint: disable=invalid-name
+cli_command_name = 'serverauditor'
 
 # pylint: disable=invalid-name
 requires = [
@@ -16,9 +19,8 @@ requires = [
     'requests==2.7.0',
     'cryptography==1.2.2',
     'six==1.10.0',
-    'pyopenssl',
-    'ndg-httpsclient',
-    'pyasn1',
+    'pyopenssl==0.15.1',
+    'ndg-httpsclient==0.4.0',
 ]
 
 # pylint: disable=invalid-name
@@ -69,7 +71,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'serverauditor = serverauditor_sshconfig.main:main'
+            '{} = serverauditor_sshconfig.main:main'.format(cli_command_name)
         ],
         'serverauditor.handlers': handlers,
         'serverauditor.info.formatters': [
@@ -106,3 +108,24 @@ def lint():
 def bats():
     """Run tests on CLI usage."""
     sh('bats --tap tests/integration')
+
+
+@task
+def create_compeletion(info):
+    """Generate bash completion."""
+    completion_dir = path('contrib/completion/bash')
+    if not completion_dir.exists():
+        completion_dir.makedirs_p()
+    completion_path = completion_dir / cli_command_name
+    if completion_path.exists():
+        info('Completion exists')
+    else:
+        sh('{} complete > {}'.format(cli_command_name, completion_path))
+
+
+@task
+def clean_compeletion(info):
+    """Generate bash completion."""
+    completion_path = path('contrib/bash/complete') / cli_command_name
+    completion_path.remove()
+    info('Completion exists')
