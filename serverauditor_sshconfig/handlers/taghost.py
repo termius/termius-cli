@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Module with tag list command helpers."""
-from ...core.exceptions import DoesNotExistException
-from ..models import Tag, TagHost
+from ..core.exceptions import DoesNotExistException
+from ..core.models.terminal import Tag, TagHost
 
 
 class TagListArgs(object):

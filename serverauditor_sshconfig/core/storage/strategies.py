@@ -4,7 +4,7 @@
 Strategy is some additional behaviour for storage.
 """
 import six
-from ..models import DeleteSets
+from ..models.base import DeleteSets
 
 
 # pylint: disable=too-few-public-methods

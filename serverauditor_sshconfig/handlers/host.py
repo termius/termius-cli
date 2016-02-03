@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Module with Host commands."""
-from ...core.exceptions import ArgumentRequiredException
-from ...core.commands import DetailCommand, ListCommand
-from ..models import Host, Group, TagHost
+from ..core.exceptions import ArgumentRequiredException
+from ..core.commands import DetailCommand, ListCommand
+from ..core.models.terminal import Host, Group, TagHost
 from .taghost import TagListArgs
 from .ssh_config import SshConfigArgs
 

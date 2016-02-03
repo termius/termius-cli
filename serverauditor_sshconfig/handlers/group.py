@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Module with Group commands."""
 import functools
-from ...core.commands import DetailCommand, ListCommand
-from ..models import Group
+from ..core.commands import DetailCommand, ListCommand
+from ..core.models.terminal import Group
 from .ssh_config import SshConfigArgs
 
 

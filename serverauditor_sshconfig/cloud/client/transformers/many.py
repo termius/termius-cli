@@ -3,7 +3,7 @@
 from collections import OrderedDict
 from ....core.exceptions import DoesNotExistException
 from ....core.storage.strategies import SoftDeleteStrategy
-from ...models import (
+from ....core.models.terminal import (
     Host, Group,
     Tag, SshKey,
     SshIdentity, SshConfig,

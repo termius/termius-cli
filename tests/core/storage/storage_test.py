@@ -3,7 +3,7 @@ import tempfile
 from six import integer_types
 from mock import patch
 from unittest import TestCase
-from serverauditor_sshconfig.cloud.models import (
+from serverauditor_sshconfig.core.models.terminal import (
     Host, SshConfig, SshIdentity, SshKey, Group
 )
 from serverauditor_sshconfig.core.exceptions import DoesNotExistException

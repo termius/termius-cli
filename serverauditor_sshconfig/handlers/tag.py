@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Module for tag command."""
-from ...core.commands import ListCommand
-from ...core.commands.mixins import InstanceOpertionMixin, GetObjectsMixin
-from ..models import Tag
+from ..core.commands import ListCommand
+from ..core.commands.mixins import InstanceOpertionMixin, GetObjectsMixin
+from ..core.models.terminal import Tag
 
 
 class TagsCommand(GetObjectsMixin, InstanceOpertionMixin, ListCommand):

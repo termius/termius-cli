@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Module with user data models."""
-from ..core.models import Model, Field
+from .base import Model, Field
 
 
 class Tag(Model):

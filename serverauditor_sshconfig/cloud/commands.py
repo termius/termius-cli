@@ -3,10 +3,10 @@
 import abc
 from base64 import b64decode
 import six
-from ...core.commands import AbstractCommand
-from ..client.controllers import ApiController
-from ..client.cryptor import RNCryptor
-from ...core.storage.strategies import RelatedGetStrategy, SyncSaveStrategy
+from ..core.commands import AbstractCommand
+from .client.controllers import ApiController
+from .client.cryptor import RNCryptor
+from ..core.storage.strategies import RelatedGetStrategy, SyncSaveStrategy
 
 
 @six.add_metaclass(abc.ABCMeta)

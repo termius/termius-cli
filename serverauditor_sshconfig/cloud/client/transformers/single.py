@@ -3,7 +3,7 @@
 import logging
 from collections import defaultdict
 from operator import attrgetter
-from ....core.models import RemoteInstance
+from ....core.models.base import RemoteInstance
 from ....core.exceptions import DoesNotExistException
 from .base import Transformer
 from .utils import id_getter, map_zip_model_fields
