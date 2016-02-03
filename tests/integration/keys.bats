@@ -2,21 +2,26 @@
 
 setup() {
     rm ~/.serverauditor.storage || true
+    touch key
 }
 
-@test "snippets help by arg" {
-    run serverauditor snippets --help
+teardown() {
+    rm key
+}
+
+@test "keys help by arg" {
+    run serverauditor keys --help
     [ "$status" -eq 0 ]
 }
 
-@test "snippets help command" {
-    run serverauditor help snippets
+@test "keys help command" {
+    run serverauditor help keys
     [ "$status" -eq 0 ]
 }
 
 @test "List snippets in table format" {
-    serverauditor snippet -L test --script 'ls'
-    run serverauditor snippets
+    serverauditor key -L test -i key
+    run serverauditor keys
     [ "$status" -eq 0 ]
     ! [ -z $(cat ~/.serverauditor.storage) ]
 }

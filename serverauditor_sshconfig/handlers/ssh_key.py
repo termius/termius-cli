@@ -6,8 +6,13 @@ from ..core.commands import DetailCommand, ListCommand
 from ..core.models.terminal import SshKey
 
 
+# pylint: disable=too-few-public-methods
 class SshKeyGeneratorMixin(object):
+    """Mixin for create new ssh key from file."""
+
+    # pylint: disable=no-self-use
     def generate_ssh_key_instance(self, path):
+        """Generate ssh key from file."""
         with open(path, 'r') as _file:
             content = _file.read()
         label = os.path.basename(path)
@@ -44,6 +49,9 @@ class SshKeyCommand(SshKeyGeneratorMixin, DetailCommand):
         """Convert args to instance."""
         if instance:
             ssh_key = instance
+            if args.identity_file:
+                with open(args.identity_file, 'r') as _file:
+                    ssh_key.private_key = _file.read()
         else:
             ssh_key = self.generate_ssh_key_instance(args.identity_file)
 

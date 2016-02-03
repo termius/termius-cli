@@ -70,6 +70,7 @@ class SshIdentityCommand(SshKeyGeneratorMixin, DetailCommand):
         return identity
 
     def check_incompatible_args(self, args):
+        """Raise an error when passed incompatible args."""
         if args.identity_file and args.ssh_key:
             raise InvalidArgumentException(
                 'You can not use ssh key and identity file together!'
