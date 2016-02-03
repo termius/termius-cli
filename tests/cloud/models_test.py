@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 import six
-from collections import OrderedDict
-from mock import patch, Mock
+from mock import patch
 
-from serverauditor_sshconfig.cloud.models import Model
-from serverauditor_sshconfig.cloud.models import (
+from serverauditor_sshconfig.core.models.base import Model
+from serverauditor_sshconfig.core.models.terminal import (
     Host, Group, Tag, SshKey, SshIdentity, SshConfig, Group, Host, PFRule
 )
 

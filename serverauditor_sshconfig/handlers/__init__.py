@@ -6,5 +6,5 @@ from .snippet import SnippetCommand, SnippetsCommand  # noqa
 from .pf_rule import PFRuleCommand, PFRulesCommand  # noqa
 from .ssh_identity import SshIdentityCommand, SshIdentitiesCommand  # noqa
 from .tag import TagsCommand  # noqa
-from .sync import PushCommand, PullCommand  # noqa
 from .info import InfoCommand  # noqa
+from .connect import ConnectCommand  # noqa

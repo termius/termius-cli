@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """Module with cliff single formatter into ssh command."""
 from cliff.formatters.base import SingleFormatter
+from .mixins import SshCommandFormatterMixin
 
 
-class SshFormatter(SingleFormatter):
+class SshFormatter(SshCommandFormatterMixin, SingleFormatter):
     """Cliff formatter for ssh config into ssh command."""
 
     def add_argument_group(self, parser):
@@ -21,22 +22,6 @@ class SshFormatter(SingleFormatter):
     def emit_one(self, column_names, data, stdout, parsed_args):
         """Generate ssh config command."""
         ssh_config = dict(zip(column_names, data))
-        username = ssh_config.get('ssh_identity', dict()).get('username', '')
         address = parsed_args.address or ssh_config['address']
-        stdout.write('ssh {port} {auth}\n'.format(
-            port=format_port(ssh_config['port']),
-            auth=ssh_auth(username, address)
-        ))
+        stdout.write(self.render_command(ssh_config, address))
         return
-
-
-def ssh_auth(username, address):
-    """Render username and address part."""
-    if username:
-        return '{}@{}'.format(username, address)
-    return '{}'.format(address)
-
-
-def format_port(port):
-    """Render port option."""
-    return (port and '-p {}'.format(port)) or ''

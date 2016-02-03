@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """Module with Snippet commands."""
 from operator import attrgetter
-from ...core.commands import ListCommand, DetailCommand
-from ...core.exceptions import ArgumentRequiredException
-from ..models import Snippet
+from ..core.commands import ListCommand, DetailCommand
+from ..core.exceptions import ArgumentRequiredException
+from ..core.models.terminal import Snippet
 
 
 class SnippetCommand(DetailCommand):

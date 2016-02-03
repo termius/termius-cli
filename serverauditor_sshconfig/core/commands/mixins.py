@@ -7,6 +7,8 @@ from ..exceptions import (
     TooManyEntriesException
 )
 from .utils import parse_ids_names
+from ..models.terminal import SshConfig, SshIdentity
+from ..models.utils import GroupStackGenerator, Merger
 
 
 # pylint: disable=too-few-public-methods
@@ -126,3 +128,48 @@ class InstanceOpertionMixin(object):
         """Log deleting model entry."""
         self.app.stdout.write('{}\n'.format(entry.id))
         self.log.info('Delete object.')
+
+
+class GroupStackGetterMixin(object):
+    """Mixin to get whole stack of parent groups."""
+
+    # pylint: disable=no-self-use
+    def get_group_stack(self, instance):
+        """Generate parent group stack for instance."""
+        stack_generator = GroupStackGenerator(instance)
+        return stack_generator.generate()
+
+
+class SshConfigMergerMixin(GroupStackGetterMixin, object):
+    """Mixin to squash (aka merge) stack to single ssh config."""
+
+    def get_merged_ssh_config(self, instance):
+        """Get merged ssh config instance for instance.
+
+        :param instance: Host or Group instance.
+        """
+        group_stack = self.get_group_stack(instance)
+        full_stack = [instance] + group_stack
+        return self.merge_ssh_config(full_stack)
+
+    def merge_ssh_config(self, full_stack):
+        """Squash full_stack to single ssh_config instance."""
+        ssh_config_merger = self.get_ssh_config_merger(full_stack)
+        ssh_identity_merger = self.get_ssh_identity_merger(ssh_config_merger)
+        ssh_config = ssh_config_merger.merge()
+        ssh_config.ssh_identity = ssh_identity_merger.merge()
+        return ssh_config
+
+    # pylint: disable=no-self-use
+    def get_ssh_config_merger(self, stack):
+        """Create ssh config merger for passed stack."""
+        return Merger(stack, 'ssh_config', SshConfig())
+
+    # pylint: disable=no-self-use
+    def get_ssh_identity_merger(self, ssh_config_merger):
+        """Create ssh_identity merger for passed merger."""
+        stack = [
+            i for i in ssh_config_merger.get_entry_stack()
+            if not i.ssh_identity.is_visible
+        ]
+        return Merger(stack, 'ssh_identity', SshIdentity())

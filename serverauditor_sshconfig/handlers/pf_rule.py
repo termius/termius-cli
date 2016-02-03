@@ -2,11 +2,11 @@
 """Module with PFRule commands."""
 import re
 from operator import attrgetter
-from ...core.exceptions import (
+from ..core.exceptions import (
     InvalidArgumentException, ArgumentRequiredException,
 )
-from ...core.commands import DetailCommand, ListCommand
-from ..models import Host, PFRule
+from ..core.commands import DetailCommand, ListCommand
+from ..core.models.terminal import Host, PFRule
 
 
 class PFRuleCommand(DetailCommand):

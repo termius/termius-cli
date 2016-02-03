@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Module for ssh identity command."""
 from operator import attrgetter
-from ...core.commands import DetailCommand, ListCommand
-from ..models import SshIdentity, SshKey
+from ..core.commands import DetailCommand, ListCommand
+from ..core.models.terminal import SshIdentity, SshKey
 
 
 class SshIdentityCommand(DetailCommand):

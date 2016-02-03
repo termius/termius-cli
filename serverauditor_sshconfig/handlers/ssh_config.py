@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Module with Sshconfig's args helper."""
-from ..models import SshConfig, SshIdentity
-from ...core.exceptions import InvalidArgumentException
+from ..core.models.terminal import SshConfig, SshIdentity
+from ..core.exceptions import InvalidArgumentException
 
 
 class SshConfigArgs(object):
