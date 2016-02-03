@@ -67,9 +67,6 @@ class SshConfigArgs(object):
 
         self.invalid_parameter_set(args)
 
-        if args.generate_key:
-            raise NotImplementedError('Not implemented')
-
         if args.ssh_identity:
             ssh_identity = self.command.get_relation(
                 SshIdentity, args.ssh_identity
