@@ -53,7 +53,7 @@ class InfoCommand(SshConfigMergerMixin, GetRelationMixin,
         instance = self.get_relation(
             parsed_args.entry_type, parsed_args.id_or_name
         )
-        ssh_config = self.get_merged_ssh_confi(instance)
+        ssh_config = self.get_merged_ssh_config(instance)
 
         return self.prepare_fields(ssh_config, instance)
 

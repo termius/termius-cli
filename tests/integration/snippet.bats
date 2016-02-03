@@ -5,12 +5,12 @@ setup() {
 }
 
 @test "Snippet help by arg" {
-    run serverauditor host --help
+    run serverauditor snippet --help
     [ "$status" -eq 0 ]
 }
 
 @test "Snippet help command" {
-    run serverauditor help host
+    run serverauditor help snippet
     [ "$status" -eq 0 ]
 }
 

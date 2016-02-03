@@ -24,10 +24,6 @@ class GroupCommand(DetailCommand):
         """
         parser = super(GroupCommand, self).get_parser(prog_name)
         parser.add_argument(
-            '--generate-key', action='store_true',
-            help='Create and assign automatically a identity file for group.'
-        )
-        parser.add_argument(
             '--ssh', help='Options in ssh_config format.'
         )
         parser.add_argument(

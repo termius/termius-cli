@@ -26,10 +26,6 @@ class HostCommand(DetailCommand):
         """
         parser = super(HostCommand, self).get_parser(prog_name)
         parser.add_argument(
-            '--generate-key', action='store_true',
-            help='Create and assign automatically a identity file for host.'
-        )
-        parser.add_argument(
             '--ssh', metavar='SSH_CONFIG_OPTIONS',
             help='Options in ssh_config format.'
         )
