@@ -17,7 +17,6 @@
     rm ~/.serverauditor || true
 
     run serverauditor login --username $SERVERAUDITOR_USERNAME -p $SERVERAUDITOR_PASSWORD
-    echo $output
     [ "$status" -eq 0 ]
     ! [ -z $(cat ~/.serverauditor) ]
 }

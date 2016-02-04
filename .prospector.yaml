@@ -11,8 +11,6 @@ ignore-paths:
   - serverauditor_sshconfig/core/ssh_config.py  # it's too complex
   - serverauditor_sshconfig/core/cryptor.py  # it's too complex
   - serverauditor_sshconfig/core/utils.py  # it's too complex
-  # TODO Remove this file in production
-  - serverauditor_sshconfig/sync/services/aws.py
 
 ignore-patterns:
   - (^|/)(?!serverauditor_sshconfig)?(/|$)
@@ -24,5 +22,14 @@ pep257:
 pylint:
   options:
     max-parents: 12
+  enable:
+    - fixme
   disable:
     - super-on-old-class
+
+pyroma:
+  run: true
+
+mccabe:
+  options:
+    max-complexity: 6

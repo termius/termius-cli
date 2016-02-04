@@ -9,7 +9,6 @@ from .ssh_config import SshConfigArgs
 class GroupCommand(DetailCommand):
     """Operate with Group object."""
 
-    allowed_operations = DetailCommand.all_operations
     model_class = Group
 
     def __init__(self, *args, **kwargs):
@@ -17,12 +16,8 @@ class GroupCommand(DetailCommand):
         super(GroupCommand, self).__init__(*args, **kwargs)
         self.ssh_config_args = SshConfigArgs(self)
 
-    def get_parser(self, prog_name):
-        """Create command line argument parser.
-
-        Use it to add extra options to argument parser.
-        """
-        parser = super(GroupCommand, self).get_parser(prog_name)
+    def extend_parser(self, parser):
+        """Add more arguments to parser."""
         parser.add_argument(
             '--ssh', help='Options in ssh_config format.'
         )
@@ -33,10 +28,6 @@ class GroupCommand(DetailCommand):
 
         self.ssh_config_args.add_agrs(parser)
         return parser
-
-    def create(self, parsed_args):
-        """Handle create new instance command."""
-        self.create_instance(parsed_args)
 
     # pylint: disable=no-self-use
     def serialize_args(self, args, instance=None):
@@ -62,12 +53,8 @@ class GroupsCommand(ListCommand):
 
     model_class = Group
 
-    def get_parser(self, prog_name):
-        """Create command line argument parser.
-
-        Use it to add extra options to argument parser.
-        """
-        parser = super(GroupsCommand, self).get_parser(prog_name)
+    def extend_parser(self, parser):
+        """Add more arguments to parser."""
         parser.add_argument(
             '-r', '--recursive', action='store_true',
             help=('List groups of current group '

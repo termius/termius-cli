@@ -59,7 +59,8 @@ setup() {
 
 @test "Delete group" {
     group=$(serverauditor group -L 'test group' --port 2 --username 'use r name')
-    run serverauditor group --delete $group
+    run serverauditor group --delete $group --debug
+    echo ${lines[*]}
     [ "$status" -eq 0 ]
     ! [ -z $(cat ~/.serverauditor.storage) ]
 }

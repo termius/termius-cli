@@ -16,19 +16,19 @@ load test_helper
 
     serverauditor pull -p $SERVERAUDITOR_PASSWORD
     run serverauditor push -p $SERVERAUDITOR_PASSWORD
-    echo ${lines[*]}
     [ "$status" -eq 0 ]
 }
 
-@test "push logged in incorrect password" {
+@test "push nothing logged in incorrect password" {
     login_serverauditor
 
-    run serverauditor push -p ""
+    run serverauditor push -p "" --debug
+    echo ${lines[*]}
     [ "$status" -eq 1 ]
 }
 
 @test "push not logged in" {
-
+    serverauditor logout
     run serverauditor pull -p ""
     [ "$status" -eq 1 ]
 }

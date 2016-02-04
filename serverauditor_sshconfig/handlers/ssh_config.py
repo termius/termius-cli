@@ -49,10 +49,6 @@ class SshConfigArgs(object):
             help=('Selects a file from which the identity (private key) '
                   'for public key authentication is read.')
         )
-        parser.add_argument(
-            'command', nargs='?', metavar='COMMAND',
-            help='Create and assign automatically snippet.'
-        )
         return parser
 
     def serialize_args(self, args, instance):

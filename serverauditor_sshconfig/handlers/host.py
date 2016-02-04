@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Module with Host commands."""
-from ..core.exceptions import ArgumentRequiredException
 from ..core.commands import DetailCommand, ListCommand
+from ..core.commands.single import RequiredOptions
 from ..core.models.terminal import Host, Group, TagHost
 from .taghost import TagListArgs
 from .ssh_config import SshConfigArgs
@@ -10,8 +10,8 @@ from .ssh_config import SshConfigArgs
 class HostCommand(DetailCommand):
     """Operate with Host object."""
 
-    allowed_operations = DetailCommand.all_operations
     model_class = Host
+    required_options = RequiredOptions(create=('address',))
 
     def __init__(self, *args, **kwargs):
         """Construct new host command."""
@@ -19,12 +19,8 @@ class HostCommand(DetailCommand):
         self.ssh_config_args = SshConfigArgs(self)
         self.taglist_args = TagListArgs(self)
 
-    def get_parser(self, prog_name):
-        """Create command line argument parser.
-
-        Use it to add extra options to argument parser.
-        """
-        parser = super(HostCommand, self).get_parser(prog_name)
+    def extend_parser(self, parser):
+        """Add more arguments to parser."""
         parser.add_argument(
             '--ssh', metavar='SSH_CONFIG_OPTIONS',
             help='Options in ssh_config format.'
@@ -44,13 +40,6 @@ class HostCommand(DetailCommand):
 
         self.ssh_config_args.add_agrs(parser)
         return parser
-
-    def create(self, parsed_args):
-        """Handle create new instance command."""
-        if not parsed_args.address:
-            raise ArgumentRequiredException('Address is required.')
-
-        self.create_instance(parsed_args)
 
     def update_children(self, instance, args):
         """Create new model entry."""
@@ -92,12 +81,8 @@ class HostsCommand(ListCommand):
         super(HostsCommand, self).__init__(*args, **kwargs)
         self.taglist_args = TagListArgs(self)
 
-    def get_parser(self, prog_name):
-        """Create command line argument parser.
-
-        Use it to add extra options to argument parser.
-        """
-        parser = super(HostsCommand, self).get_parser(prog_name)
+    def extend_parser(self, parser):
+        """Add more arguments to parser."""
         parser.add_argument(
             '-t', '--tags', metavar='TAG_LIST',
             help=('(Comma separated tag list) list hosts with such tags.')
@@ -113,8 +98,9 @@ class HostsCommand(ListCommand):
         """Process CLI call."""
         group_id = self.get_group_id(parsed_args)
         hosts = self.get_hosts(group_id)
-        filtered_hosts = self.filter_host_by_tags(hosts, parsed_args)
-        return self.prepare_result(filtered_hosts)
+        if parsed_args.tags:
+            hosts = self.filter_host_by_tags(hosts, parsed_args.tags)
+        return self.prepare_result(hosts)
 
     def get_hosts(self, group_id):
         """Get host list by group id."""
@@ -124,19 +110,16 @@ class HostsCommand(ListCommand):
         """Get group id by group id or label."""
         return args.group and self.get_relation(Group, args.group).id
 
-    def filter_host_by_tags(self, hosts, args):
+    def filter_host_by_tags(self, hosts, tags):
         """Filter host list by tag csv list."""
-        if args.tags:
-            tags = self.taglist_args.get_tag_instances(args.tags)
-            tag_ids = [i.id for i in tags]
-            host_ids = [i.id for i in hosts]
-            taghost_instances = self.storage.filter(TagHost, all, **{
-                'tag.rcontains': tag_ids
-            })
-            filtered_host_id = {i.host for i in taghost_instances}
-            intersected_host_ids = set(host_ids) and filtered_host_id
-            return self.storage.filter(
-                Host, **{'id.rcontains': intersected_host_ids}
-            )
-        else:
-            return hosts
+        tags = self.taglist_args.get_tag_instances(tags)
+        tag_ids = [i.id for i in tags]
+        host_ids = [i.id for i in hosts]
+        taghost_instances = self.storage.filter(TagHost, all, **{
+            'tag.rcontains': tag_ids
+        })
+        filtered_host_id = {i.host for i in taghost_instances}
+        intersected_host_ids = set(host_ids) and filtered_host_id
+        return self.storage.filter(
+            Host, **{'id.rcontains': intersected_host_ids}
+        )

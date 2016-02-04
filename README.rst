@@ -1,6 +1,18 @@
 Serverauditor ssh config utility
 ================================
 
+.. image:: https://travis-ci.org/Crystalnix/serverauditor-sshconfig.svg?branch=master
+    :target: https://travis-ci.org/Crystalnix/serverauditor-sshconfig
+
+.. image:: https://codeclimate.com/github/Crystalnix/serverauditor-sshconfig/badges/gpa.svg
+   :target: https://codeclimate.com/github/Crystalnix/serverauditor-sshconfig
+   :alt: Code Climate
+
+.. image:: https://codeclimate.com/github/Crystalnix/serverauditor-sshconfig/badges/coverage.svg
+   :target: https://codeclimate.com/github/Crystalnix/serverauditor-sshconfig/coverage
+   :alt: Test Coverage
+
+
 
 Installation
 ------------

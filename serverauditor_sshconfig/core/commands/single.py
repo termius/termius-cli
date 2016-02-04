@@ -1,42 +1,45 @@
 # -*- coding: utf-8 -*-
 """Module with base commands per entries."""
+from collections import namedtuple
 from ..exceptions import ArgumentRequiredException
 from ..storage.strategies import (
     RelatedSaveStrategy,
     RelatedGetStrategy,
 )
-from .mixins import GetRelationMixin, GetObjectsMixin, InstanceOpertionMixin
+from .mixins import GetRelationMixin, GetObjectsMixin, InstanceOperationMixin
 from .base import AbstractCommand
 
 
+class RequiredOptions(namedtuple('RequiredOptions',
+                                 ['create', 'update', 'delete'])):
+    """Class for keeping required options."""
+
+    @staticmethod
+    def __new__(cls, create=(), update=('entry',), delete=('entry',)):
+        """Make field optionals."""
+        return super(RequiredOptions, cls).__new__(cls, create, update, delete)
+
+
 class DetailCommand(GetRelationMixin, GetObjectsMixin,
-                    InstanceOpertionMixin, AbstractCommand):
+                    InstanceOperationMixin, AbstractCommand):
     """Command for operating with models by id or names."""
 
     save_strategy = RelatedSaveStrategy
     get_strategy = RelatedGetStrategy
 
-    all_operations = {'delete', 'update', 'create'}
-    allowed_operations = set()
-    """Allowed operations for detail command.
+    required_options = RequiredOptions()
 
-    E.g. allowed_operations = {'delete', 'update', 'create'}
-    """
-
-    def __init__(self, *args, **kwargs):
-        """Construct new detail command."""
-        super(DetailCommand, self).__init__(*args, **kwargs)
-        assert self.all_operations.intersection(self.allowed_operations)
+    def create(self, parsed_args):
+        """Handle create new instance command."""
+        self.validate_args(parsed_args, 'create')
+        self.create_instance(parsed_args)
 
     def update(self, parsed_args):
         """Handle update command.
 
         Get models from storage, parse args and update models.
         """
-        if not parsed_args.entry:
-            raise ArgumentRequiredException(
-                'At least one ID or NAME are required.'
-            )
+        self.validate_args(parsed_args, 'update')
         instances = self.get_objects(parsed_args.entry)
         for i in instances:
             self.update_instance(parsed_args, i)
@@ -46,63 +49,55 @@ class DetailCommand(GetRelationMixin, GetObjectsMixin,
 
         Get models from storage, delete models.
         """
-        if not parsed_args.entry:
-            raise ArgumentRequiredException(
-                'At least one ID or NAME are required.'
-            )
+        self.validate_args(parsed_args, 'delete')
         instances = self.get_objects(parsed_args.entry)
         for i in instances:
             self.delete_instance(i)
 
-    @property
-    def is_allow_delete(self):
-        """Check is command handle model deleting."""
-        return 'delete' in self.allowed_operations
-
-    @property
-    def is_allow_update(self):
-        """Check is command handle model updating."""
-        return 'update' in self.allowed_operations
-
-    @property
-    def is_allow_create(self):
-        """Check is command handle model creating."""
-        return 'create' in self.allowed_operations
-
     def get_parser(self, prog_name):
-        """Create command line argument parser.
-
-        Use it to add extra options to argument parser.
-        """
+        """Add more arguments to parser."""
         parser = super(DetailCommand, self).get_parser(prog_name)
-        if self.is_allow_delete:
-            parser.add_argument(
-                '-d', '--delete',
-                action='store_true', help='Delete entries.'
-            )
-        if self.is_allow_create or self.is_allow_update:
-            parser.add_argument(
-                '-I', '--interactive', action='store_true',
-                help='Enter to interactive mode.'
-            )
-            parser.add_argument(
-                '-L', '--label', metavar='NAME',
-                help="Entry's label in Serverauditor"
-            )
-        if self.is_allow_delete or self.is_allow_update:
-            parser.add_argument(
-                'entry', nargs='*', metavar='ID or NAME',
-                help='Pass to edit exited entries.'
-            )
-
+        parser.add_argument(
+            '-d', '--delete',
+            action='store_true', help='Delete entries.'
+        )
+        parser.add_argument(
+            '-I', '--interactive', action='store_true',
+            help='Enter to interactive mode.'
+        )
+        parser.add_argument(
+            '-L', '--label', metavar='NAME',
+            help="Entry's label in Serverauditor"
+        )
+        parser.add_argument(
+            'entry', nargs='*', metavar='ID or NAME',
+            help='Pass to edit exited entries.'
+        )
         return parser
 
     def take_action(self, parsed_args):
         """Process CLI call."""
-        if self.is_allow_delete and parsed_args.delete:
+        if parsed_args.delete:
             self.delete(parsed_args)
+        elif not parsed_args.entry:
+            self.create(parsed_args)
         else:
-            if self.is_allow_create and not parsed_args.entry:
-                self.create(parsed_args)
-            elif self.is_allow_update and parsed_args.entry:
-                self.update(parsed_args)
+            self.update(parsed_args)
+
+    def validate_args(self, args, action):
+        """Raise ArgumentRequiredException if any required options' missed."""
+        arg_list = getattr(self.required_options, action)
+        missed_options_list = [
+            i for i in arg_list if getattr(args, i) is None
+        ]
+        if missed_options_list:
+            message = self.generate_requirement_message(missed_options_list)
+            raise ArgumentRequiredException(message)
+
+    # pylint: disable=no-self-use
+    def generate_requirement_message(self, options):
+        """Render error message for missed required options."""
+        if len(options) == 1:
+            return 'Option {} is required!'.format(options[0])
+        else:
+            return 'Options {} are required!'.format(','.join(options))

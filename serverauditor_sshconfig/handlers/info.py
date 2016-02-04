@@ -20,12 +20,8 @@ class InfoCommand(SshConfigMergerMixin, GetRelationMixin,
         """Return entrypoint with cliff formatters."""
         return 'serverauditor.info.formatters'
 
-    def get_parser(self, prog_name):
-        """Create command line argument parser.
-
-        Use it to add extra options to argument parser.
-        """
-        parser = super(InfoCommand, self).get_parser(prog_name)
+    def extend_parser(self, parser):
+        """Add more arguments to parser."""
         parser.add_argument(
             '-G', '--group', dest='entry_type',
             action='store_const', const=Group, default=Host,

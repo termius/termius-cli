@@ -36,10 +36,12 @@ class AbstractCommand(PasswordPromptMixin, Command):
         )
 
     def get_parser(self, prog_name):
-        """Create command line argument parser.
-
-        Use it to add extra options to argument parser.
-        """
+        """Create command line argument parser."""
         parser = super(AbstractCommand, self).get_parser(prog_name)
         parser.add_argument('--log-file', help='Path to log file.')
+        return self.extend_parser(parser)
+
+    # pylint: disable=no-self-use
+    def extend_parser(self, parser):
+        """Add more arguments to parser."""
         return parser

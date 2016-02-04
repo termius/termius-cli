@@ -68,8 +68,7 @@ setup() {
 
 @test "Delete host" {
     host=$(serverauditor host -L test_3 --port 22 --address google.com --username root --password 'psswrd')
-    run serverauditor host --delete $host --debug
-    echo ${lines[*]}
+    run serverauditor host --delete $host
     [ "$status" -eq 0 ]
     ! [ -z $(cat ~/.serverauditor.storage) ]
 }

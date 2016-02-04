@@ -3,6 +3,7 @@
 import abc
 from base64 import b64decode
 import six
+from ..core.api import API
 from ..core.commands import AbstractCommand
 from .client.controllers import ApiController
 from .client.cryptor import RNCryptor
@@ -13,12 +14,8 @@ from ..core.storage.strategies import RelatedGetStrategy, SyncSaveStrategy
 class CloudSynchronizationCommand(AbstractCommand):
     """Base class for pull and push commands."""
 
-    def get_parser(self, prog_name):
-        """Create command line argument parser.
-
-        Use it to add extra options to argument parser.
-        """
-        parser = super(CloudSynchronizationCommand, self).get_parser(prog_name)
+    def extend_parser(self, parser):
+        """Add more arguments to parser."""
         parser.add_argument(
             '-s', '--strategy', metavar='STRATEGY_NAME',
             help='Force to use specific strategy to merge data.'
@@ -38,6 +35,7 @@ class CloudSynchronizationCommand(AbstractCommand):
         password = parsed_args.password
         if password is None:
             password = self.prompt_password()
+        self.validate_password(password)
         cryptor = RNCryptor()
         cryptor.password = password
         cryptor.encryption_salt = encryption_salt
@@ -45,6 +43,11 @@ class CloudSynchronizationCommand(AbstractCommand):
         controller = ApiController(self.storage, self.config, cryptor)
         with self.storage:
             self.process_sync(controller)
+
+    def validate_password(self, password):
+        """Raise an error when password invalid."""
+        username = self.config.get('User', 'username')
+        API().login(username, password)
 
 
 class PushCommand(CloudSynchronizationCommand):

@@ -14,12 +14,8 @@ class ConnectCommand(SshCommandFormatterMixin, SshConfigMergerMixin,
 
     get_strategy = RelatedGetStrategy
 
-    def get_parser(self, prog_name):
-        """Create command line argument parser.
-
-        Use it to add extra options to argument parser.
-        """
-        parser = super(ConnectCommand, self).get_parser(prog_name)
+    def extend_parser(self, parser):
+        """Add more arguments to parser."""
         parser.add_argument(
             'host', metavar='HOST_ID or HOST_NAME',
             help='Connect to this host.'
