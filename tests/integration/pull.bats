@@ -26,7 +26,11 @@ load test_helper
 }
 
 @test "pull not logged in" {
-
+    serverauditor logout
     run serverauditor pull -p ""
     [ "$status" -eq 1 ]
+}
+
+setup() {
+    rm ~/.serverauditor.storage || true
 }

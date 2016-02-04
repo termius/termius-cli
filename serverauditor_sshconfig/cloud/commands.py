@@ -3,6 +3,7 @@
 import abc
 from base64 import b64decode
 import six
+from ..core.api import API
 from ..core.commands import AbstractCommand
 from .client.controllers import ApiController
 from .client.cryptor import RNCryptor
@@ -34,6 +35,7 @@ class CloudSynchronizationCommand(AbstractCommand):
         password = parsed_args.password
         if password is None:
             password = self.prompt_password()
+        self.validate_password(password)
         cryptor = RNCryptor()
         cryptor.password = password
         cryptor.encryption_salt = encryption_salt
@@ -41,6 +43,11 @@ class CloudSynchronizationCommand(AbstractCommand):
         controller = ApiController(self.storage, self.config, cryptor)
         with self.storage:
             self.process_sync(controller)
+
+    def validate_password(self, password):
+        """Raise an error when password invalid."""
+        username = self.config.get('User', 'username')
+        API().login(username, password)
 
 
 class PushCommand(CloudSynchronizationCommand):
