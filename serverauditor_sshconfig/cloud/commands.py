@@ -5,6 +5,13 @@ from base64 import b64decode
 import six
 from ..core.api import API
 from ..core.commands import AbstractCommand
+from ..core.models.terminal import (
+    SshKey, Snippet,
+    SshIdentity, SshConfig,
+    Tag, Group,
+    Host, PFRule,
+    TagHost
+)
 from .client.controllers import ApiController
 from .client.cryptor import RNCryptor
 from ..core.storage.strategies import RelatedGetStrategy, SyncSaveStrategy
@@ -71,3 +78,35 @@ class PullCommand(CloudSynchronizationCommand):
         """Pull updated remote instances."""
         api_controller.get_bulk()
         self.log.info('Pull data from Serverauditor cloud.')
+
+
+class FullCleanCommand(CloudSynchronizationCommand):
+    """Pull, delete all data and push to Serverauditor cloud."""
+
+    get_strategy = RelatedGetStrategy
+    save_strategy = SyncSaveStrategy
+
+    supported_models = reversed((
+        SshKey, Snippet,
+        SshIdentity, SshConfig,
+        Tag, Group,
+        Host, PFRule,
+        TagHost
+    ))
+
+    def process_sync(self, api_controller):
+        """Pull updated remote instances."""
+        api_controller.get_bulk()
+        with self.storage:
+            self.full_clean()
+        api_controller.post_bulk()
+        self.log.info('Full clean data from Serverauditor cloud.')
+
+    def full_clean(self):
+        for model in self.supported_models:
+            self.log.info('Start cleaning %s...', model)
+            instances = self.storage.get_all(model)
+            for i in instances:
+                self.storage.delete(i)
+            self.log.info('Complete cleaning')
+

@@ -88,13 +88,13 @@ class DeleteSetsTransformer(GetPrimaryKeyTransformerMixin,
                             ManyTransformer):
     """Transformer for deleted_sets field."""
 
-    supported_models = (
+    supported_models = reversed((
         SshKey, Snippet,
         SshIdentity, SshConfig,
         Tag, Group,
         Host, PFRule,
         TagHost
-    )
+    ))
 
     def create_child_transformer(self, model):
         """Create transformer for sub transformers."""
