@@ -14,7 +14,7 @@ load test_helper
 @test "pull logged in" {
     login_serverauditor
 
-    run serverauditor pull -p $Serverauditor_password
+    run serverauditor pull -p $SERVERAUDITOR_PASSWORD
     [ "$status" -eq 0 ]
 }
 
@@ -22,11 +22,11 @@ load test_helper
     login_serverauditor
 
     run serverauditor pull -p ""
-    [ "$status" -eq 0 ]
+    [ "$status" -eq 1 ]
 }
 
 @test "pull not logged in" {
 
     run serverauditor pull -p ""
-    [ "$status" -eq 0 ]
+    [ "$status" -eq 1 ]
 }

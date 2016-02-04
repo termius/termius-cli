@@ -14,7 +14,9 @@ load test_helper
 @test "push logged in" {
     login_serverauditor
 
-    run serverauditor push -p $Serverauditor_password
+    serverauditor pull -p $SERVERAUDITOR_PASSWORD
+    run serverauditor push -p $SERVERAUDITOR_PASSWORD
+    echo ${lines[*]}
     [ "$status" -eq 0 ]
 }
 
@@ -22,11 +24,15 @@ load test_helper
     login_serverauditor
 
     run serverauditor push -p ""
-    [ "$status" -eq 0 ]
+    [ "$status" -eq 1 ]
 }
 
 @test "push not logged in" {
 
     run serverauditor pull -p ""
-    [ "$status" -eq 0 ]
+    [ "$status" -eq 1 ]
+}
+
+setup() {
+    rm ~/.serverauditor.storage || true
 }

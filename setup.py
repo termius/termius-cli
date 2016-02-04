@@ -51,7 +51,7 @@ setup(
     url='https://github.com/Crystalnix/serverauditor-sshconfig',
     description='Serverauditor ssh-config utility.',
     keywords=['serverauditor', 'crystalnix'],
-    packages=find_packages(),
+    packages=find_packages(exclude=['tests']),
     install_requires=requires,
     test_suite='nose.collector',
     zip_safe=False,

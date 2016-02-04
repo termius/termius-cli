@@ -1,4 +1,4 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
 
 import fnmatch
 import getpass
@@ -51,7 +51,7 @@ class SSHConfig(object):
                 os.mkdir(ssh_dir, 0o700)
 
             with open(path, 'w') as _file:
-                _file.write("# File was created by ServerAuditor\n\n")
+                _file.write('# File was created by ServerAuditor\n\n')
 
             return
 
@@ -77,7 +77,7 @@ class SSHConfig(object):
                 if val[i] == '"':
                     end = val.find('"', i + 1)
                     if end < 0:
-                        raise SSHConfigException("Unparsable host %s" % val)
+                        raise SSHConfigException('Unparsable host %s' % val)
                     hosts.append(val[i + 1:end])
                     i = end + 1
                 elif not val[i].isspace():
@@ -100,7 +100,7 @@ class SSHConfig(object):
 
             match = re.match(settings_regex, line)
             if not match:
-                raise SSHConfigException("Unparsable line %s" % line)
+                raise SSHConfigException('Unparsable line %s' % line)
             key = match.group(1).lower()
             value = match.group(2)
 
