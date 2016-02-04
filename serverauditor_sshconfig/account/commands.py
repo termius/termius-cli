@@ -23,15 +23,10 @@ class LoginCommand(BaseAccountCommand):
         """Ask username prompt."""
         return six.moves.input("Serverauditor's username: ")
 
-    def get_parser(self, prog_name):
-        """Create command line argument parser.
-
-        Use it to add extra options to argument parser.
-        """
-        parser = super(LoginCommand, self).get_parser(prog_name)
+    def extend_parser(self, parser):
+        """Add more arguments to parser."""
         parser.add_argument('-u', '--username', metavar='USERNAME')
         parser.add_argument('-p', '--password', metavar='PASSWORD')
-        parser.add_argument('--sync-sshconfig', action='store_true')
         return parser
 
     def take_action(self, parsed_args):
@@ -44,15 +39,6 @@ class LoginCommand(BaseAccountCommand):
 
 class LogoutCommand(BaseAccountCommand):
     """Sign out serverauditor cloud."""
-
-    def get_parser(self, prog_name):
-        """Create command line argument parser.
-
-        Use it to add extra options to argument parser.
-        """
-        parser = super(LogoutCommand, self).get_parser(prog_name)
-        parser.add_argument('--clear-sshconfig', action='store_true')
-        return parser
 
     def take_action(self, _):
         """Process CLI call."""

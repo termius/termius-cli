@@ -81,7 +81,7 @@ class GetObjectsMixin(object):
         return instances
 
 
-class InstanceOpertionMixin(object):
+class InstanceOperationMixin(object):
     """Mixin with methods to create, update and delete operations."""
 
     def create_instance(self, args):
@@ -116,18 +116,19 @@ class InstanceOpertionMixin(object):
 
     def log_create(self, entry):
         """Log creating new model entry."""
-        self.app.stdout.write('{}\n'.format(entry.id))
-        self.log.info('Create object.')
+        self._general_log(entry, 'Create object.')
 
     def log_update(self, entry):
         """Log updating model entry."""
-        self.app.stdout.write('{}\n'.format(entry.id))
-        self.log.info('Update object.')
+        self._general_log(entry, 'Update object.')
 
     def log_delete(self, entry):
         """Log deleting model entry."""
+        self._general_log(entry, 'Delete object.')
+
+    def _general_log(self, entry, message):
         self.app.stdout.write('{}\n'.format(entry.id))
-        self.log.info('Delete object.')
+        self.log.info(message)
 
 
 class GroupStackGetterMixin(object):

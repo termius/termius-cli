@@ -6,7 +6,9 @@ import os
 import base64
 import hashlib
 import hmac as python_hmac
+import operator
 
+from cached_property import cached_property
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
@@ -27,8 +29,6 @@ class CryptoSettings(object):
         self._password = None
         self._encryption_salt = None
         self._hmac_salt = None
-        self._encryption_key = None
-        self._hmac_key = None
 
     @property
     def password(self):
@@ -65,21 +65,15 @@ class CryptoSettings(object):
         """Generate random bytes."""
         return os.urandom(int(self.AES_BLOCK_SIZE / 8))
 
-    @property
+    @cached_property
     def encryption_key(self):
         """Get encryption key."""
-        if not getattr(self, '_encryption_key', None):
-            self._encryption_key = self.pbkdf2(
-                self.password, self.encryption_salt
-            )
-        return self._encryption_key
+        return self.pbkdf2(self.password, self.encryption_salt)
 
-    @property
+    @cached_property
     def hmac_key(self):
         """Get hmac key."""
-        if not getattr(self, '_hmac_key', None):
-            self._hmac_key = self.pbkdf2(self.password, self.hmac_salt)
-        return self._hmac_key
+        return self.pbkdf2(self.password, self.hmac_salt)
 
     def pbkdf2(self, password, salt, iterations=10000, key_length=32):
         """Generate key."""
@@ -90,10 +84,10 @@ class CryptoSettings(object):
         )
         return key_generator.derive(password)
 
-    def get_cipher(self, key, initialization_vector):
+    def get_cipher(self, initialization_vector):
         """Generate cipher for AES algorithm."""
         cipher = Cipher(
-            algorithms.AES(key),
+            algorithms.AES(self.encryption_key),
             modes.CBC(initialization_vector),
             backend=self.backend
         )
@@ -106,6 +100,9 @@ class RNCryptor(CryptoSettings):
     NB. You must set encryption_salt, hmac_salt and password
     after creation of RNCryptor's instance.
     """
+
+    encryptor = operator.methodcaller('encryptor')
+    decryptor = operator.methodcaller('decryptor')
 
     # pylint: disable=no-self-use
     def pre_decrypt_data(self, data):
@@ -140,15 +137,12 @@ class RNCryptor(CryptoSettings):
              hmac_salt != self.hmac_salt)):
             raise CryptorException('Bad encryption salt or hmac salt!')
 
-        encryption_key = self.encryption_key
         hmac_key = self.hmac_key
 
         if self._hmac(hmac_key, data[:length - 32]) != hmac:
             raise CryptorException('Bad data!')
 
-        decrypted_data = self._aes_decrypt(
-            encryption_key, initialization_vector, cipher_text
-        )
+        decrypted_data = self._aes_decrypt(initialization_vector, cipher_text)
 
         return self.post_decrypt_data(decrypted_data)
 
@@ -170,15 +164,12 @@ class RNCryptor(CryptoSettings):
         data = self.pre_encrypt_data(data)
 
         encryption_salt = self.encryption_salt
-        encryption_key = self.encryption_key
 
         hmac_salt = self.hmac_salt
         hmac_key = self.hmac_key
 
         initialization_vector = self.initialization_vector
-        cipher_text = self._aes_encrypt(
-            encryption_key, initialization_vector, data
-        )
+        cipher_text = self._aes_encrypt(initialization_vector, data)
 
         version = b'\x02'
         options = b'\x01'
@@ -192,15 +183,15 @@ class RNCryptor(CryptoSettings):
 
         return self.post_encrypt_data(encrypted_data)
 
-    def _aes_encrypt(self, key, initialization_vector, text):
-        encryptor = self.get_cipher(key, initialization_vector).encryptor()
-        ciphertext = encryptor.update(text) + encryptor.finalize()
-        return ciphertext
+    def _aes_encrypt(self, *args):
+        return self._aes_process(self.encryptor, *args)
 
-    def _aes_decrypt(self, key, initialization_vector, ciphertext):
-        decryptor = self.get_cipher(key, initialization_vector).decryptor()
-        text = decryptor.update(ciphertext) + decryptor.finalize()
-        return text
+    def _aes_decrypt(self, *args):
+        return self._aes_process(self.decryptor, *args)
+
+    def _aes_process(self, get_operation, initialization_vector, data):
+        operation = get_operation(self.get_cipher(initialization_vector))
+        return operation.update(data) + operation.finalize()
 
     def _hmac(self, key, data):
         return python_hmac.new(key, data, hashlib.sha256).digest()

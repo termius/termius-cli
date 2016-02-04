@@ -11,12 +11,8 @@ class SyncCommand(AbstractCommand):
         namespace='serverauditor.sync.services'
     )
 
-    def get_parser(self, prog_name):
-        """Create command line argument parser.
-
-        Use it to add extra options to argument parser.
-        """
-        parser = super(SyncCommand, self).get_parser(prog_name)
+    def extend_parser(self, parser):
+        """Add more arguments to parser."""
         parser.add_argument(
             '-c', '--credentials',
             help='Credentials (path or file) for service.'

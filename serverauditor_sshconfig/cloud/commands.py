@@ -13,12 +13,8 @@ from ..core.storage.strategies import RelatedGetStrategy, SyncSaveStrategy
 class CloudSynchronizationCommand(AbstractCommand):
     """Base class for pull and push commands."""
 
-    def get_parser(self, prog_name):
-        """Create command line argument parser.
-
-        Use it to add extra options to argument parser.
-        """
-        parser = super(CloudSynchronizationCommand, self).get_parser(prog_name)
+    def extend_parser(self, parser):
+        """Add more arguments to parser."""
         parser.add_argument(
             '-s', '--strategy', metavar='STRATEGY_NAME',
             help='Force to use specific strategy to merge data.'

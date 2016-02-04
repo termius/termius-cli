@@ -29,7 +29,6 @@
     serverauditor host -L test --address host1 --password password -t A
 
     run serverauditor tags A B --debug
-    echo ${lines[*]}
     [ "$status" -eq 0 ]
     ! [ -z $(cat ~/.serverauditor.storage) ]
 }

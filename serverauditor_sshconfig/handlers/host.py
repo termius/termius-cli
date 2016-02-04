@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Module with Host commands."""
-from ..core.exceptions import ArgumentRequiredException
 from ..core.commands import DetailCommand, ListCommand
+from ..core.commands.single import RequiredOptions
 from ..core.models.terminal import Host, Group, TagHost
 from .taghost import TagListArgs
 from .ssh_config import SshConfigArgs
@@ -11,6 +11,7 @@ class HostCommand(DetailCommand):
     """Operate with Host object."""
 
     model_class = Host
+    required_options = RequiredOptions(create=('address',))
 
     def __init__(self, *args, **kwargs):
         """Construct new host command."""
@@ -18,12 +19,8 @@ class HostCommand(DetailCommand):
         self.ssh_config_args = SshConfigArgs(self)
         self.taglist_args = TagListArgs(self)
 
-    def get_parser(self, prog_name):
-        """Create command line argument parser.
-
-        Use it to add extra options to argument parser.
-        """
-        parser = super(HostCommand, self).get_parser(prog_name)
+    def extend_parser(self, parser):
+        """Add more arguments to parser."""
         parser.add_argument(
             '--ssh', metavar='SSH_CONFIG_OPTIONS',
             help='Options in ssh_config format.'
@@ -43,13 +40,6 @@ class HostCommand(DetailCommand):
 
         self.ssh_config_args.add_agrs(parser)
         return parser
-
-    def create(self, parsed_args):
-        """Handle create new instance command."""
-        if not parsed_args.address:
-            raise ArgumentRequiredException('Address is required.')
-
-        self.create_instance(parsed_args)
 
     def update_children(self, instance, args):
         """Create new model entry."""
@@ -91,12 +81,8 @@ class HostsCommand(ListCommand):
         super(HostsCommand, self).__init__(*args, **kwargs)
         self.taglist_args = TagListArgs(self)
 
-    def get_parser(self, prog_name):
-        """Create command line argument parser.
-
-        Use it to add extra options to argument parser.
-        """
-        parser = super(HostsCommand, self).get_parser(prog_name)
+    def extend_parser(self, parser):
+        """Add more arguments to parser."""
         parser.add_argument(
             '-t', '--tags', metavar='TAG_LIST',
             help=('(Comma separated tag list) list hosts with such tags.')

@@ -16,7 +16,6 @@ load test_helper
 
     serverauditor pull -p $SERVERAUDITOR_PASSWORD
     run serverauditor push -p $SERVERAUDITOR_PASSWORD
-    echo ${lines[*]}
     [ "$status" -eq 0 ]
 }
 

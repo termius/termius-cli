@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Module with ssh key commands."""
 import os.path
-from ..core.exceptions import ArgumentRequiredException
+from ..core.commands.single import RequiredOptions
 from ..core.commands import DetailCommand, ListCommand
 from ..core.models.terminal import SshKey
 
@@ -23,25 +23,15 @@ class SshKeyCommand(SshKeyGeneratorMixin, DetailCommand):
     """Operate with Host object."""
 
     model_class = SshKey
+    required_options = RequiredOptions(create=('identity_file',))
 
-    def get_parser(self, prog_name):
-        """Create command line argument parser.
-
-        Use it to add extra options to argument parser.
-        """
-        parser = super(SshKeyCommand, self).get_parser(prog_name)
+    def extend_parser(self, parser):
+        """Add more arguments to parser."""
         parser.add_argument(
             '-i', '--identity-file',
             metavar='PRIVATE_KEY', help='Private key.'
         )
         return parser
-
-    def create(self, parsed_args):
-        """Handle create new instance command."""
-        if not parsed_args.identity_file:
-            raise ArgumentRequiredException('Identity file is required.')
-
-        self.create_instance(parsed_args)
 
     # pylint: disable=no-self-use
     def serialize_args(self, args, instance=None):
@@ -63,9 +53,3 @@ class SshKeysCommand(ListCommand):
     """Manage ssh key objects."""
 
     model_class = SshKey
-
-    # pylint: disable=unused-argument
-    def take_action(self, parsed_args):
-        """Process CLI call."""
-        instances = self.storage.get_all(self.model_class)
-        return self.prepare_result(instances)

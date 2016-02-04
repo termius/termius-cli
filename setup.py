@@ -16,6 +16,7 @@ requires = [
     'six==1.10.0',
     'pyopenssl==0.15.1',
     'ndg-httpsclient==0.4.0',
+    'cached-property==1.3.0',
 ]
 
 # pylint: disable=invalid-name

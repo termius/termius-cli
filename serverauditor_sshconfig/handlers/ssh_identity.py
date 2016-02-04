@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """Module for ssh identity command."""
-from operator import attrgetter
 from ..core.commands import DetailCommand, ListCommand
 from ..core.models.terminal import SshIdentity, SshKey
 from ..core.exceptions import InvalidArgumentException
@@ -12,12 +11,8 @@ class SshIdentityCommand(SshKeyGeneratorMixin, DetailCommand):
 
     model_class = SshIdentity
 
-    def get_parser(self, prog_name):
-        """Create command line argument parser.
-
-        Use it to add extra options to argument parser.
-        """
-        parser = super(SshIdentityCommand, self).get_parser(prog_name)
+    def extend_parser(self, parser):
+        """Add more arguments to parser."""
         parser.add_argument(
             '-u', '--username',
             metavar='USERNAME', help="Username of host's user."
@@ -34,15 +29,7 @@ class SshIdentityCommand(SshKeyGeneratorMixin, DetailCommand):
             '-k', '--ssh-key',
             metavar='SSH_KEY', help="Serveraduitor's ssh key's name or id."
         )
-        parser.add_argument(
-            'ssh_identity', nargs='*', metavar='IDENITY_ID or IDENITY_NAME',
-            help='Pass to edit exited identities.'
-        )
         return parser
-
-    def create(self, parsed_args):
-        """Handle create new instance command."""
-        self.create_instance(parsed_args)
 
     # pylint: disable=no-self-use
     def serialize_args(self, args, instance=None):
@@ -79,10 +66,4 @@ class SshIdentityCommand(SshKeyGeneratorMixin, DetailCommand):
 class SshIdentitiesCommand(ListCommand):
     """Manage ssh identity objects."""
 
-    # pylint: disable=unused-argument
-    def take_action(self, parsed_args):
-        """Process CLI call."""
-        ssh_identities = self.storage.get_all(SshIdentity)
-        fields = SshIdentity.allowed_fields()
-        getter = attrgetter(*fields)
-        return fields, [getter(i) for i in ssh_identities]
+    model_class = SshIdentity

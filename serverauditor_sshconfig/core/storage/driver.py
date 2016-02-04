@@ -36,7 +36,7 @@ class PickleDriver(Driver):
         pickle.dump(dict(obj_data), stream, 2)
 
     def load(self, stream):
-        """Load obj_data from stream."""
+        """Load obj_data from pickle stream."""
         super(PickleDriver, self).load(stream)
         return pickle.load(stream)
 
@@ -49,7 +49,7 @@ class JSONDriver(Driver):
         json.dump(obj_data, stream, separators=(',', ':'))
 
     def load(self, stream):
-        """Load obj_data from stream."""
+        """Load obj_data from json stream."""
         super(JSONDriver, self).load(stream)
         return json.load(stream)
 
@@ -62,7 +62,7 @@ class CSVDriver(Driver):
         csv.writer(stream).writerows(obj_data.items())
 
     def load(self, stream):
-        """Load obj_data from stream."""
+        """Load obj_data from csv stream."""
         super(CSVDriver, self).load(stream)
         return csv.reader(stream)
 

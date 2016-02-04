@@ -1,21 +1,17 @@
 # -*- coding: utf-8 -*-
 """Module for tag command."""
 from ..core.commands import ListCommand
-from ..core.commands.mixins import InstanceOpertionMixin, GetObjectsMixin
+from ..core.commands.mixins import InstanceOperationMixin, GetObjectsMixin
 from ..core.models.terminal import Tag
 
 
-class TagsCommand(GetObjectsMixin, InstanceOpertionMixin, ListCommand):
+class TagsCommand(GetObjectsMixin, InstanceOperationMixin, ListCommand):
     """Manage tag objects."""
 
     model_class = Tag
 
-    def get_parser(self, prog_name):
-        """Create command line argument parser.
-
-        Use it to add extra options to argument parser.
-        """
-        parser = super(TagsCommand, self).get_parser(prog_name)
+    def extend_parser(self, parser):
+        """Add more arguments to parser."""
         parser.add_argument(
             '-d', '--delete',
             action='store_true', help='Delete tags.'

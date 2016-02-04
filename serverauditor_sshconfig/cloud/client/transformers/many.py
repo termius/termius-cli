@@ -15,9 +15,22 @@ from .single import GetPrimaryKeyTransformerMixin, CryptoBulkEntryTransformer
 from .mixins import CryptoChildTransformerCreatorMixin
 
 
+# pylint: disable=abstract-method
+class ManyTransformer(Transformer):
+    """Base class for all many transformers."""
+
+    def __init__(self, **kwargs):
+        """Construct new transformer for entry list."""
+        super(ManyTransformer, self).__init__(**kwargs)
+        self.mapping = OrderedDict((
+            (i.set_name, self.create_child_transformer(i))
+            for i in self.supported_models
+        ))
+
+
 class BulkTransformer(CryptoChildTransformerCreatorMixin,
                       GetPrimaryKeyTransformerMixin,
-                      Transformer):
+                      ManyTransformer):
     """Transformer for entry list."""
 
     child_transformer_class = CryptoBulkEntryTransformer
@@ -31,12 +44,8 @@ class BulkTransformer(CryptoChildTransformerCreatorMixin,
 
     def __init__(self, crypto_controller, **kwargs):
         """Construct new transformer for entry list."""
-        super(BulkTransformer, self).__init__(**kwargs)
         self.crypto_controller = crypto_controller
-        self.mapping = OrderedDict((
-            (i.set_name, self.create_child_transformer(i))
-            for i in self.supported_models
-        ))
+        super(BulkTransformer, self).__init__(**kwargs)
         self.deleted_sets_transformer = DeleteSetsTransformer(
             storage=self.storage
         )
@@ -76,7 +85,7 @@ class BulkTransformer(CryptoChildTransformerCreatorMixin,
 
 
 class DeleteSetsTransformer(GetPrimaryKeyTransformerMixin,
-                            Transformer):
+                            ManyTransformer):
     """Transformer for deleted_sets field."""
 
     supported_models = (
@@ -87,13 +96,9 @@ class DeleteSetsTransformer(GetPrimaryKeyTransformerMixin,
         TagHost
     )
 
-    def __init__(self, **kwargs):
-        """Construct new transformer for entry list."""
-        super(DeleteSetsTransformer, self).__init__(**kwargs)
-        self.mapping = OrderedDict((
-            (i.set_name, self.get_primary_key_transformer(i))
-            for i in self.supported_models
-        ))
+    def create_child_transformer(self, model):
+        """Create transformer for sub transformers."""
+        return self.get_primary_key_transformer(model)
 
     def to_model(self, payload):
         """Handle payload to local models and delete them completely."""

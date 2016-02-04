@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """Module with PFRule commands."""
 import re
-from operator import attrgetter
 from ..core.exceptions import (
     InvalidArgumentException, ArgumentRequiredException,
 )
 from ..core.commands import DetailCommand, ListCommand
+from ..core.commands.single import RequiredOptions
 from ..core.models.terminal import Host, PFRule
 
 
@@ -13,6 +13,7 @@ class PFRuleCommand(DetailCommand):
     """Operate with port forwarding rule object."""
 
     model_class = PFRule
+    required_options = RequiredOptions(create=('host', 'binding'))
 
     @property
     # pylint: disable=no-self-use
@@ -24,12 +25,8 @@ class PFRuleCommand(DetailCommand):
             'R': BindingParser.remote,
         }
 
-    def get_parser(self, prog_name):
-        """Create command line argument parser.
-
-        Use it to add extra options to argument parser.
-        """
-        parser = super(PFRuleCommand, self).get_parser(prog_name)
+    def extend_parser(self, parser):
+        """Add more arguments to parser."""
         parser.add_argument(
             '-H', '--host', metavar='HOST_ID or HOST_NAME',
             help='Create port forwarding rule for this host.'
@@ -51,22 +48,11 @@ class PFRuleCommand(DetailCommand):
             help=('Specify binding of ports and addresses '
                   '[bind_address:]port or [bind_address:]port:host:hostport')
         )
-        parser.add_argument(
-            'pr_rule', nargs='?', metavar='PF_RULE_ID or PF_RULE_NAME',
-            help='Pass to edit exited port Forwarding Rule.'
-        )
         return parser
 
     def parse_binding(self, pf_type, binding):
         """Parse binding string to dict."""
         return self.binding_parsers[pf_type](binding)
-
-    def create(self, parsed_args):
-        """Handle create new instance command."""
-        if not parsed_args.host:
-            raise ArgumentRequiredException('Host is required.')
-
-        self.create_instance(parsed_args)
 
     def serialize_args(self, args, instance=None):
         """Convert args to instance."""
@@ -89,13 +75,7 @@ class PFRuleCommand(DetailCommand):
 class PFRulesCommand(ListCommand):
     """Manage port forwarding rule objects."""
 
-    # pylint: disable=unused-argument
-    def take_action(self, parsed_args):
-        """Process CLI call."""
-        pf_rules = self.storage.get_all(PFRule)
-        fields = PFRule.allowed_fields()
-        getter = attrgetter(*fields)
-        return fields, [getter(i) for i in pf_rules]
+    model_class = PFRule
 
 
 class InvalidBinding(InvalidArgumentException):
