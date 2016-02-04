@@ -6,6 +6,8 @@ Driver means "dict converter to stream".
 import abc
 import os
 from collections import OrderedDict
+from contextlib import contextmanager
+from functools import partial
 
 import pickle
 import json
@@ -35,7 +37,7 @@ class PickleDriver(Driver):
         """Dump obj_data to stream."""
         pickle.dump(dict(obj_data), stream, 2)
 
-    loader = pickle.load
+    loader = partial(pickle.load)
 
 
 class JSONDriver(Driver):
@@ -45,7 +47,7 @@ class JSONDriver(Driver):
         """Dump obj_data to stream."""
         json.dump(obj_data, stream, separators=(',', ':'))
 
-    loader = json.load
+    loader = partial(json.load)
 
 
 class CSVDriver(Driver):
@@ -55,7 +57,7 @@ class CSVDriver(Driver):
         """Dump obj_data to stream."""
         csv.writer(stream).writerows(obj_data.items())
 
-    loader = csv.reader
+    loader = partial(csv.reader)
 
 
 DRIVERS = OrderedDict((
@@ -63,6 +65,21 @@ DRIVERS = OrderedDict((
     ('json', JSONDriver()),
     ('csv', CSVDriver()),
 ))
+
+
+@contextmanager
+def atomic_file(filename, write_mode, filename_mode):
+    """Open file and atomic write it."""
+    tempname = filename + '.tmp'
+    try:
+        with open(tempname, write_mode) as fileobj:
+            yield fileobj
+    except Exception:
+        os.remove(tempname)
+        raise
+    shutil.move(tempname, filename)  # atomic commit
+    if filename_mode is not None:
+        os.chmod(filename, filename_mode)
 
 
 class PersistentDict(OrderedDict):
@@ -91,37 +108,19 @@ class PersistentDict(OrderedDict):
         self.mode = mode
         self._format = _format
         self.filename = filename
+        self.write_mode = 'wb' if self._format == 'pickle' else 'w'
+        self.read_mode = 'rb' if self._format == 'pickle' else 'r'
         super(PersistentDict, self).__init__(*args, **kwds)
         if flag != 'n' and os.access(filename, os.R_OK):
-            with open(filename, self._read_mode()) as fileobj:
+            with open(filename, self.read_mode) as fileobj:
                 self.load(fileobj)
-
-    def _write_mode(self):
-        return 'wb' if self._format == 'pickle' else 'w'
-
-    def _read_mode(self):
-        return 'rb' if self._format == 'pickle' else 'r'
 
     def sync(self):
         """Write dict to disk."""
-        def write_temp_file(filename):
-            tempname = filename + '.tmp'
-            try:
-                with open(tempname, self._write_mode()) as fileobj:
-                    self.dump(fileobj)
-            except Exception:
-                os.remove(tempname)
-                raise
-            return tempname
-
-        def move_file_and_set_mode(src, dst, dst_mode):
-            shutil.move(src, dst)    # atomic commit
-            if dst_mode is not None:
-                os.chmod(dst, dst_mode)
-
-        if self.flag != 'r':
-            tempname = write_temp_file(self.filename)
-            move_file_and_set_mode(tempname, self.filename, self.mode)
+        if self.flag == 'r':
+            return
+        with atomic_file(self.filename, self.write_mode, self.mode) as _file:
+            self.dump(_file)
 
     def close(self):
         """Close storage."""
@@ -133,7 +132,8 @@ class PersistentDict(OrderedDict):
 
     def __exit__(self, *exc_info):
         """Process exiting transaction."""
-        self.close()
+        if not any(exc_info):
+            self.close()
 
     def dump(self, fileobj):
         """Write self to fileobj."""

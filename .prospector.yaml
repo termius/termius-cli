@@ -22,5 +22,14 @@ pep257:
 pylint:
   options:
     max-parents: 12
+  enable:
+    - fixme
   disable:
     - super-on-old-class
+
+pyroma:
+  run: true
+
+mccabe:
+  options:
+    max-complexity: 6
