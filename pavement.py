@@ -21,7 +21,14 @@ def bats():
 @task
 def nosetests():
     """Run unit tests."""
-    sh('python setup.py test')
+    sh('nosetests')
+
+
+@task
+def coverage():
+    """Run test and collect coverage."""
+    sh('nosetests --with-coverage')
+    sh('coverage xml')
 
 
 @task

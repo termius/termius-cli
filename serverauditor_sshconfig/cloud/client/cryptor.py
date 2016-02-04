@@ -63,7 +63,7 @@ class CryptoSettings(object):
     @property
     def initialization_vector(self):
         """Generate random bytes."""
-        return os.urandom(self.AES_BLOCK_SIZE / 8)
+        return os.urandom(int(self.AES_BLOCK_SIZE / 8))
 
     @property
     def encryption_key(self):
