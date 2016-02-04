@@ -110,8 +110,7 @@ class DeleteSetsTransformer(GetPrimaryKeyTransformerMixin,
             ]
             deleted_set = [i for i in deleted_set_with_none if i]
             model[set_name] = deleted_set
-            for i in deleted_set:
-                self.storage.delete(i)
+            self.soft_delete_entries(deleted_set)
         self.storage.confirm_delete(payload)
         return model
 

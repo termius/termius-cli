@@ -98,8 +98,9 @@ class HostsCommand(ListCommand):
         """Process CLI call."""
         group_id = self.get_group_id(parsed_args)
         hosts = self.get_hosts(group_id)
-        filtered_hosts = self.filter_host_by_tags(hosts, parsed_args)
-        return self.prepare_result(filtered_hosts)
+        if parsed_args.tags:
+            hosts = self.filter_host_by_tags(hosts, parsed_args.tags)
+        return self.prepare_result(hosts)
 
     def get_hosts(self, group_id):
         """Get host list by group id."""
@@ -109,19 +110,16 @@ class HostsCommand(ListCommand):
         """Get group id by group id or label."""
         return args.group and self.get_relation(Group, args.group).id
 
-    def filter_host_by_tags(self, hosts, args):
+    def filter_host_by_tags(self, hosts, tags):
         """Filter host list by tag csv list."""
-        if args.tags:
-            tags = self.taglist_args.get_tag_instances(args.tags)
-            tag_ids = [i.id for i in tags]
-            host_ids = [i.id for i in hosts]
-            taghost_instances = self.storage.filter(TagHost, all, **{
-                'tag.rcontains': tag_ids
-            })
-            filtered_host_id = {i.host for i in taghost_instances}
-            intersected_host_ids = set(host_ids) and filtered_host_id
-            return self.storage.filter(
-                Host, **{'id.rcontains': intersected_host_ids}
-            )
-        else:
-            return hosts
+        tags = self.taglist_args.get_tag_instances(tags)
+        tag_ids = [i.id for i in tags]
+        host_ids = [i.id for i in hosts]
+        taghost_instances = self.storage.filter(TagHost, all, **{
+            'tag.rcontains': tag_ids
+        })
+        filtered_host_id = {i.host for i in taghost_instances}
+        intersected_host_ids = set(host_ids) and filtered_host_id
+        return self.storage.filter(
+            Host, **{'id.rcontains': intersected_host_ids}
+        )

@@ -22,10 +22,10 @@ class Driver(object):
     def dump(self, stream, obj_data):
         """Dump obj_data to stream."""
 
-    @abc.abstractmethod
     def load(self, stream):
         """Load obj_data from stream."""
         stream.seek(0)
+        return self.loader(stream)
 
 
 class PickleDriver(Driver):
@@ -35,10 +35,7 @@ class PickleDriver(Driver):
         """Dump obj_data to stream."""
         pickle.dump(dict(obj_data), stream, 2)
 
-    def load(self, stream):
-        """Load obj_data from pickle stream."""
-        super(PickleDriver, self).load(stream)
-        return pickle.load(stream)
+    loader = pickle.load
 
 
 class JSONDriver(Driver):
@@ -48,10 +45,7 @@ class JSONDriver(Driver):
         """Dump obj_data to stream."""
         json.dump(obj_data, stream, separators=(',', ':'))
 
-    def load(self, stream):
-        """Load obj_data from json stream."""
-        super(JSONDriver, self).load(stream)
-        return json.load(stream)
+    loader = json.load
 
 
 class CSVDriver(Driver):
@@ -61,10 +55,7 @@ class CSVDriver(Driver):
         """Dump obj_data to stream."""
         csv.writer(stream).writerows(obj_data.items())
 
-    def load(self, stream):
-        """Load obj_data from csv stream."""
-        super(CSVDriver, self).load(stream)
-        return csv.reader(stream)
+    loader = csv.reader
 
 
 DRIVERS = OrderedDict((
