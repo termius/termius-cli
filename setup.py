@@ -83,7 +83,7 @@ setup(
         'serverauditor.sync.services': [
             # WARNING! It should be removed in production!
             # Other projects should add such endpoint to add services.
-            'aws = serverauditor_sshconfig.sync.services.aws:AWSService',
+            'ssh = serverauditor_sshconfig.sync.services.ssh:SSHService',
         ],
     },
 )
