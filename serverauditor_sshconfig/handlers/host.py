@@ -10,7 +10,6 @@ from .ssh_config import SshConfigArgs
 class HostCommand(DetailCommand):
     """Operate with Host object."""
 
-    allowed_operations = DetailCommand.all_operations
     model_class = Host
 
     def __init__(self, *args, **kwargs):

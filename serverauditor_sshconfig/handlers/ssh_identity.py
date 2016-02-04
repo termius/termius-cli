@@ -10,7 +10,6 @@ from .ssh_key import SshKeyGeneratorMixin
 class SshIdentityCommand(SshKeyGeneratorMixin, DetailCommand):
     """Operate with ssh identity object."""
 
-    allowed_operations = DetailCommand.all_operations
     model_class = SshIdentity
 
     def get_parser(self, prog_name):

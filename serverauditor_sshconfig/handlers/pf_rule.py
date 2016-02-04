@@ -12,7 +12,6 @@ from ..core.models.terminal import Host, PFRule
 class PFRuleCommand(DetailCommand):
     """Operate with port forwarding rule object."""
 
-    allowed_operations = DetailCommand.all_operations
     model_class = PFRule
 
     @property

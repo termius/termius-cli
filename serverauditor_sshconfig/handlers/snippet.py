@@ -9,7 +9,6 @@ from ..core.models.terminal import Snippet
 class SnippetCommand(DetailCommand):
     """Operate with Group object."""
 
-    allowed_operations = DetailCommand.all_operations
     model_class = Snippet
 
     def get_parser(self, prog_name):

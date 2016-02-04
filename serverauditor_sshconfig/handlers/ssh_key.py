@@ -22,7 +22,6 @@ class SshKeyGeneratorMixin(object):
 class SshKeyCommand(SshKeyGeneratorMixin, DetailCommand):
     """Operate with Host object."""
 
-    allowed_operations = DetailCommand.all_operations
     model_class = SshKey
 
     def get_parser(self, prog_name):

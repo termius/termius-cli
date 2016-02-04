@@ -9,7 +9,6 @@ from .ssh_config import SshConfigArgs
 class GroupCommand(DetailCommand):
     """Operate with Group object."""
 
-    allowed_operations = DetailCommand.all_operations
     model_class = Group
 
     def __init__(self, *args, **kwargs):
