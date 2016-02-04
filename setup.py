@@ -43,6 +43,12 @@ handlers = [
     'connect = serverauditor_sshconfig.handlers:ConnectCommand',
 ]
 
+
+def get_long_description():
+    with open('README.rst') as f:
+        return f.read()
+
+
 setup(
     name='serverauditor-sshconfig',
     version=get_version(),
@@ -51,6 +57,7 @@ setup(
     author_email='contacts@crystalnix.com',
     url='https://github.com/Crystalnix/serverauditor-sshconfig',
     description='Serverauditor ssh-config utility.',
+    long_description=get_long_description(),
     keywords=['serverauditor', 'crystalnix'],
     packages=find_packages(exclude=['tests']),
     install_requires=requires,
