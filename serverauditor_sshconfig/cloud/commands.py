@@ -103,10 +103,10 @@ class FullCleanCommand(CloudSynchronizationCommand):
         self.log.info('Full clean data from Serverauditor cloud.')
 
     def full_clean(self):
+        """Remove all local and remote instances."""
         for model in self.supported_models:
             self.log.info('Start cleaning %s...', model)
             instances = self.storage.get_all(model)
             for i in instances:
                 self.storage.delete(i)
             self.log.info('Complete cleaning')
-

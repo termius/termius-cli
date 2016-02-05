@@ -17,6 +17,8 @@ requires = [
     'pyopenssl==0.15.1',
     'ndg-httpsclient==0.4.0',
     'cached-property==1.3.0',
+    'paramiko==1.16.0',
+    'pathlib==1.0.1',
 ]
 
 # pylint: disable=invalid-name
@@ -89,10 +91,8 @@ setup(
             'yaml = cliff.formatters.yaml_format:YAMLFormatter',
             'json = cliff.formatters.json_format:JSONFormatter',
         ],
-        'serverauditor.sync.services': [
-            # WARNING! It should be removed in production!
-            # Other projects should add such endpoint to add services.
-            'ssh = serverauditor_sshconfig.sync.services.ssh:SSHService',
+        'serverauditor.sync.providers': [
+            'ssh = serverauditor_sshconfig.sync.providers.ssh:SSHService',
         ],
     },
 )
