@@ -27,9 +27,9 @@ class AbstractCommand(PasswordPromptMixin, Command):
     def __init__(self, app, app_args, cmd_name=None):
         """Construct new command."""
         super(AbstractCommand, self).__init__(app, app_args, cmd_name)
-        self.config = Config(self.app.NAME)
+        self.config = Config(self)
         self.storage = ApplicationStorage(
-            self.app.NAME,
+            self,
             save_strategy=self.save_strategy,
             get_strategy=self.get_strategy,
             delete_strategy=self.delete_strategy

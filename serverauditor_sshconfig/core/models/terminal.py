@@ -36,6 +36,10 @@ class SshKey(Model):
     set_name = 'sshkeycrypt_set'
     crypto_fields = fields
 
+    def file_path(self, command):
+        ssh_keys_path = command.config.ssh_key_dir_path
+        return ssh_keys_path / self.label
+
 
 class SshIdentity(Model):
     """Model for ssh identity."""

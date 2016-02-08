@@ -99,7 +99,7 @@ class InstanceOperationMixin(object):
         with self.storage:
             self.storage.save(updated_instance)
             self.update_children(updated_instance, args)
-            self.log_update(updated_instance)
+        self.log_update(updated_instance)
 
     def update_children(self, instance, args):
         """Update children of instance.
@@ -112,7 +112,7 @@ class InstanceOperationMixin(object):
         """Delete model entry."""
         with self.storage:
             self.storage.delete(instance)
-            self.log_delete(instance)
+        self.log_delete(instance)
 
     def log_create(self, entry):
         """Log creating new model entry."""

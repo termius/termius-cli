@@ -2,9 +2,13 @@
 """Module for Application storage."""
 import logging
 from collections import namedtuple
+from ..signals import (
+    pre_create_instance, post_create_instance,
+    pre_update_instance, post_update_instance,
+    pre_delete_instance, post_delete_instance,
+)
 from .idgenerators import UUIDGenerator
 from .driver import PersistentDict
-from ..utils import expand_and_format_path
 from ..exceptions import DoesNotExistException, TooManyEntriesException
 from .strategies import SaveStrategy, GetStrategy, SoftDeleteStrategy
 from .query import Query
@@ -42,18 +46,20 @@ Strategies = namedtuple('Strategies', ('getter', 'saver', 'deleter'))
 class ApplicationStorage(object):
     """Storage for user data."""
 
-    path = '~/.{application_name}.storage'
+    path = '{application_directory}/.storage'
     defaultstorage = list
     logger = logging.getLogger(__name__)
 
-    def __init__(self, application_name, save_strategy=None,
+    def __init__(self, command, save_strategy=None,
                  get_strategy=None, delete_strategy=None, **kwargs):
         """Create new storage for application."""
-        self._path = expand_and_format_path(
-            [self.path], application_name=application_name, **kwargs
-        )[0]
+        paths_kwargs = dict(
+            application_directory=command.app.directory_path, **kwargs
+        )
+        self._path = self.path.format(**paths_kwargs)
         self.driver = PersistentDict(self._path)
         self.id_generator = UUIDGenerator(self)
+        self.command = command
 
         self.strategies = Strategies(
             self.make_strategy(get_strategy, GetStrategy),
@@ -90,22 +96,42 @@ class ApplicationStorage(object):
     def create(self, model):
         """Add new model in it's list."""
         assert not getattr(model, model.id_name)
+        pre_create_instance.send(
+            model.__class__, command=self.command, instance=model
+        )
         model.id = self.generate_id(model)
-        return self._internal_update(model)
+        updated_model = self._internal_update(model)
+        post_create_instance.send(
+            model.__class__, command=self.command, instance=model
+        )
+        return updated_model
 
     def update(self, model):
         """Update existed model in it's list."""
         identificator = getattr(model, model.id_name)
         assert identificator
 
+        pre_update_instance.send(
+            model.__class__, command=self.command, instance=model
+        )
         self._internal_delete(model)
         self.strategies.saver.mark_model(model)
-        return self._internal_update(model)
+        updated_model = self._internal_update(model)
+        post_update_instance.send(
+            model.__class__, command=self.command, instance=model
+        )
+        return updated_model
 
     def delete(self, model):
         """Delete model from it's list."""
+        pre_delete_instance.send(
+            model.__class__, command=self.command, instance=model
+        )
         self._internal_delete(model)
         self.strategies.deleter.delete(model)
+        post_delete_instance.send(
+            model.__class__, command=self.command, instance=model
+        )
 
     def confirm_delete(self, deleted_sets):
         """Remove intersection with deleted_sets from storage."""
