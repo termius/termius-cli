@@ -13,3 +13,7 @@ pull_serverauditor() {
     serverauditor pull -p $SERVERAUDITOR_PASSWORD
 
 }
+
+get_models_set() {
+    cat ~/.serverauditor.storage | jq .$1
+}

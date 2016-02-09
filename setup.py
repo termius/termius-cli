@@ -26,6 +26,7 @@ handlers = [
     'logout = serverauditor_sshconfig.account.commands:LogoutCommand',
     'push = serverauditor_sshconfig.cloud.commands:PushCommand',
     'pull = serverauditor_sshconfig.cloud.commands:PullCommand',
+    'fullclean = serverauditor_sshconfig.cloud.commands:FullCleanCommand',
     'snippet = serverauditor_sshconfig.handlers:SnippetCommand',
     'snippets = serverauditor_sshconfig.handlers:SnippetsCommand',
     'host = serverauditor_sshconfig.handlers:HostCommand',
