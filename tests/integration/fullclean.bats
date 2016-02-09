@@ -42,6 +42,6 @@ load test_helper
 }
 
 setup() {
-    rm ~/.serverauditor.storage || true
+    clean_storage || true
 }
 

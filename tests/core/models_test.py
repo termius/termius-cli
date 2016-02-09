@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import six
-from mock import patch
+from mock import patch, Mock
 
 from serverauditor_sshconfig.core.models.base import Model
 from serverauditor_sshconfig.core.models.terminal import (
-    Host, Group, Tag, SshKey, SshIdentity, SshConfig, Group, Host, PFRule
+    Tag, SshKey, SshIdentity, SshConfig, Group, Host, PFRule
 )
 
 from serverauditor_sshconfig.core.storage import ApplicationStorage
@@ -31,7 +31,9 @@ def test_generator():
 @patch('serverauditor_sshconfig.core.storage.PersistentDict')
 def save(model, mocked):
 
-    storage = ApplicationStorage('test')
+    storage = ApplicationStorage(Mock(**{
+        'app.directory_path.return_value': 'TestCase'
+    }))
     with storage:
         saved_model = storage.save(model)
 

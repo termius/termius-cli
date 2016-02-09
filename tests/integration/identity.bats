@@ -1,4 +1,10 @@
 #!/usr/bin/env bats
+load test_helper
+
+
+setup() {
+    clean_storage || true
+}
 
 @test "Identity help by arg" {
     run serverauditor identity --help
@@ -11,42 +17,37 @@
 }
 
 @test "Add general identity" {
-    rm ~/.serverauditor.storage || true
     run serverauditor identity -L local --username 'ROOT' --password 'pa'
     [ "$status" -eq 0 ]
-    ! [ -z $(cat ~/.serverauditor.storage) ]
+    [ $(get_models_set_length 'sshidentity_set') -eq 1 ]
 }
 
 @test "Update identity" {
-    rm ~/.serverauditor.storage || true
     identity=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
     run serverauditor identity -L local --username 'ROOT' --password 'pa' $identity
     [ "$status" -eq 0 ]
-    ! [ -z $(cat ~/.serverauditor.storage) ]
+    [ $(get_models_set_length 'sshidentity_set') -eq 1 ]
 }
 
 @test "Update many identities" {
-    rm ~/.serverauditor.storage || true
     identity1=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
     identity2=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
     run serverauditor identity -L local --username 'ROOT' --password 'pa' $identity1 $identity2
     [ "$status" -eq 0 ]
-    ! [ -z $(cat ~/.serverauditor.storage) ]
+    [ $(get_models_set_length 'sshidentity_set') -eq 2 ]
 }
 
 @test "Delete identity" {
-    rm ~/.serverauditor.storage || true
     identity=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
     run serverauditor identity --delete $identity
     [ "$status" -eq 0 ]
-    ! [ -z $(cat ~/.serverauditor.storage) ]
+    [ $(get_models_set_length 'sshidentity_set') -eq 0 ]
 }
 
 @test "Delete many identities" {
-    rm ~/.serverauditor.storage || true
     identity1=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
     identity2=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
     run serverauditor identity --delete $identity1 $identity2
     [ "$status" -eq 0 ]
-    ! [ -z $(cat ~/.serverauditor.storage) ]
+    [ $(get_models_set_length 'sshidentity_set') -eq 0 ]
 }

@@ -1,4 +1,10 @@
 #!/usr/bin/env bats
+load test_helper
+
+
+setup() {
+    clean_storage || true
+}
 
 @test "tags help by arg" {
     run serverauditor tags --help
@@ -15,7 +21,8 @@
 
     run serverauditor tags
     [ "$status" -eq 0 ]
-    ! [ -z $(cat ~/.serverauditor.storage) ]
+    [ $(get_models_set_length 'tag_set') -eq 3 ]
+    [ $(get_models_set_length 'taghost_set') -eq 3 ]
 }
 
 @test "tags filter not existed" {
@@ -30,9 +37,6 @@
 
     run serverauditor tags A B --debug
     [ "$status" -eq 0 ]
-    ! [ -z $(cat ~/.serverauditor.storage) ]
-}
-
-setup() {
-    rm ~/.serverauditor.storage || true
+    [ $(get_models_set_length 'tag_set') -eq 4 ]
+    [ $(get_models_set_length 'taghost_set') -eq 7 ]
 }

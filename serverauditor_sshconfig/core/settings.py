@@ -1,24 +1,38 @@
 # -*- coding: utf-8 -*-
 """Module for keeping application config."""
-import os
-import six
-from .utils import expand_and_format_path
+from pathlib import Path
+from six.moves import configparser
 
 
 class Config(object):
     """Class for application config."""
 
-    paths = ['~/.{application_name}']
+    paths = ['{application_directory}/config']
 
-    def __init__(self, application_name, **kwargs):
+    def __init__(self, command, **kwargs):
         """Create new config."""
         assert self.paths, "It must have at least single config file's path."
-        self._paths = expand_and_format_path(
-            self.paths, application_name=application_name, **kwargs
+        paths_kwargs = dict(
+            application_directory=command.app.directory_path, **kwargs
         )
+        self._paths = [Path(i.format(**paths_kwargs)) for i in self.paths]
         self.touch_files()
-        self.config = six.moves.configparser.ConfigParser()
-        self.config.read(self._paths)
+        self.config = configparser.ConfigParser()
+        self.config.read([str(i) for i in self._paths])
+        self.command = command
+
+    @property
+    def ssh_key_dir_path(self):
+        """Get path instance to Directory with applications ssh key."""
+        try:
+            ssh_keys_path = Path(self.command.config.get(
+                'SSH_keys', 'directory'
+            ))
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            ssh_keys_path = self.command.app.directory_path / 'ssh_keys'
+            self.set('SSH_keys', 'directory', ssh_keys_path)
+            self.write()
+        return ssh_keys_path
 
     @property
     def user_config_path(self):
@@ -28,8 +42,8 @@ class Config(object):
     def touch_files(self):
         """Touch config file paths."""
         for i in self._paths:
-            if not os.path.exists(i):
-                with open(i, 'w+'):
+            if not i.is_file():
+                with i.open('w+'):
                     pass
 
     def get(self, *args, **kwargs):
@@ -54,5 +68,5 @@ class Config(object):
 
     def write(self):
         """Write config for current user config file."""
-        with open(self.user_config_path, 'w') as _file:
+        with self.user_config_path.open('wb') as _file:
             self.config.write(_file)

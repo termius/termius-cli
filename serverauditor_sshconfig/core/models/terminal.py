@@ -36,6 +36,11 @@ class SshKey(Model):
     set_name = 'sshkeycrypt_set'
     crypto_fields = fields
 
+    def file_path(self, command):
+        """Return path object to private key file."""
+        ssh_keys_path = command.config.ssh_key_dir_path
+        return ssh_keys_path / self.label
+
 
 class SshIdentity(Model):
     """Model for ssh identity."""
@@ -69,6 +74,10 @@ class SshConfig(Model):
         'startup_snippet'
     }
     set_name = 'sshconfig_set'
+
+    def get_ssh_key(self):
+        """Retrieve ssh key instance."""
+        return self.ssh_identity and self.ssh_identity.ssh_key
 
 
 class Group(Model):

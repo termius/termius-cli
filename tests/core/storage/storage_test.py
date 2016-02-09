@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import tempfile
 from six import integer_types
-from mock import patch
+from mock import patch, Mock
 from unittest import TestCase
 from serverauditor_sshconfig.core.models.terminal import (
     Host, SshConfig, SshIdentity, SshKey, Group
@@ -30,7 +30,7 @@ class StrategyCase(TestCase):
         from serverauditor_sshconfig.core.storage import ApplicationStorage
 
         self.storage = ApplicationStorage(
-            'TestCase',
+            Mock(**{'app.directory_path.return_value': 'TestCase'}),
             save_strategy=self.save_strategy_class,
             get_strategy=self.get_strategy_class
         )

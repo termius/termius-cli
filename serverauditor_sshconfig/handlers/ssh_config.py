@@ -2,9 +2,10 @@
 """Module with Sshconfig's args helper."""
 from ..core.models.terminal import SshConfig, SshIdentity
 from ..core.exceptions import InvalidArgumentException
+from .ssh_key import SshKeyGeneratorMixin
 
 
-class SshConfigArgs(object):
+class SshConfigArgs(SshKeyGeneratorMixin, object):
     """Class for ssh config argument adding and serializing."""
 
     def __init__(self, command):
@@ -72,6 +73,10 @@ class SshConfigArgs(object):
 
         ssh_identity.username = args.username
         ssh_identity.password = args.password
+        if args.identity_file:
+            ssh_identity.ssh_key = self.generate_ssh_key_instance(
+                args.identity_file
+            )
         ssh_config.port = args.port
         ssh_config.ssh_identity = ssh_identity
         return ssh_config

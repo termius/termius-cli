@@ -1,7 +1,9 @@
 #!/usr/bin/env bats
+load test_helper
+
 
 setup() {
-    rm ~/.serverauditor.storage || true
+    clean_storage || true
 }
 
 @test "snippets help by arg" {
@@ -18,5 +20,5 @@ setup() {
     serverauditor snippet -L test --script 'ls'
     run serverauditor snippets
     [ "$status" -eq 0 ]
-    ! [ -z $(cat ~/.serverauditor.storage) ]
+    [ $(get_models_set_length 'snippet_set') -eq 1 ]
 }

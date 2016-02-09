@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """Miscellaneous extra functions."""
-import os
 from six import PY2, PY3
 
 
@@ -43,8 +42,3 @@ elif PY3:
 
     def bord(s):
         return s
-
-
-def expand_and_format_path(paths, **kwargs):
-    """Format and expand filename list."""
-    return [os.path.expanduser(i.format(**kwargs)) for i in paths]

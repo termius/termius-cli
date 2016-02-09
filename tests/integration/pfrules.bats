@@ -1,4 +1,10 @@
 #!/usr/bin/env bats
+load test_helper
+
+
+setup() {
+    clean_storage || true
+}
 
 @test "pfrules help by arg" {
     run serverauditor pfrules --help
@@ -11,10 +17,9 @@
 }
 
 @test "List pfrules in table format" {
-    rm ~/.serverauditor.storage || true
     host="$(serverauditor host --label test2 --address 127.0.0.1)"
     serverauditor pfrule --dynamic --host $host --binding 127.0.0.1:2222
     run serverauditor pfrules
     [ "$status" -eq 0 ]
-    ! [ -z $(cat ~/.serverauditor.storage) ]
+    [ $(get_models_set_length 'pfrule_set') -eq 1 ]
 }
