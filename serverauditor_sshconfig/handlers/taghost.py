@@ -15,7 +15,7 @@ class TagListArgs(object):
     def update_taghosts(self, host, tag_instances):
         """Update binding for taghost."""
         current_taghost = self.storage.filter(
-            TagHost, **{'host': host.id}
+            TagHost, **{'host.id': host.id}
         )
         current_taghost_per_id = {i.tag.id: i for i in current_taghost}
         new_tag_per_id = {i.id: i for i in tag_instances}
