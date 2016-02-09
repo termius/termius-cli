@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Module for keeping application config."""
-from pathlib import Path
+from pathlib2 import Path
+from six import PY2
 from six.moves import configparser
 
 
@@ -8,6 +9,7 @@ class Config(object):
     """Class for application config."""
 
     paths = ['{application_directory}/config']
+    write_mode = (PY2 and 'wb') or 'w'
 
     def __init__(self, command, **kwargs):
         """Create new config."""
@@ -30,7 +32,7 @@ class Config(object):
             ))
         except (configparser.NoSectionError, configparser.NoOptionError):
             ssh_keys_path = self.command.app.directory_path / 'ssh_keys'
-            self.set('SSH_keys', 'directory', ssh_keys_path)
+            self.set('SSH_keys', 'directory', str(ssh_keys_path))
             self.write()
         return ssh_keys_path
 
@@ -43,8 +45,7 @@ class Config(object):
         """Touch config file paths."""
         for i in self._paths:
             if not i.is_file():
-                with i.open('w+'):
-                    pass
+                i.touch()
 
     def get(self, *args, **kwargs):
         """Get option value from config."""
@@ -68,5 +69,5 @@ class Config(object):
 
     def write(self):
         """Write config for current user config file."""
-        with self.user_config_path.open('wb') as _file:
+        with self.user_config_path.open(self.write_mode) as _file:
             self.config.write(_file)

@@ -43,6 +43,15 @@ setup() {
     [ $(get_models_set_length 'group_set') -eq 1 ]
 }
 
+@test "Update group add into infinite loop" {
+    grand_parent_group=$(serverauditor group -L 'test group' --port 2 --username 'name')
+    parent_group=$(serverauditor group -L 'test group' --port 2 --username 'name' --parent-group $grand_parent_group)
+    group=$(serverauditor group -L 'test group' --port 2 --username 'name' --parent-group $parent_group)
+    run serverauditor group -L 'test group' --port 2 --username 'user' --parent-group $group $grand_parent_group
+    [ "$status" -eq 1 ]
+    [ $(get_models_set_length 'group_set') -eq 3 ]
+}
+
 @test "Update group add in parent group" {
     parent_group=$(serverauditor group -L 'test group' --port 2 --username 'use r name')
     group=$(serverauditor group -L 'test group' --port 2 --username 'name')

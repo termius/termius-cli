@@ -11,12 +11,12 @@
 }
 
 @test "login & logout by tester account" {
-    if [ "$SERVERAUDITOR_USERNAME" == '' ] || [ "$SERVERAUDITOR_PASSWORD" == '' ];then
+    if [ "$SERVERAUDITOR_USERNAME" = '' ] || [ "$SERVERAUDITOR_PASSWORD" = '' ];then
         skip '$SERVERAUDITOR_USERNAME and $SERVERAUDITOR_PASSWORD are not set!'
     fi
 
     rm ~/.serverauditor/config || true
-    serverauditor login --username $SERVERAUDITOR_USERNAME -p$SERVERAUDITOR_PASSWORD
+    serverauditor login --username $SERVERAUDITOR_USERNAME -p $SERVERAUDITOR_PASSWORD
 
     run serverauditor logout
     [ "$status" -eq 0 ]

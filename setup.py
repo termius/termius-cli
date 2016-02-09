@@ -18,7 +18,7 @@ requires = [
     'ndg-httpsclient==0.4.0',
     'cached-property==1.3.0',
     'paramiko==1.16.0',
-    'pathlib==1.0.1',
+    'pathlib2==2.1.0',
     'blinker==1.4',
 ]
 
