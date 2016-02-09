@@ -2,14 +2,19 @@
 """Module with CLI command to retrieve SaaS and IaaS hosts."""
 from stevedore.extension import ExtensionManager
 from ..core.commands import AbstractCommand
+from ..core.storage.strategies import (
+    RelatedSaveStrategy, RelatedGetStrategy
+)
 
 
 class SyncCommand(AbstractCommand):
     """Sync with IaaS or PaaS."""
 
     service_manager = ExtensionManager(
-        namespace='serverauditor.sync.services'
+        namespace='serverauditor.sync.providers'
     )
+    save_strategy = RelatedSaveStrategy
+    get_strategy = RelatedGetStrategy
 
     def extend_parser(self, parser):
         """Add more arguments to parser."""
@@ -33,7 +38,7 @@ class SyncCommand(AbstractCommand):
     def sync_with_service(self, service, credentials):
         """Connect to service and retrieve it's hosts.."""
         service_class = self.get_service(service)
-        service = service_class(credentials)
+        service = service_class(self.storage, credentials)
         service.sync()
 
     def take_action(self, parsed_args):
