@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """Handlers for application signals."""
-import os
 
 
 # pylint: disable=unused-argument
@@ -19,4 +18,4 @@ def delete_ssh_key(sender, command, instance):
     """Delete private key file."""
     path = instance.file_path(command)
     if path.is_file():
-        os.remove(str(path))
+        path.unlink()

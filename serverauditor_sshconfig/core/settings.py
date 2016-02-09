@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Module for keeping application config."""
 from pathlib2 import Path
+from six import PY2
 from six.moves import configparser
 
 
@@ -8,6 +9,7 @@ class Config(object):
     """Class for application config."""
 
     paths = ['{application_directory}/config']
+    write_mode = (PY2 and 'wb') or 'w'
 
     def __init__(self, command, **kwargs):
         """Create new config."""
@@ -67,5 +69,5 @@ class Config(object):
 
     def write(self):
         """Write config for current user config file."""
-        with self.user_config_path.open('w') as _file:
+        with self.user_config_path.open(self.write_mode) as _file:
             self.config.write(_file)
