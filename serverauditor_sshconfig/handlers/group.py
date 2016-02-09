@@ -2,11 +2,13 @@
 """Module with Group commands."""
 import functools
 from ..core.commands import DetailCommand, ListCommand
+from ..core.commands.mixins import GroupStackGetterMixin
 from ..core.models.terminal import Group
+from ..core.exceptions import InvalidArgumentException
 from .ssh_config import SshConfigArgs
 
 
-class GroupCommand(DetailCommand):
+class GroupCommand(GroupStackGetterMixin, DetailCommand):
     """Operate with Group object."""
 
     model_class = Group
@@ -45,7 +47,18 @@ class GroupCommand(DetailCommand):
         group.ssh_config = ssh_config
         if args.parent_group:
             group.parent_group = self.get_relation(Group, args.parent_group)
+        self.validate_parent_group(group)
         return group
+
+    def validate_parent_group(self, group):
+        """Raise an error when group have cyclic folding."""
+        group_id = group.id
+        if not group_id:
+            return
+        group_stack = self.get_group_stack(group)
+        not_unique = any([i.id for i in group_stack if i.id == group_id])
+        if not_unique:
+            raise InvalidArgumentException('Cyclic group founded!')
 
 
 class GroupsCommand(ListCommand):
