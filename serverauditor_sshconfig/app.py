@@ -40,7 +40,9 @@ class ServerauditorApp(App):
         logging.getLogger('requests').setLevel(logging.WARNING)
         return
 
+    # pylint: disable=no-self-use
     def configure_signals(self):
+        """Bind subscribers to signals."""
         post_create_instance.connect(store_ssh_key, sender=SshKey)
         post_update_instance.connect(store_ssh_key, sender=SshKey)
         post_delete_instance.connect(delete_ssh_key, sender=SshKey)

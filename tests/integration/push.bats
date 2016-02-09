@@ -1,6 +1,10 @@
 #!/usr/bin/env bats
 load test_helper
 
+setup() {
+    clean_storage || true
+}
+
 @test "push help by arg" {
     run serverauditor push --help
     [ "$status" -eq 0 ]
@@ -31,8 +35,4 @@ load test_helper
     serverauditor logout
     run serverauditor pull -p ""
     [ "$status" -eq 1 ]
-}
-
-setup() {
-    rm ~/.serverauditor.storage || true
 }

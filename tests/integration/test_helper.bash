@@ -1,4 +1,3 @@
-
 login_serverauditor () {
     if [ "$SERVERAUDITOR_USERNAME" == '' ] || [ "$SERVERAUDITOR_PASSWORD" == '' ];then
       skip '$SERVERAUDITOR_USERNAME and $SERVERAUDITOR_PASSWORD are not set!'
@@ -15,5 +14,13 @@ pull_serverauditor() {
 }
 
 get_models_set() {
-    cat ~/.serverauditor.storage | jq .$1
+    cat ~/.serverauditor/storage | jq .$1
+}
+
+get_models_set_length() {
+    cat ~/.serverauditor/storage | jq ".$1 | length"
+}
+
+clean_storage() {
+    rm ~/.serverauditor/storage
 }

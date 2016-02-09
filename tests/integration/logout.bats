@@ -15,10 +15,10 @@
         skip '$SERVERAUDITOR_USERNAME and $SERVERAUDITOR_PASSWORD are not set!'
     fi
 
-    rm ~/.serverauditor || true
+    rm ~/.serverauditor/config || true
     serverauditor login --username $SERVERAUDITOR_USERNAME -p$SERVERAUDITOR_PASSWORD
 
     run serverauditor logout
     [ "$status" -eq 0 ]
-    [ -z $(cat ~/.serverauditor) ]
+    [ -z "$(cat ~/.serverauditor/config)" ]
 }

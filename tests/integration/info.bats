@@ -1,5 +1,10 @@
 #!/usr/bin/env bats
+load test_helper
 
+
+setup() {
+    clean_storage || true
+}
 
 @test "info help by arg" {
     run serverauditor info --help
@@ -23,7 +28,6 @@
     [ "$status" -eq 0 ]
 }
 
-
 @test "info group use default formatter" {
     group=$(serverauditor group -L test --port 2022)
     run serverauditor info --group $group --debug
@@ -45,8 +49,4 @@
     host=$(serverauditor host -L test --port 2022 --address localhost --username root --password password)
     run serverauditor info --group $host
     [ "$status" -eq 1 ]
-}
-
-setup() {
-    rm ~/.serverauditor.storage || true
 }

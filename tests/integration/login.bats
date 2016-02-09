@@ -14,9 +14,9 @@
     if [ "$SERVERAUDITOR_USERNAME" == '' ] || [ "$SERVERAUDITOR_PASSWORD" == '' ];then
         skip '$SERVERAUDITOR_USERNAME and $SERVERAUDITOR_PASSWORD are not set!'
     fi
-    rm ~/.serverauditor || true
+    rm ~/.serverauditor/config || true
 
     run serverauditor login --username $SERVERAUDITOR_USERNAME -p $SERVERAUDITOR_PASSWORD
     [ "$status" -eq 0 ]
-    ! [ -z $(cat ~/.serverauditor) ]
+    ! [ -z "$(cat ~/.serverauditor/config)" ]
 }

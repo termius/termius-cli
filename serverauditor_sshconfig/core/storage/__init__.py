@@ -46,7 +46,7 @@ Strategies = namedtuple('Strategies', ('getter', 'saver', 'deleter'))
 class ApplicationStorage(object):
     """Storage for user data."""
 
-    path = '{application_directory}/.storage'
+    path = '{application_directory}/storage'
     defaultstorage = list
     logger = logging.getLogger(__name__)
 

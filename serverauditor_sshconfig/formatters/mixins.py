@@ -26,6 +26,7 @@ def ssh_auth(username, address):
 
 
 def format_ssh_identity_file(ssh_key_file):
+    """Render identity file option."""
     return (ssh_key_file and '-i {}'.format(ssh_key_file)) or ''
 
 

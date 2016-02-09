@@ -1,7 +1,8 @@
 #!/usr/bin/env bats
+load test_helper
 
 setup() {
-    rm ~/.serverauditor.storage || true
+    clean_storage || true
 }
 
 @test "hosts help by arg" {
@@ -18,7 +19,7 @@ setup() {
     serverauditor host -L test --port 2022 --address 123.2.3.2 --username root --password password
     run serverauditor hosts
     [ "$status" -eq 0 ]
-    ! [ -z $(cat ~/.serverauditor.storage) ]
+    [ $(get_models_set_length 'host_set') -eq 1 ]
 }
 
 @test "List hosts filter by tag" {
@@ -26,7 +27,7 @@ setup() {
 
     run serverauditor hosts --tags A
     [ "$status" -eq 0 ]
-    ! [ -z $(cat ~/.serverauditor.storage) ]
+    [ $(get_models_set_length 'host_set') -eq 1 ]
 }
 
 @test "List hosts in group" {
@@ -35,7 +36,7 @@ setup() {
 
     run serverauditor hosts --group $group
     [ "$status" -eq 0 ]
-    ! [ -z $(cat ~/.serverauditor.storage) ]
+    [ $(get_models_set_length 'host_set') -eq 1 ]
 }
 
 @test "List hosts in group filter by tag" {
@@ -44,5 +45,5 @@ setup() {
 
     run serverauditor hosts --tags A --group $group
     [ "$status" -eq 0 ]
-    ! [ -z $(cat ~/.serverauditor.storage) ]
+    [ $(get_models_set_length 'host_set') -eq 1 ]
 }

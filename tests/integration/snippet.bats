@@ -1,7 +1,9 @@
 #!/usr/bin/env bats
+load test_helper
+
 
 setup() {
-    rm ~/.serverauditor.storage || true
+    clean_storage || true
 }
 
 @test "Snippet help by arg" {
@@ -17,7 +19,7 @@ setup() {
 @test "Add general snippet" {
     run serverauditor snippet -L test --script 'ls'
     [ "$status" -eq 0 ]
-    ! [ -z $(cat ~/.serverauditor.storage) ]
+    [ $(get_models_set_length 'snippet_set') -eq 1 ]
 }
 
 @test "Add many snippets" {
@@ -25,14 +27,14 @@ setup() {
     run serverauditor snippet -L test_2 --script 'whoami'
     run serverauditor snippet -L test_3 --script 'exit'
     [ "$status" -eq 0 ]
-    ! [ -z $(cat ~/.serverauditor.storage) ]
+    [ $(get_models_set_length 'snippet_set') -eq 3 ]
 }
 
 @test "Update snippet" {
     snippet=$(serverauditor snippet -L test --script 'ls')
     run serverauditor snippet --script 'cd /' $snippet
     [ "$status" -eq 0 ]
-    ! [ -z $(cat ~/.serverauditor.storage) ]
+    [ $(get_models_set_length 'snippet_set') -eq 1 ]
 }
 
 @test "Update many snippets" {
@@ -41,14 +43,14 @@ setup() {
     snippet3=$(serverauditor snippet -L test_3 --script 'exit')
     run serverauditor snippet --script 'cd /' $snippet1 $snippet2 $snippet3
     [ "$status" -eq 0 ]
-    ! [ -z $(cat ~/.serverauditor.storage) ]
+    [ $(get_models_set_length 'snippet_set') -eq 3 ]
 }
 
 @test "Delete snippet" {
     snippet=$(serverauditor snippet -L test --script 'ls')
     run serverauditor snippet --delete $snippet
     [ "$status" -eq 0 ]
-    ! [ -z $(cat ~/.serverauditor.storage) ]
+    [ $(get_models_set_length 'snippet_set') -eq 0 ]
 }
 
 @test "Delete many snippets" {
@@ -57,5 +59,5 @@ setup() {
     snippet3=$(serverauditor snippet -L test_3 --script 'exit')
     run serverauditor snippet --delete $snippet1 $snippet2 $snippet3
     [ "$status" -eq 0 ]
-    ! [ -z $(cat ~/.serverauditor.storage) ]
+    [ $(get_models_set_length 'snippet_set') -eq 0 ]
 }

@@ -1,7 +1,8 @@
 #!/usr/bin/env bats
+load test_helper
 
 setup() {
-    rm ~/.serverauditor.storage || true
+    clean_storage || true
     touch key
 }
 
@@ -23,5 +24,5 @@ teardown() {
     serverauditor key -L test -i key
     run serverauditor keys
     [ "$status" -eq 0 ]
-    ! [ -z $(cat ~/.serverauditor.storage) ]
+    [ $(get_models_set_length 'sshkeycrypt_set') -eq 1 ]
 }
