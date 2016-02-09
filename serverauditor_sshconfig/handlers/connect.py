@@ -36,4 +36,6 @@ class ConnectCommand(SshCommandFormatterMixin, SshConfigMergerMixin,
 
     def ssh_config_to_command(self, config, address):
         """Generate ssh command string with arguments from config."""
-        return self.render_command(config, address)
+        ssh_key = config.get_ssh_key()
+        ssh_key_path = ssh_key and ssh_key.file_path(self)
+        return self.render_command(config, address, ssh_key_path)

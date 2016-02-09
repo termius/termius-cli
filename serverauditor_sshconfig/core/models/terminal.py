@@ -74,6 +74,9 @@ class SshConfig(Model):
     }
     set_name = 'sshconfig_set'
 
+    def get_ssh_key(self):
+        return self.ssh_identity and self.ssh_identity.ssh_key
+
 
 class Group(Model):
     """Model for group."""

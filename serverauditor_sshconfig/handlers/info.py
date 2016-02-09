@@ -53,16 +53,20 @@ class InfoCommand(SshConfigMergerMixin, GetRelationMixin,
 
         return self.prepare_fields(ssh_config, instance)
 
-    # pylint: disable=no-self-use
     def prepare_fields(self, ssh_config, instance):
         """Generate 2size tuple with ssh_config fields.
 
         Warning there is one additional field - 'address'.
         """
-        ssh_config_fields = ssh_config.allowed_fields()
-        keys = tuple(ssh_config_fields) + ('address',)
+        ssh_config_fields = tuple(ssh_config.allowed_fields())
+        additional_fields = ('address', 'ssh_key_path')
+        keys = ssh_config_fields + additional_fields
+        ssh_key = ssh_config.get_ssh_key()
         values = (
             attrgetter(*ssh_config_fields)(ssh_config) +
-            (getattr(instance, 'address', ''),)
+            (
+                getattr(instance, 'address', ''),
+                ssh_key and ssh_key.file_path(self)
+            )
         )
         return (keys, values)
