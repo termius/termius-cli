@@ -2,7 +2,7 @@
 """Module for main app class."""
 import logging
 from os.path import expanduser
-from pathlib import Path
+from pathlib2 import Path
 # pylint: disable=import-error
 from cliff.app import App
 # pylint: disable=import-error

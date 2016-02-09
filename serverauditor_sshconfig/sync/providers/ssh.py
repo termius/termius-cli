@@ -3,7 +3,7 @@
 from os import environ
 from os.path import expanduser
 import re
-from pathlib import Path
+from pathlib2 import Path
 from paramiko.config import SSHConfig
 from .base import BaseSyncService
 from ...core.models.terminal import Host, SshConfig, SshIdentity, SshKey
@@ -57,7 +57,7 @@ class SSHService(BaseSyncService):
         identityfile = self.choose_ssh_key(config['identityfile'], config)
         if not identityfile:
             return None
-        content = self._readkey(identityfile)
+        content = identityfile.read_text()
         return SshKey(label=identityfile.name, private_key=content)
 
     # pylint: disable=unused-argument,no-self-use
@@ -66,8 +66,3 @@ class SSHService(BaseSyncService):
         key_paths = [Path(i) for i in sshkeys]
         existed_paths = [i for i in key_paths if i.is_file()]
         return existed_paths and existed_paths[0]
-
-    # pylint: disable=no-self-use
-    def _readkey(self, sshkey_path):
-        with sshkey_path.open('r') as _file:
-            return _file.read()

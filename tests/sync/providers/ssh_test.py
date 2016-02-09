@@ -74,16 +74,14 @@ Host firstone
 
 @patch('serverauditor_sshconfig.sync.providers.ssh.Path')
 def test_single_sshconfig_with_keys(mockpath):
-    sshconfig_content = StringIO(
-        """
+    sshconfig_content = """
 Host firstone
     HostName localhost
     User ubuntu
     IdentityFile ~/.ssh/id_rsa
     IdentityFile ~/.ssh/id_dsa
-        """
-    )
-    private_key_content = StringIO('private_key')
+    """
+    private_key_content = 'private_key'
     fake_files = FakePathsObj(**{
         '~/.ssh/config': sshconfig_content,
         '~/.ssh/id_rsa': private_key_content
@@ -124,5 +122,6 @@ class FakePathsObj(object):
         mock.name = os.path.basename(path)
         path = os.path.expanduser(path)
         mock.is_file.return_value = path in self.files
-        mock.open.return_value.__enter__.side_effect = lambda: self.files[path]
+        mock.open.return_value.__enter__.side_effect = lambda: StringIO(self.files[path])
+        mock.read_text.side_effect = lambda: self.files[path]
         return mock
