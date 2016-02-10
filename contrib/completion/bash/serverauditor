@@ -1,3 +1,205 @@
+__serverauditor_entity_labels() {
+  serverauditor "$1"s -f value -c label -c id
+}
+
+__serverauditor_get_labels_ids() {
+  case $1 in
+    host|group|identity|key|pfrule|snippet)
+      __serverauditor_entity_labels $1
+      ;;
+    *) return 0
+      ;;
+  esac
+}
+
+__serverauditor_subcommand_instance() {
+  case $1 in
+    host|group|identity|key|pfrule|snippet)
+      __serverauditor_get_labels_ids $1
+      ;;
+    connect)
+      __serverauditor_complete_connect
+      ;;
+    info)
+     __serverauditor_complete_info
+      ;;
+    *) return 0
+      ;;
+  esac
+}
+
+__serverauditor_complete_option_value() {
+  __serverauditor_complete_options_$1 $2
+}
+
+__serverauditor_complete_connect() {
+  __serverauditor_get_labels_ids host
+}
+
+__serverauditor_complete_info() {
+  if [[ " ${words[@]} " =~ " -g " ]] || [[ " ${words[@]} " =~ " --group " ]]; then
+    __serverauditor_get_labels_ids group
+  else
+    __serverauditor_get_labels_ids host
+  fi
+}
+
+__serverauditor_complete_options_complete() {
+  case $1 in
+    --shell)
+      echo bash
+      ;;
+    --name)
+      echo serverauditor
+      ;;
+    *)
+      return 0
+      ;;
+  esac
+}
+__serverauditor_complete_options_connect() {
+  return 0
+}
+__serverauditor_complete_options_fullclean() {
+  __serverauditor_complete_common_options $1
+}
+__serverauditor_complete_options_group() {
+  case $1 in
+    -g|--parent-group)
+      __serverauditor_get_labels_ids group
+      ;;
+    -s|--snippet)
+      __serverauditor_get_labels_ids snippet
+      ;;
+    --ssh-identity)
+      __serverauditor_get_labels_ids identity
+      ;;
+    *)
+      __serverauditor_complete_common_options $1
+      ;;
+  esac
+}
+__serverauditor_complete_options_groups() {
+  __serverauditor_complete_common_list_options $1
+}
+__serverauditor_complete_options_help() {
+  return 0
+}
+__serverauditor_complete_options_host() {
+  case $1 in
+    -g|--group)
+      __serverauditor_get_labels_ids group
+      ;;
+    -t|--tag)
+      __serverauditor_get_labels_ids tag
+      ;;
+    -s|--snippet)
+      __serverauditor_get_labels_ids snippet
+      ;;
+    --ssh-identity)
+      __serverauditor_get_labels_ids identity
+      ;;
+    *)
+      __serverauditor_complete_common_options $1
+      ;;
+  esac
+}
+__serverauditor_complete_options_hosts() {
+  case $1 in
+    -g|--group)
+      __serverauditor_get_labels_ids group
+      ;;
+    -t|--tag)
+      __serverauditor_get_labels_ids tag
+      ;;
+    *)
+      __serverauditor_complete_common_list_options $1
+      ;;
+  esac
+}
+__serverauditor_complete_options_identities() {
+  __serverauditor_complete_common_list_options $1
+}
+__serverauditor_complete_options_identity() {
+  case $1 in
+    -k|--ssh-key)
+      __serverauditor_get_labels_ids key
+      ;;
+    *)
+      __serverauditor_complete_common_options $1
+      ;;
+  esac
+}
+__serverauditor_complete_options_info() {
+   case $1 in
+    -f|--format)
+      echo json shell ssh table value yaml
+      ;;
+    *)
+      __serverauditor_complete_common_options $1
+      ;;
+  esac
+}
+__serverauditor_complete_options_key() {
+  __serverauditor_complete_common_options $1
+}
+__serverauditor_complete_options_keys() {
+  __serverauditor_complete_common_list_options $1
+}
+__serverauditor_complete_options_login() {
+  __serverauditor_complete_common_options $1
+}
+__serverauditor_complete_options_logout() {
+  __serverauditor_complete_common_options $1
+}
+__serverauditor_complete_options_pfrule() {
+   case $1 in
+    -H|--host)
+      __serverauditor_get_labels_ids host
+      ;;
+    *)
+      __serverauditor_complete_common_options $1
+      ;;
+  esac
+}
+__serverauditor_complete_options_pfrules() {
+  __serverauditor_complete_common_list_options $1
+}
+__serverauditor_complete_options_pull() {
+  __serverauditor_complete_common_options $1
+}
+__serverauditor_complete_options_push() {
+  __serverauditor_complete_common_options $1
+}
+__serverauditor_complete_options_snippet() {
+  __serverauditor_complete_common_options $1
+}
+__serverauditor_complete_options_snippets() {
+  __serverauditor_complete_common_list_options $1
+}
+
+__serverauditor_complete_options_sync() {
+  __serverauditor_complete_common_options $1
+}
+__serverauditor_complete_options_tags() {
+  __serverauditor_complete_common_list_options $1
+}
+
+__serverauditor_complete_common_list_options() {
+  case $1 in
+    -f|--format)
+      echo csv json table value yaml
+      ;;
+    *)
+      __serverauditor_complete_common_options $1
+      ;;
+  esac
+}
+
+__serverauditor_complete_common_options() {
+  return 0
+}
+
 _serverauditor()
 {
   local cur prev words
@@ -5,31 +207,77 @@ _serverauditor()
   _get_comp_words_by_ref -n : cur prev words
 
   # Command data:
-  cmds='complete connect group groups help host hosts identities identity info login logout pfrule pfrules pull push snippet snippets sync tags'
+  cmds='complete connect fullclean group groups help host hosts identities identity info key keys login logout pfrule pfrules pull push snippet snippets sync tags'
   cmds_complete='-h --help --name --shell'
-  cmds_connect='-h --help --log-file -G --group --ssh'
-  cmds_group='-h --help --log-file -d --delete -I --interactive -L --label --generate-key --ssh -g --parent-group -p --port -S --strict-key-check -s --snippet --ssh-identity -k --keep-alive-packages -u --username -P --password -i --identity-file'
+  cmds_complete_arg_options='--name --shell'
+  cmds_connect='-h --help --log-file'
+  cmds_connect_arg_options='--log-file'
+  cmds_connect_file_options='--log-file'
+  cmds_fullclean='-h --help --log-file -s --strategy -p --password'
+  cmds_fullclean_arg_options='--log-file -s --strategy -p --password'
+  cmds_fullclean_file_options='--log-file'
+  cmds_group='-h --help --log-file -g --parent-group -p --port -S --strict-key-check -s --snippet --ssh-identity -k --keep-alive-packages -u --username -P --password -i --identity-file -d --delete -I --interactive -L --label'
+  cmds_group_arg_options='--log-file -g --parent-group -p --port -s --snippet --ssh-identity -u --username -P --password -i --identity-file -L --label'
+  cmds_group_file_options='--log-file -i --identity-file'
   cmds_groups='-h --help -f --format -c --column --max-width --noindent --quote --log-file -r --recursive'
+  cmds_groups_arg_options='-f --format -c --column --max-width --log-file'
+  cmds_groups_file_options='--log-file'
   cmds_help='-h --help'
-  cmds_host='-h --help --log-file -d --delete -I --interactive -L --label --generate-key --ssh -t --tags -g --group -a --address -p --port -S --strict-key-check -s --snippet --ssh-identity -k --keep-alive-packages -u --username -P --password -i --identity-file'
+  cmds_host='-h --help --log-file -t --tags -g --group -a --address -p --port -S --strict-key-check -s --snippet --ssh-identity -k --keep-alive-packages -u --username -P --password -i --identity-file -d --delete -I --interactive -L --label'
+  cmds_host_arg_options='--log-file -t --tags -g --group -a --address -p --port -s --snippet --ssh-identity -u --username -P --password -i --identity-file -L --label'
+  cmds_host_file_options='--log-file -i --identity-file'
   cmds_hosts='-h --help -f --format -c --column --max-width --noindent --quote --log-file -t --tags -g --group'
+  cmds_hosts_arg_options='-f --format -c --column --max-width --log-file -t --tags -g --group'
+  cmds_hosts_file_options='--log-file'
   cmds_identities='-h --help -f --format -c --column --max-width --noindent --quote --log-file'
-  cmds_identity='-h --help --log-file -d --delete -I --interactive -L --label --generate-key -u --username -p --password -i --identity-file -k --ssh-key'
-  cmds_info='-h --help --log-file -f --format -c --column --variable --prefix --noindent --address --max-width -G --group -H --host -M --no-merge --ssh'
-  cmds_login='-h --help --log-file -u --username -p --password --sync-sshconfig'
-  cmds_logout='-h --help --log-file --clear-sshconfig'
-  cmds_pfrule='-h --help --log-file -d --delete -I --interactive -L --label -H --host --dynamic --remote --local --binding'
+  cmds_identities_arg_options='-f --format -c --column --max-width --log-file'
+  cmds_identities_file_options='--log-file'
+  cmds_identity='-h --help --log-file -u --username -p --password -i --identity-file -k --ssh-key -d --delete -I --interactive -L --label'
+  cmds_identity_arg_options='--log-file -u --username -p --password -i --identity-file -k --ssh-key -L --label'
+  cmds_identity_file_options='--log-file -i --identity-file'
+  cmds_info='-h --help --log-file -G --group -H --host -M --no-merge -f --format -c --column --prefix --noindent --address --max-width'
+  cmds_info_arg_options='--log-file -f --format -c --column --prefix --address'
+  cmds_info_file_options='--log-file'
+  cmds_key='-h --help --log-file -i --identity-file -d --delete -I --interactive -L --label'
+  cmds_key_arg_options='--log-file -i --identity-file -L --label'
+  cmds_key_file_options='--log-file -i --identity-file'
+  cmds_keys='-h --help -f --format -c --column --max-width --noindent --quote --log-file'
+  cmds_keys_arg_options='-f --format -c --column --max-width --log-file'
+  cmds_keys_file_options='--log-file'
+  cmds_login='-h --help --log-file -u --username -p --password'
+  cmds_login_arg_options='--log-file -u --username -p --password'
+  cmds_login_file_options='--log-file'
+  cmds_logout='-h --help --log-file'
+  cmds_logout_arg_options='--log-file'
+  cmds_logout_file_options='--log-file'
+  cmds_pfrule='-h --help --log-file -H --host --dynamic --remote --local --binding -d --delete -I --interactive -L --label'
+  cmds_pfrule_arg_options='--log-file -H --host --binding -L --label'
+  cmds_pfrule_file_options='--log-file'
   cmds_pfrules='-h --help -f --format -c --column --max-width --noindent --quote --log-file'
+  cmds_pfrules_arg_options='-f --format -c --column --max-width --log-file'
+  cmds_pfrules_file_options='--log-file'
   cmds_pull='-h --help --log-file -s --strategy -p --password'
+  cmds_pull_arg_options='--log-file -s --strategy -p --password'
+  cmds_pull_file_options='--log-file'
   cmds_push='-h --help --log-file -s --strategy -p --password'
-  cmds_snippet='-h --help --log-file -d --delete -I --interactive -L --label -s --script'
+  cmds_push_arg_options='--log-file -s --strategy -p --password'
+  cmds_push_file_options='--log-file'
+  cmds_snippet='-h --help --log-file -s --script -d --delete -I --interactive -L --label'
+  cmds_snippet_arg_options='--log-file -s --script -L --label'
+  cmds_snippet_file_options='--log-file'
   cmds_snippets='-h --help -f --format -c --column --max-width --noindent --quote --log-file'
+  cmds_snippets_arg_options='-f --format -c --column --max-width --log-file'
+  cmds_snippets_file_options='--log-file'
   cmds_sync='-h --help --log-file -c --credentials'
+  cmds_sync_arg_options='--log-file -c --credentials'
+  cmds_sync_file_options='--log-file -c --credentials'
   cmds_tags='-h --help -f --format -c --column --max-width --noindent --quote --log-file -d --delete'
+  cmds_tags_arg_options='-f --format -c --column --max-width --log-file'
+  cmds_tags_file_options='--log-file'
 
   cmd=""
   words[0]=""
-  completed="${cmds}"
+  completed_options="${cmds}"
   for var in "${words[@]:1}"
   do
     if [[ ${var} == -* ]] ; then
@@ -47,18 +295,38 @@ _serverauditor()
     fi
     if [[ ${comp} == -* ]] ; then
       if [[ ${cur} != -* ]] ; then
-        completed=""
+        completed_options=""
         break
       fi
     fi
     cmd="${proposed}"
-    completed="${comp}"
+    completed_options="${comp}"
   done
 
-  if [ -z "${completed}" ] ; then
-    COMPREPLY=( $( compgen -f -- "$cur" ) $( compgen -d -- "$cur" ) )
+  subcommand=${words[1]}
+  arg_options="cmds_${subcommand}_arg_options"
+  arg_file_options="cmds_${subcommand}_file_options"
+
+  if [ -z "${completed_options}" ] ;
+  then
+    if [ -n "${subcommand}" ] ;
+    then
+      if [[ "${prev}" == -* ]] && [[ " ${!arg_options} " =~ " ${prev} " ]];
+      then
+        if [[ " ${!arg_file_options} " =~ " ${prev} " ]];
+        then
+          COMPREPLY=( $(compgen -f -- ${cur}) )
+        else
+          COMPREPLY=( $(compgen -W "$(__serverauditor_complete_option_value $subcommand $prev)" -- ${cur}) )
+        fi
+      else
+        COMPREPLY=( $(compgen -W "$(__serverauditor_subcommand_instance $subcommand)" -- ${cur}) )
+      fi
+    else
+      COMPREPLY=( $( compgen -W "" -- "$cur" ) )
+    fi
   else
-    COMPREPLY=( $(compgen -W "${completed}" -- ${cur}) )
+    COMPREPLY=( $(compgen -W "${completed_options}" -- ${cur}) )
   fi
   return 0
 }
