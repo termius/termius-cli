@@ -21,9 +21,6 @@ class GroupCommand(GroupStackGetterMixin, DetailCommand):
     def extend_parser(self, parser):
         """Add more arguments to parser."""
         parser.add_argument(
-            '--ssh', help='Options in ssh_config format.'
-        )
-        parser.add_argument(
             '-g', '--parent-group',
             metavar='PARENT_GROUP', help="Parent group's id or name."
         )
