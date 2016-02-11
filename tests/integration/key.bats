@@ -42,8 +42,7 @@ teardown() {
 
 @test "Update key" {
     key=$(serverauditor key -L test -i $private_key_path)
-    run serverauditor key -i $private_key_path $key --debug
-    echo ${lines[*]}
+    run serverauditor key -i $private_key_path -L test $key
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'sshkeycrypt_set') -eq 1 ]
     [ $(diff ~/.serverauditor/ssh_keys/key $private_key_path) = ""]
@@ -70,13 +69,28 @@ teardown() {
 }
 
 @test "Delete many keys" {
-    key1=$(serverauditor key -L test_1 -i key)
-    key2=$(serverauditor key -L test_2 -i key)
-    key3=$(serverauditor key -L test_3 -i key)
+    key1=$(serverauditor key -L test_1 -i $private_key_path)
+    key2=$(serverauditor key -L test_2 -i $private_key_path)
+    key3=$(serverauditor key -L test_3 -i $private_key_path)
     run serverauditor key --delete $key1 $key2 $key3
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'sshkeycrypt_set') -eq 0 ]
     ! [ -f ~/.serverauditor/ssh_keys/test_1 ]
     ! [ -f ~/.serverauditor/ssh_keys/test_2 ]
     ! [ -f ~/.serverauditor/ssh_keys/test_3 ]
+}
+
+@test "Not add key with same ids" {
+    serverauditor key -L test -i $private_key_path
+    run serverauditor key -L test -i $private_key_path
+    [ "$status" -eq 1 ]
+    [ $(get_models_set_length 'sshkeycrypt_set') -eq 1 ]
+}
+
+@test "Not update key with same ids" {
+    key1=$(serverauditor key -L test_1 -i $private_key_path)
+    key2=$(serverauditor key -L test_2 -i $private_key_path)
+    run serverauditor key -L test_2 -i $private_key_path $key1
+    [ "$status" -eq 1 ]
+    [ $(get_models_set_length 'sshkeycrypt_set') -eq 2 ]
 }
