@@ -22,10 +22,6 @@ class HostCommand(DetailCommand):
     def extend_parser(self, parser):
         """Add more arguments to parser."""
         parser.add_argument(
-            '--ssh', metavar='SSH_CONFIG_OPTIONS',
-            help='Options in ssh_config format.'
-        )
-        parser.add_argument(
             '-t', '--tags', metavar='TAG_LIST',
             help='Comma separated tag list for host, e.g. "web,django".'
         )

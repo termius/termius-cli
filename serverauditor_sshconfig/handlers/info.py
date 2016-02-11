@@ -36,10 +36,6 @@ class InfoCommand(SshConfigMergerMixin, GetRelationMixin,
             '-M', '--no-merge', action='store_true',
             help='Do not merge configs.'
         )
-        parser.add_argument(
-            '--ssh', action='store_true',
-            help='Show info in ssh_config format'
-        )
         parser.add_argument('id_or_name', metavar='ID or NAME')
         return parser
 
