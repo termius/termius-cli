@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Module with ssh key commands."""
-import os.path
+from pathlib2 import Path
 from ..core.commands.single import RequiredOptions
 from ..core.commands import DetailCommand, ListCommand
 from ..core.models.terminal import SshKey
@@ -13,10 +13,11 @@ class SshKeyGeneratorMixin(object):
     # pylint: disable=no-self-use
     def generate_ssh_key_instance(self, path):
         """Generate ssh key from file."""
-        with open(path, 'r') as _file:
-            content = _file.read()
-        label = os.path.basename(path)
-        return SshKey(private_key=content, label=label)
+        private_key_path = Path(path)
+        return SshKey(
+            private_key=private_key_path.read_text(),
+            label=private_key_path.name
+        )
 
 
 class SshKeyCommand(SshKeyGeneratorMixin, DetailCommand):
