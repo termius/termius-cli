@@ -72,10 +72,9 @@ class CompletionTestCase(unittest.TestCase):
 class BashCompletionTest(unittest.TestCase):
 
     def run_complete(self, completion_file, program, command, expected):
-        print(command)
         stdout, stderr = Completion().run(completion_file, program, command)
         print(stderr)
-        self.assertEqual(stdout, expected + '\n')
+        self.assertEqual(stdout.decode('utf-8'), expected + '\n')
 
 
 class ServerauditorTestCase(BashCompletionTest):
@@ -117,7 +116,8 @@ class ServerauditorTestCase(BashCompletionTest):
         first = self.client.create_host('localhost', 'Asparagales')
         second = self.client.create_host('localhost', 'xanthorrhoeaceae')
         instances = (first, second)
-        self.run_complete('connect ', ' '.join(['{} {}'.format(i.id, i.label) for i in instances]))
+        print((self.client.app_directory / 'storage').read_text())
+        self.run_complete('connect ', ids_labels_completion(instances))
         self.run_complete('connect As', 'Asparagales')
         self.run_complete('connect xa', 'xanthorrhoeaceae')
 
@@ -126,7 +126,7 @@ class ServerauditorTestCase(BashCompletionTest):
         first = self.client.create_host('localhost', 'Asparagales')
         second = self.client.create_host('localhost', 'xanthorrhoeaceae')
         instances = (first, second)
-        self.run_complete('info ', ' '.join(['{} {}'.format(i.id, i.label) for i in instances]))
+        self.run_complete('info ', ids_labels_completion(instances))
         self.run_complete('info As', 'Asparagales')
         self.run_complete('info xa', 'xanthorrhoeaceae')
 
@@ -137,7 +137,7 @@ class ServerauditorTestCase(BashCompletionTest):
         instances = (first, second)
         for option in ('-g', '--group'):
             subcommand = 'info {} '.format(option)
-            self.run_complete(subcommand, ' '.join(['{} {}'.format(i.id, i.label) for i in instances]))
+            self.run_complete(subcommand, ids_labels_completion(instances))
             self.run_complete(subcommand + ' As'.format(option), 'Asparagales')
             self.run_complete(subcommand + ' xa', 'xanthorrhoeaceae')
 
@@ -147,7 +147,7 @@ class ServerauditorTestCase(BashCompletionTest):
         first = self.client.create_host('localhost', 'Asparagales')
         second = self.client.create_host('localhost', 'xanthorrhoeaceae')
         instances = (first, second)
-        self.run_complete(entity + ' ', ' '.join(['{} {}'.format(i.id, i.label) for i in instances]))
+        self.run_complete(entity + ' ', ids_labels_completion(instances))
         self.run_complete(entity + ' As', 'Asparagales')
         self.run_complete(entity + ' xa', 'xanthorrhoeaceae')
 
@@ -175,8 +175,8 @@ class ServerauditorClient(object):
         self.app_directory = Path('~/.serverauditor/').expanduser()
         if not self.app_directory.is_dir():
             self.app_directory.mkdir()
-        command_mock = Mock(**{'app.directory_path': self.app_directory})
-        self.storage = ApplicationStorage(command_mock)
+        self.command_mock = Mock(**{'app.directory_path': self.app_directory})
+        self.storage = ApplicationStorage(self.command_mock)
 
     def create_host(self, address, label):
         return self._create_instance(Host, label=label, address=address)
@@ -192,8 +192,13 @@ class ServerauditorClient(object):
     def clean(self):
         if self.app_directory.is_dir():
             self._clean_dir(self.app_directory)
+        self.storage = ApplicationStorage(self.command_mock)
 
     def _clean_dir(self, dir_path):
-        [self._clean_dir(x) for x in dir_path.iterdir() if x.is_dir()]
-        [i.unlink() for i in dir_path.iterdir() if x.is_file()]
+        [self._clean_dir(i) for i in dir_path.iterdir() if i.is_dir()]
+        [i.unlink() for i in dir_path.iterdir() if i.is_file()]
         dir_path.rmdir()
+
+
+def ids_labels_completion(instances):
+    return ' '.join(['{0.label}'.format(i) for i in instances])

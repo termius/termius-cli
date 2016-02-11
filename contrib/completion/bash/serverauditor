@@ -1,5 +1,5 @@
 __serverauditor_entity_labels() {
-  serverauditor "$1"s -f value -c label -c id
+  serverauditor "$1"s -f value -c label
 }
 
 __serverauditor_get_labels_ids() {
@@ -18,7 +18,7 @@ __serverauditor_subcommand_instance() {
       __serverauditor_get_labels_ids $1
       ;;
     connect)
-      __serverauditor_complete_connect
+      __serverauditor_get_labels_ids host
       ;;
     info)
      __serverauditor_complete_info
@@ -29,11 +29,13 @@ __serverauditor_subcommand_instance() {
 }
 
 __serverauditor_complete_option_value() {
-  __serverauditor_complete_options_$1 $2
-}
-
-__serverauditor_complete_connect() {
-  __serverauditor_get_labels_ids host
+  local completion
+  completion="__serverauditor_complete_options_$1"
+  if ! type $completion >/dev/null 2>&1; then
+    __serverauditor_complete_common_options $2
+  else
+    $completion $2
+  fi
 }
 
 __serverauditor_complete_info() {
@@ -140,17 +142,8 @@ __serverauditor_complete_options_info() {
       ;;
   esac
 }
-__serverauditor_complete_options_key() {
-  __serverauditor_complete_common_options $1
-}
 __serverauditor_complete_options_keys() {
   __serverauditor_complete_common_list_options $1
-}
-__serverauditor_complete_options_login() {
-  __serverauditor_complete_common_options $1
-}
-__serverauditor_complete_options_logout() {
-  __serverauditor_complete_common_options $1
 }
 __serverauditor_complete_options_pfrule() {
    case $1 in
@@ -165,21 +158,8 @@ __serverauditor_complete_options_pfrule() {
 __serverauditor_complete_options_pfrules() {
   __serverauditor_complete_common_list_options $1
 }
-__serverauditor_complete_options_pull() {
-  __serverauditor_complete_common_options $1
-}
-__serverauditor_complete_options_push() {
-  __serverauditor_complete_common_options $1
-}
-__serverauditor_complete_options_snippet() {
-  __serverauditor_complete_common_options $1
-}
 __serverauditor_complete_options_snippets() {
   __serverauditor_complete_common_list_options $1
-}
-
-__serverauditor_complete_options_sync() {
-  __serverauditor_complete_common_options $1
 }
 __serverauditor_complete_options_tags() {
   __serverauditor_complete_common_list_options $1
