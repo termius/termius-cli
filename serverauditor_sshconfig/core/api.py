@@ -65,7 +65,7 @@ class API(object):
         response = requests.get(self.request_url('v1/token/auth/'),
                                 auth=(username, password))
         if response.status_code != 200:
-            self.logging.warning('Can not login!\nResponse %s', response.text)
+            self.logger.warning('Can not login!\nResponse %s', response.text)
         assert response.status_code == 200
 
         response_payload = response.json()
