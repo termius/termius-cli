@@ -17,7 +17,7 @@ setup() {
 }
 
 @test "tags list" {
-    serverauditor host -L test --port 2022 --address localhost --username root --password password -t A,B,C
+    serverauditor host -L test --port 2022 --address localhost --username root --password password -t A -t B -t C
 
     run serverauditor tags
     [ "$status" -eq 0 ]
@@ -31,8 +31,8 @@ setup() {
 }
 
 @test "tags list filter some" {
-    serverauditor host -L test --address localhost --username root --password password -t A,B,C
-    serverauditor host -L test --address local2 --username root -t 1,A,B
+    serverauditor host -L test --address localhost --username root --password password -t A -t B -t C
+    serverauditor host -L test --address local2 --username root -t 1 -t A -t B
     serverauditor host -L test --address host1 --password password -t A
 
     run serverauditor tags A B --debug

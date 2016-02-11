@@ -22,8 +22,9 @@ class HostCommand(DetailCommand):
     def extend_parser(self, parser):
         """Add more arguments to parser."""
         parser.add_argument(
-            '-t', '--tags', metavar='TAG_LIST',
-            help='Comma separated tag list for host, e.g. "web,django".'
+            '-t', '--tag', metavar='TAG_NAME',
+            action='append', default=[], dest='tags',
+            help='Specify the tag(s) for host, can be repeated'
         )
         parser.add_argument(
             '-g', '--group', metavar='GROUP_ID or GROUP_NAME',
@@ -61,9 +62,9 @@ class HostCommand(DetailCommand):
             host.group = self.get_relation(Group, args.group)
         return host
 
-    def update_tag_list(self, host, tag_csv):
+    def update_tag_list(self, host, tags):
         """Update tag list for host instance."""
-        tag_instanes = self.taglist_args.get_or_create_tag_instances(tag_csv)
+        tag_instanes = self.taglist_args.get_or_create_tag_instances(tags)
         self.taglist_args.update_taghosts(host, tag_instanes)
 
 
@@ -80,8 +81,9 @@ class HostsCommand(ListCommand):
     def extend_parser(self, parser):
         """Add more arguments to parser."""
         parser.add_argument(
-            '-t', '--tags', metavar='TAG_LIST',
-            help=('(Comma separated tag list) list hosts with such tags.')
+            '-t', '--tag', metavar='TAG_NAME',
+            action='append', default=[], dest='tags',
+            help=('Specify the tag(s) for host, can be repeated')
         )
         parser.add_argument(
             '-g', '--group', metavar='GROUP_ID or GROUP_NAME',

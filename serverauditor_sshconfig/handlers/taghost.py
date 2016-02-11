@@ -41,10 +41,10 @@ class TagListArgs(object):
         for i in taghost_list:
             self.storage.save(i)
 
-    def get_or_create_tag_instances(self, tag_csv):
-        """Get tag list from tag csv string."""
+    def get_or_create_tag_instances(self, tag_label_list):
+        """Get tag list from list of tag label."""
         tags = [
-            self.get_or_create_tag(i) for i in self.csv_tags_to_list(tag_csv)
+            self.get_or_create_tag(i) for i in tag_label_list
         ]
         return tags
 
@@ -55,12 +55,6 @@ class TagListArgs(object):
         except DoesNotExistException:
             return self.storage.create(Tag(label=tag_label))
 
-    def get_tag_instances(self, tag_csv):
-        """Get tag list from tag_csv."""
-        tag_label_list = self.csv_tags_to_list(tag_csv)
+    def get_tag_instances(self, tag_label_list):
+        """Get tag list from list of tag label."""
         return self.storage.filter(Tag, **{'label.rcontains': tag_label_list})
-
-    # pylint: disable=no-self-use
-    def csv_tags_to_list(self, csv_tags):
-        """Convert csv list with tag label to list."""
-        return set(csv_tags.split(','))

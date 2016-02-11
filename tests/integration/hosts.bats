@@ -23,11 +23,12 @@ setup() {
 }
 
 @test "List hosts filter by tag" {
+    serverauditor host -L test --port 2022 --address localhost --username root --password password
     serverauditor host -L test --port 2022 --address localhost --username root --password password -t A
 
-    run serverauditor hosts --tags A
+    run serverauditor hosts --tag A
     [ "$status" -eq 0 ]
-    [ $(get_models_set_length 'host_set') -eq 1 ]
+    [ $(get_models_set_length 'host_set') -eq 2 ]
 }
 
 @test "List hosts in group" {
@@ -43,7 +44,7 @@ setup() {
     group=$(serverauditor group --port 2022)
     serverauditor host -L test --group $group --address localhost --username root --password password -t A
 
-    run serverauditor hosts --tags A --group $group
+    run serverauditor hosts --tag A --group $group
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'host_set') -eq 1 ]
 }

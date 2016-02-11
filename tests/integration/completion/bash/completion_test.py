@@ -99,7 +99,7 @@ class ServerauditorTestCase(BashCompletionTest):
         self.run_complete('host --ad', '--address')
         self.run_complete(
             'host -',
-            '-h --help --log-file -t --tags -g --group -a --address '
+            '-h --help --log-file -t --tag -g --group -a --address '
             '-p --port -S --strict-key-check -s --snippet --ssh-identity '
             '-k --keep-alive-packages -u --username -P --password '
             '-i --identity-file -d --delete -I --interactive -L --label'

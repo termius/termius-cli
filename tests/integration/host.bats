@@ -91,7 +91,7 @@ setup() {
 }
 
 @test "Create with 3 tags" {
-    run serverauditor host -L test --port 2022 --address localhost --username root --password password -t A,B,C
+    run serverauditor host -L test --port 2022 --address localhost --username root --password password -t A -t B -t C
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'host_set') -eq 1 ]
     [ $(get_models_set_length 'tag_set') -eq 3 ]
@@ -99,8 +99,8 @@ setup() {
 }
 
 @test "Create 2 hosts with 3 tags" {
-    run serverauditor host -L test --port 2022 --address localhost --username root --password password -t A,B,C
-    run serverauditor host -L test --port 2022 --address localhost --username root --password password -t A,B,C
+    run serverauditor host -L test --port 2022 --address localhost --username root --password password -t A -t B -t C
+    run serverauditor host -L test --port 2022 --address localhost --username root --password password -t A -t B -t C
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'host_set') -eq 2 ]
     [ $(get_models_set_length 'tag_set') -eq 3 ]
@@ -108,8 +108,8 @@ setup() {
 }
 
 @test "Update host with 3 same tags" {
-    host=$(serverauditor host -L test --port 2022 --address localhost --username root --password password -t A,B,C)
-    run serverauditor host -L test --port 2022 --address localhost --username root --password password -t A,B,C $host
+    host=$(serverauditor host -L test --port 2022 --address localhost --username root --password password -t A -t B -t C)
+    run serverauditor host -L test --port 2022 --address localhost --username root --password password -t A -t B -t C $host
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'host_set') -eq 1 ]
     [ $(get_models_set_length 'tag_set') -eq 3 ]
@@ -117,8 +117,8 @@ setup() {
 }
 
 @test "Update host with 3 diff tags" {
-    host=$(serverauditor host -L test --port 2022 --address localhost --username root --password password -t A,B,C)
-    run serverauditor host -L test --port 2022 --address localhost --username root --password password -t D,E,F $host
+    host=$(serverauditor host -L test --port 2022 --address localhost --username root --password password -t A -t B -t C)
+    run serverauditor host -L test --port 2022 --address localhost --username root --password password -t D -t E -t F $host
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'host_set') -eq 1 ]
     [ $(get_models_set_length 'tag_set') -eq 6 ]
