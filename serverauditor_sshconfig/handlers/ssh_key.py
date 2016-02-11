@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """Module with ssh key commands."""
-import os.path
+from pathlib2 import Path
 from ..core.commands.single import RequiredOptions
+from ..core.exceptions import InvalidArgumentException
 from ..core.commands import DetailCommand, ListCommand
 from ..core.models.terminal import SshKey
 
@@ -13,10 +14,11 @@ class SshKeyGeneratorMixin(object):
     # pylint: disable=no-self-use
     def generate_ssh_key_instance(self, path):
         """Generate ssh key from file."""
-        with open(path, 'r') as _file:
-            content = _file.read()
-        label = os.path.basename(path)
-        return SshKey(private_key=content, label=label)
+        private_key_path = Path(path)
+        return SshKey(
+            private_key=private_key_path.read_text(),
+            label=private_key_path.name
+        )
 
 
 class SshKeyCommand(SshKeyGeneratorMixin, DetailCommand):
@@ -39,14 +41,22 @@ class SshKeyCommand(SshKeyGeneratorMixin, DetailCommand):
         if instance:
             ssh_key = instance
             if args.identity_file:
-                with open(args.identity_file, 'r') as _file:
-                    ssh_key.private_key = _file.read()
+                ssh_key.private_key = Path(args.identity_file).read_text()
         else:
             ssh_key = self.generate_ssh_key_instance(args.identity_file)
 
         if args.label:
             ssh_key.label = args.label
+        self.validate_label(ssh_key)
         return ssh_key
+
+    def validate_label(self, instance):
+        """Raise an error when any instances exist with same label."""
+        with_same_label = self.storage.filter(
+            SshKey, **{'label': instance.label, 'id.ne': instance.id}
+        )
+        if with_same_label:
+            raise InvalidArgumentException('Instances with same label exists.')
 
 
 class SshKeysCommand(ListCommand):
