@@ -19,18 +19,6 @@ class SnippetCommand(DetailCommand):
         )
         return parser
 
-    # pylint: disable=no-self-use
-    def serialize_args(self, args, instance=None):
-        """Convert args to instance."""
-        if instance:
-            snippet = instance
-        else:
-            snippet = Snippet()
-
-        snippet.script = args.script
-        snippet.label = args.label
-        return snippet
-
 
 class SnippetsCommand(ListCommand):
     """Manage snippet objects."""

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """Module with PFRule commands."""
 import re
-from ..core.exceptions import (
-    InvalidArgumentException, ArgumentRequiredException,
-)
+from operator import attrgetter
+from cached_property import cached_property
+from ..core.exceptions import InvalidArgumentException
 from ..core.commands import DetailCommand, ListCommand
 from ..core.commands.single import RequiredOptions
 from ..core.models.terminal import Host, PFRule
@@ -13,7 +13,16 @@ class PFRuleCommand(DetailCommand):
     """Operate with port forwarding rule object."""
 
     model_class = PFRule
-    required_options = RequiredOptions(create=('host', 'binding'))
+    required_options = RequiredOptions(create=('host', 'binding', 'pf_type'))
+
+    @cached_property
+    def fields(self):
+        """Return dictionary of args serializers to models field."""
+        _fields = {
+            i: attrgetter(i) for i in ('pf_type',)
+        }
+        _fields['host'] = self.get_safely_instance_partial(Host, 'host')
+        return _fields
 
     @property
     # pylint: disable=no-self-use
@@ -32,15 +41,15 @@ class PFRuleCommand(DetailCommand):
             help='Create port forwarding rule for this host.'
         )
         parser.add_argument(
-            '--dynamic', dest='type', action='store_const',
+            '--dynamic', dest='pf_type', action='store_const',
             const='D', help='Dynamic port forwarding.'
         )
         parser.add_argument(
-            '--remote', dest='type', action='store_const',
+            '--remote', dest='pf_type', action='store_const',
             const='R', help='Remote port forwarding.'
         )
         parser.add_argument(
-            '--local', dest='type', action='store_const',
+            '--local', dest='pf_type', action='store_const',
             const='L', help='Local port forwarding.'
         )
         parser.add_argument(
@@ -56,20 +65,12 @@ class PFRuleCommand(DetailCommand):
 
     def serialize_args(self, args, instance=None):
         """Convert args to instance."""
-        if instance:
-            pfrule, host = instance, instance.host
-        else:
-            pfrule, host = PFRule(), self.get_relation(Host, args.host)
-            if not args.type:
-                raise ArgumentRequiredException('Type is required.')
-
-        pfrule.pf_type = args.type or pfrule.pf_type
-        pfrule.host = host
+        instance = super(PFRuleCommand, self).serialize_args(args, instance)
         if args.binding:
-            binding_dict = self.parse_binding(pfrule.pf_type, args.binding)
+            binding_dict = self.parse_binding(instance.pf_type, args.binding)
             for key, value in binding_dict.items():
-                setattr(pfrule, key, value)
-        return pfrule
+                setattr(instance, key, value)
+        return instance
 
 
 class PFRulesCommand(ListCommand):

@@ -24,3 +24,9 @@ class InvalidArgumentException(ValueError):
     """Raise it when CLI argument have invalid value."""
 
     pass
+
+
+class SkipField(Exception):
+    """Raise it when needs to skip field."""
+
+    pass
