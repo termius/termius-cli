@@ -29,6 +29,7 @@ def completion_tests():
     """Run integration tests for bash completion."""
     sh('nosetests tests/integration/completion/bash/')
 
+
 @task
 def coverage():
     """Run test and collect coverage."""
