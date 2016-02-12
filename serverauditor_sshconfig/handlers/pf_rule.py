@@ -102,11 +102,18 @@ class BindingParser(object):
     )
 
     @classmethod
+    def patch_ports(cls, pair):
+        """Wrap ports with int or use None."""
+        if pair[0] in ('remote_port', 'local_port'):
+            return pair[0], pair[1] and int(pair[1]) or None
+        return pair
+
+    @classmethod
     def _parse(cls, regexp, binding_str):
         matched = regexp.match(binding_str)
         if not matched:
             raise InvalidBinding('Invalid binding format.')
-        return matched.groupdict()
+        return dict([cls.patch_ports(i) for i in matched.groupdict().items()])
 
     @classmethod
     def local(cls, binding_str):
