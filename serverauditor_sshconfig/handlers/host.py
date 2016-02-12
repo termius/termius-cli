@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """Module with Host commands."""
+from operator import attrgetter
+from cached_property import cached_property
 from ..core.commands import DetailCommand, ListCommand
 from ..core.commands.single import RequiredOptions
 from ..core.models.terminal import Host, Group, TagHost
@@ -12,6 +14,15 @@ class HostCommand(DetailCommand):
 
     model_class = Host
     required_options = RequiredOptions(create=('address',))
+
+    @cached_property
+    def fields(self):
+        """Return dictionary of args serializers to models field."""
+        _fields = {
+            i: attrgetter(i) for i in ('label', 'address')
+        }
+        _fields['group'] = self.get_safely_instance_partial(Group, 'group')
+        return _fields
 
     def __init__(self, *args, **kwargs):
         """Construct new host command."""
@@ -43,29 +54,19 @@ class HostCommand(DetailCommand):
         if args.tags is not None:
             self.update_tag_list(instance, args.tags)
 
-    # pylint: disable=no-self-use
-    def serialize_args(self, args, instance=None):
-        """Convert args to instance."""
-        if instance:
-            ssh_config = self.ssh_config_args.serialize_args(
-                args, instance.ssh_config
-            )
-            host = instance
-        else:
-            host = Host()
-            ssh_config = self.ssh_config_args.serialize_args(args, None)
-
-        host.label = args.label
-        host.address = args.address
-        host.ssh_config = ssh_config
-        if args.group:
-            host.group = self.get_relation(Group, args.group)
-        return host
-
     def update_tag_list(self, host, tags):
         """Update tag list for host instance."""
         tag_instanes = self.taglist_args.get_or_create_tag_instances(tags)
         self.taglist_args.update_taghosts(host, tag_instanes)
+
+    def serialize_args(self, args, instance=None):
+        """Convert args to instance."""
+        instance = super(HostCommand, self).serialize_args(args, instance)
+        ssh_config = instance.get_assign_ssh_config()
+        instance.ssh_config = self.ssh_config_args.serialize_args(
+            args, ssh_config
+        )
+        return instance
 
 
 class HostsCommand(ListCommand):

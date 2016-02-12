@@ -80,7 +80,18 @@ class SshConfig(Model):
         return self.ssh_identity and self.ssh_identity.ssh_key
 
 
-class Group(Model):
+# pylint: disable=too-few-public-methods
+class SshConfigMixin(object):
+    """Mixin to easy and safely get ssh config field."""
+
+    def get_assign_ssh_config(self):
+        """Get existed ssh config or create and assign new one."""
+        ssh_config = self.ssh_config or SshConfig()
+        self.ssh_config = ssh_config
+        return ssh_config
+
+
+class Group(SshConfigMixin, Model):
     """Model for group."""
 
     fields = {
@@ -94,7 +105,7 @@ class Group(Model):
 Group.fields['parent_group'] = Field(Group, False, None)
 
 
-class Host(Model):
+class Host(SshConfigMixin, Model):
     """Model for host."""
 
     fields = {

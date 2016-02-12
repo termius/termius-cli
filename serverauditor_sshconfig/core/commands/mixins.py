@@ -2,9 +2,11 @@
 """Module with different CLI commands mixins."""
 import getpass
 from operator import attrgetter
+from functools import partial
+from cached_property import cached_property
 from ..exceptions import (
     DoesNotExistException, ArgumentRequiredException,
-    TooManyEntriesException
+    TooManyEntriesException, SkipField
 )
 from .utils import parse_ids_names
 from ..models.terminal import SshConfig, SshIdentity
@@ -52,6 +54,18 @@ class GetRelationMixin(object):
             'Found too many {} instances.'.format(model_class)
         )
 
+    def get_safely_instance(self, model_class, arg):
+        """Provide safer way to get relations."""
+        return arg and self.get_relation(model_class, arg)
+
+    def get_safely_instance_partial(self, model, arg_name):
+        """Return wrap get_safely_instance() with partial for arg_name."""
+        return partial(self._safely_instance, model=model, arg_name=arg_name)
+
+    def _safely_instance(self, args, model, arg_name):
+        value = getattr(args, arg_name)
+        return self.get_safely_instance(model, value)
+
 
 class PrepareResultMixin(object):
     """Mixin with method to transform dict-list to 2-size tuple."""
@@ -81,7 +95,42 @@ class GetObjectsMixin(object):
         return instances
 
 
-class InstanceOperationMixin(object):
+class ArgModelSerializerMixin(object):
+    """Class to keep logic of command line args serialization to model."""
+
+    @cached_property
+    def fields(self):
+        """Return dictionary of args serializers to models field."""
+        return {
+            i: attrgetter(i) for i in self.model_class.fields
+        }
+
+    # pylint: disable=no-self-use
+    def serialize_args(self, args, instance=None):
+        """Convert args to instance."""
+        instance = instance or self.model_class()
+        for i in self.model_class.fields:
+            try:
+                value = self.fields[i](args)
+            except (SkipField, KeyError):
+                continue
+            if value is not None:
+                setattr(instance, i, value)
+        self.validate(instance)
+        return instance
+
+    # pylint: disable=unused-argument
+    def validate(self, instance):
+        """Validate models fields before saving."""
+        return instance
+
+    # pylint: disable=unused-argument
+    def skip(self, args):
+        """Call to skip field serialization."""
+        raise SkipField()
+
+
+class InstanceOperationMixin(ArgModelSerializerMixin, object):
     """Mixin with methods to create, update and delete operations."""
 
     def create_instance(self, args):
@@ -95,11 +144,11 @@ class InstanceOperationMixin(object):
 
     def update_instance(self, args, instance):
         """Update model entry."""
-        updated_instance = self.serialize_args(args, instance)
+        instance = self.serialize_args(args, instance)
         with self.storage:
-            self.storage.save(updated_instance)
-            self.update_children(updated_instance, args)
-        self.log_update(updated_instance)
+            self.storage.save(instance)
+            self.update_children(instance, args)
+        self.log_update(instance)
 
     def update_children(self, instance, args):
         """Update children of instance.

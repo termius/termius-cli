@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 """Module for ssh identity command."""
+from operator import attrgetter, truth
+from functools import partial
+from cached_property import cached_property
 from ..core.commands import DetailCommand, ListCommand
 from ..core.models.terminal import SshIdentity, SshKey
-from ..core.exceptions import InvalidArgumentException
+from ..core.exceptions import InvalidArgumentException, DoesNotExistException
 from .ssh_key import SshKeyGeneratorMixin
 
 
@@ -10,6 +13,30 @@ class SshIdentityCommand(SshKeyGeneratorMixin, DetailCommand):
     """Operate with ssh identity object."""
 
     model_class = SshIdentity
+
+    @cached_property
+    def fields(self):
+        """Return dictionary of args serializers to models field."""
+        _fields = {
+            i: attrgetter(i) for i in ('label', 'username', 'password')
+        }
+        _fields['ssh_key'] = self.get_ssh_key_field
+        _fields['is_visible'] = partial(truth)
+        return _fields
+
+    def get_ssh_key_field(self, args):
+        """Return ssh key instance or None.
+
+        Retrieve per ssh_key argument or create new one using identity file.
+        """
+        if args.identity_file and args.ssh_key:
+            raise InvalidArgumentException(
+                'You can not use ssh key and identity file together!'
+            )
+        if args.identity_file:
+            return self.generate_ssh_key_instance(args)
+        if args.ssh_key:
+            return self.get_safely_instance(SshKey, args.ssh_key)
 
     def extend_parser(self, parser):
         """Add more arguments to parser."""
@@ -31,36 +58,16 @@ class SshIdentityCommand(SshKeyGeneratorMixin, DetailCommand):
         )
         return parser
 
-    # pylint: disable=no-self-use
-    def serialize_args(self, args, instance=None):
-        """Convert args to instance."""
-        if instance:
-            identity = instance
-        else:
-            identity = SshIdentity()
-        ssh_key = None
+    def get_objects(self, ids__names):
+        """Get model list.
 
-        self.check_incompatible_args(args)
-
-        if args.identity_file:
-            ssh_key = self.generate_ssh_key_instance(args)
-
-        if args.ssh_key:
-            ssh_key = self.get_relation(SshKey, args.ssh_key)
-
-        identity.username = args.username
-        identity.password = args.password
-        identity.is_visible = True
-        if ssh_key:
-            identity.ssh_key = ssh_key
-        return identity
-
-    def check_incompatible_args(self, args):
-        """Raise an error when passed incompatible args."""
-        if args.identity_file and args.ssh_key:
-            raise InvalidArgumentException(
-                'You can not use ssh key and identity file together!'
-            )
+        Models will match id and label with passed ids__names list.
+        """
+        instances = super(SshIdentityCommand, self).get_objects(ids__names)
+        visible_instances = [i for i in instances if i.is_visible]
+        if not visible_instances:
+            raise DoesNotExistException("There aren't any instance.")
+        return instances
 
 
 class SshIdentitiesCommand(ListCommand):

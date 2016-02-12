@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Module with ssh key commands."""
+from operator import attrgetter
 from pathlib2 import Path
+from cached_property import cached_property
 from ..core.commands.single import RequiredOptions
 from ..core.exceptions import InvalidArgumentException
 from ..core.commands import DetailCommand, ListCommand
@@ -15,17 +17,27 @@ class SshKeyGeneratorMixin(object):
     def generate_ssh_key_instance(self, path):
         """Generate ssh key from file."""
         private_key_path = Path(path)
-        return SshKey(
+        instance = SshKey(
             private_key=private_key_path.read_text(),
             label=private_key_path.name
         )
+        self.validate_ssh_key(instance)
+        return instance
+
+    def validate_ssh_key(self, instance):
+        """Raise an error when any instances exist with same label."""
+        with_same_label = self.storage.filter(
+            SshKey, **{'label': instance.label, 'id.ne': instance.id}
+        )
+        if with_same_label:
+            raise InvalidArgumentException('Instances with same label exists.')
 
 
 class SshKeyCommand(SshKeyGeneratorMixin, DetailCommand):
     """Operate with Host object."""
 
     model_class = SshKey
-    required_options = RequiredOptions(create=('identity_file',))
+    required_options = RequiredOptions(create=('identity_file', 'label'))
 
     def extend_parser(self, parser):
         """Add more arguments to parser."""
@@ -35,28 +47,23 @@ class SshKeyCommand(SshKeyGeneratorMixin, DetailCommand):
         )
         return parser
 
+    @cached_property
+    def fields(self):
+        """Return dict with model field serializer per field."""
+        _fields = {
+            i: attrgetter(i) for i in ('label',)
+        }
+        _fields['private_key'] = self.get_private_key
+        return _fields
+
     # pylint: disable=no-self-use
-    def serialize_args(self, args, instance=None):
-        """Convert args to instance."""
-        if instance:
-            ssh_key = instance
-            if args.identity_file:
-                ssh_key.private_key = Path(args.identity_file).read_text()
-        else:
-            ssh_key = self.generate_ssh_key_instance(args.identity_file)
+    def get_private_key(self, args):
+        """Read identity passed to args."""
+        return args.identity_file and Path(args.identity_file).read_text()
 
-        if args.label:
-            ssh_key.label = args.label
-        self.validate_label(ssh_key)
-        return ssh_key
-
-    def validate_label(self, instance):
+    def validate(self, instance):
         """Raise an error when any instances exist with same label."""
-        with_same_label = self.storage.filter(
-            SshKey, **{'label': instance.label, 'id.ne': instance.id}
-        )
-        if with_same_label:
-            raise InvalidArgumentException('Instances with same label exists.')
+        self.validate_ssh_key(instance)
 
 
 class SshKeysCommand(ListCommand):

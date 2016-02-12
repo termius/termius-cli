@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Module with Group commands."""
 import functools
+from operator import attrgetter
+from cached_property import cached_property
 from ..core.commands import DetailCommand, ListCommand
 from ..core.commands.mixins import GroupStackGetterMixin
 from ..core.models.terminal import Group
@@ -13,6 +15,18 @@ class GroupCommand(GroupStackGetterMixin, DetailCommand):
 
     model_class = Group
 
+    @cached_property
+    def fields(self):
+        """Return dictionary of args serializers to models field."""
+        _fields = {
+            i: attrgetter(i) for i in ('label', )
+        }
+
+        _fields['parent_group'] = self.get_safely_instance_partial(
+            Group, 'parent_group'
+        )
+        return _fields
+
     def __init__(self, *args, **kwargs):
         """Construct new group command."""
         super(GroupCommand, self).__init__(*args, **kwargs)
@@ -24,30 +38,10 @@ class GroupCommand(GroupStackGetterMixin, DetailCommand):
             '-g', '--parent-group',
             metavar='PARENT_GROUP', help="Parent group's id or name."
         )
-
         self.ssh_config_args.add_agrs(parser)
         return parser
 
-    # pylint: disable=no-self-use
-    def serialize_args(self, args, instance=None):
-        """Convert args to instance."""
-        if instance:
-            ssh_config = self.ssh_config_args.serialize_args(
-                args, instance.ssh_config
-            )
-            group = instance
-        else:
-            group = Group()
-            ssh_config = self.ssh_config_args.serialize_args(args, None)
-
-        group.label = args.label
-        group.ssh_config = ssh_config
-        if args.parent_group:
-            group.parent_group = self.get_relation(Group, args.parent_group)
-        self.validate_parent_group(group)
-        return group
-
-    def validate_parent_group(self, group):
+    def validate(self, group):
         """Raise an error when group have cyclic folding."""
         group_id = group.id
         if not group_id:
@@ -56,6 +50,15 @@ class GroupCommand(GroupStackGetterMixin, DetailCommand):
         not_unique = any([i.id for i in group_stack if i.id == group_id])
         if not_unique:
             raise InvalidArgumentException('Cyclic group founded!')
+
+    def serialize_args(self, args, instance=None):
+        """Convert args to instance."""
+        instance = super(GroupCommand, self).serialize_args(args, instance)
+        ssh_config = instance.get_assign_ssh_config()
+        instance.ssh_config = self.ssh_config_args.serialize_args(
+            args, ssh_config
+        )
+        return instance
 
 
 class GroupsCommand(ListCommand):
