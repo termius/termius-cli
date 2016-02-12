@@ -4,12 +4,17 @@ load test_helper
 setup() {
     clean_storage || true
     private_key_content='private_key content'
-    private_key_path=key
-    echo $private_key_content > $private_key_path
+    private_key_path=key1
+    echo -n $private_key_content > $private_key_path
+
+    second_key_content='second_key content'
+    second_key_path=key2
+    echo -n $second_key_content > $second_key_path
 }
 
 teardown() {
     rm $private_key_path
+    rm $second_key_path
 }
 
 @test "key help by arg" {
@@ -27,6 +32,10 @@ teardown() {
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'sshkeycrypt_set') -eq 1 ]
     [ $(diff ~/.serverauditor/ssh_keys/test $private_key_path) = ""]
+    ssh_key=${lines[1]}
+    [ $(get_model_field 'sshkeycrypt_set' $ssh_key 'label') = '"test"' ]
+    [ $(get_model_field 'sshkeycrypt_set' $ssh_key 'private_key') = "\"$private_key_content\"" ]
+    [ $(get_model_field 'sshkeycrypt_set' $ssh_key 'ssh_key') = 'null' ]
 }
 
 @test "Add many keys" {
@@ -42,16 +51,19 @@ teardown() {
 
 @test "Update key" {
     key=$(serverauditor key -L test -i $private_key_path)
-    run serverauditor key -i $private_key_path -L test $key
+    run serverauditor key -i $second_key_path $key
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'sshkeycrypt_set') -eq 1 ]
-    [ $(diff ~/.serverauditor/ssh_keys/key $private_key_path) = ""]
+    [ $(diff ~/.serverauditor/ssh_keys/key $second_key_path) = ""]
+    [ $(get_model_field 'sshkeycrypt_set' $key 'label') = '"test"' ]
+    [ $(get_model_field 'sshkeycrypt_set' $key 'private_key') = "\"$second_key_content\"" ]
+    [ $(get_model_field 'sshkeycrypt_set' $key 'ssh_key') = 'null' ]
 }
 
 @test "Update many keys" {
-    key1=$(serverauditor key -L test_1 -i key)
-    key2=$(serverauditor key -L test_2 -i key)
-    key3=$(serverauditor key -L test_3 -i key)
+    key1=$(serverauditor key -L test_1 -i $private_key_path)
+    key2=$(serverauditor key -L test_2 -i $private_key_path)
+    key3=$(serverauditor key -L test_3 -i $private_key_path)
     run serverauditor key -i $private_key_path $key1 $key2 $key3
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'sshkeycrypt_set') -eq 3 ]
@@ -61,7 +73,7 @@ teardown() {
 }
 
 @test "Delete key" {
-    key=$(serverauditor key -L test_1 -i key)
+    key=$(serverauditor key -L test_1 -i $private_key_path)
     run serverauditor key --delete $key
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'sshkeycrypt_set') -eq 0 ]

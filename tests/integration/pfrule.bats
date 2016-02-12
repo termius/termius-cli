@@ -17,10 +17,17 @@ setup() {
 }
 
 @test "Add local pfrule" {
-    host=$(serverauditor host --label test2 --address 127.0.0.1)
+    host=$(serverauditor host --label test2 --address local)
     run serverauditor pfrule --local --host $host --binding 2:127.0.0.1:2222
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'pfrule_set') -eq 1 ]
+    pfrule=${lines[1]}
+    [ $(get_model_field 'pfrule_set' $pfrule 'pf_type') = '"L"' ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'host') = $host ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'bound_address') = "null" ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'local_port') = '2' ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'hostname') = "\"127.0.0.1\"" ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'remote_port') = "2222" ]
 }
 
 @test "Add remote pfrule" {
@@ -28,6 +35,13 @@ setup() {
     run serverauditor pfrule --remote --host $host --binding 2:127.0.0.1:2222
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'pfrule_set') -eq 1 ]
+    pfrule=${lines[1]}
+    [ $(get_model_field 'pfrule_set' $pfrule 'pf_type') = '"R"' ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'host') = $host ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'bound_address') = "null" ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'local_port') = "2" ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'hostname') = "\"127.0.0.1\"" ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'remote_port') = "2222" ]
 }
 
 @test "Add dynamic pfrule" {
@@ -35,6 +49,13 @@ setup() {
     run serverauditor pfrule --dynamic --host $host --binding 2222
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'pfrule_set') -eq 1 ]
+    pfrule=${lines[1]}
+    [ $(get_model_field 'pfrule_set' $pfrule 'pf_type') = '"D"' ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'host') = $host ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'bound_address') = "null" ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'local_port') = "2222" ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'hostname') = "\"\"" ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'remote_port') = "null" ]
 }
 
 @test "Add local pfrule with bound_address" {
@@ -42,6 +63,13 @@ setup() {
     run serverauditor pfrule --local --host $host --binding local:2:127.0.0.1:2222
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'pfrule_set') -eq 1 ]
+    pfrule=${lines[1]}
+    [ $(get_model_field 'pfrule_set' $pfrule 'pf_type') = '"L"' ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'host') = $host ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'bound_address') = "\"local\"" ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'local_port') = "2" ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'hostname') = "\"127.0.0.1\"" ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'remote_port') = "2222" ]
 }
 
 @test "Add remote pfrule with bound_address" {
@@ -49,6 +77,13 @@ setup() {
     run serverauditor pfrule --remote --host $host --binding localhost:2:127.0.0.1:2222
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'pfrule_set') -eq 1 ]
+    pfrule=${lines[1]}
+    [ $(get_model_field 'pfrule_set' $pfrule 'pf_type') = '"R"' ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'host') = $host ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'bound_address') = "\"localhost\"" ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'local_port') = "2" ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'hostname') = "\"127.0.0.1\"" ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'remote_port') = "2222" ]
 }
 
 @test "Add dynamic pfrule with bound_address" {
@@ -56,6 +91,13 @@ setup() {
     run serverauditor pfrule --dynamic --host $host --binding 127.0.0.1:2222
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'pfrule_set') -eq 1 ]
+    pfrule=${lines[1]}
+    [ $(get_model_field 'pfrule_set' $pfrule 'pf_type') = '"D"' ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'host') = $host ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'bound_address') = "\"127.0.0.1\"" ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'local_port') = "2222" ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'hostname') = "\"\"" ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'remote_port') = "null" ]
 }
 
 @test "Update local pfrule" {
@@ -64,6 +106,13 @@ setup() {
     run serverauditor pfrule --binding local:2:127.0.0.1:2200 $pfrule
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'pfrule_set') -eq 1 ]
+    pfrule=${lines[1]}
+    [ $(get_model_field 'pfrule_set' $pfrule 'pf_type') = '"L"' ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'host') = $host ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'bound_address') = "\"local\"" ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'local_port') = "2" ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'hostname') = "\"127.0.0.1\"" ]
+    [ $(get_model_field 'pfrule_set' $pfrule 'remote_port') = "2200" ]
 }
 
 @test "Update many remote pfrules" {

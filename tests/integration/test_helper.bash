@@ -21,6 +21,11 @@ get_models_set_length() {
     cat ~/.serverauditor/storage | jq ".$1 | length"
 }
 
+get_model_field() {
+  cat ~/.serverauditor/storage | jq ".$1" | jq ".[] | select(.${4:-id} == $2)" >&2
+  cat ~/.serverauditor/storage | jq ".$1" | jq ".[] | select(.${4:-id} == $2)" | jq ".$3"
+}
+
 clean_storage() {
     rm ~/.serverauditor/storage
 }
