@@ -7,15 +7,17 @@ class SshCommandFormatterMixin(object):
     """Mixin formatter for ssh config into ssh command."""
 
     # pylint: disable=no-self-use
-    def render_command(self, ssh_config, address, ssh_key_file):
+    def render_command(self, ssh_config, address, ssh_key_file, pfrule=None):
         """Generate ssh command call."""
         ssh_identity = ssh_config.get('ssh_identity', dict())
         username = ssh_identity.get('username', '')
-        return 'ssh {port} {key} {auth}\n'.format(
-            port=format_port(ssh_config['port']),
-            auth=ssh_auth(username, address),
-            key=format_ssh_identity_file(ssh_key_file)
-        )
+        return ' '.join([i for i in[
+            'ssh',
+            format_port(ssh_config['port']),
+            format_ssh_identity_file(ssh_key_file),
+            format_pfrule(pfrule),
+            ssh_auth(username, address),
+        ] if i]) + '\n'
 
 
 def ssh_auth(username, address):
@@ -33,3 +35,8 @@ def format_ssh_identity_file(ssh_key_file):
 def format_port(port):
     """Render port option."""
     return (port and '-p {}'.format(port)) or ''
+
+
+def format_pfrule(pfrule):
+    format_str = '-{0.pf_type} {binding}'.format
+    return (pfrule and format_str(pfrule, binding=pfrule.binding)) or ''

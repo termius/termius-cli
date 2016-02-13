@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Module with user data models."""
+from operator import attrgetter
 from .base import Model, Field
 
 
@@ -142,3 +143,14 @@ class PFRule(Model):
     }
     set_name = 'pfrule_set'
     crypto_fields = {'label', 'bound_address', 'hostname'}
+
+    binding_getter = {
+        'L': attrgetter('bound_address', 'local_port', 'hostname', 'remote_port'),
+        'D': attrgetter('bound_address', 'local_port'),
+    }
+    binding_getter['R'] = binding_getter['L']
+
+    @property
+    def binding(self):
+        bind_gen = self.binding_getter[self.pf_type]
+        return ':'.join([str(i) for i in bind_gen(self) if i])
