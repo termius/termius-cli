@@ -8,8 +8,8 @@ from ..exceptions import (
     DoesNotExistException, ArgumentRequiredException,
     TooManyEntriesException, SkipField
 )
-from .utils import parse_ids_names
 from ..models.terminal import SshConfig, SshIdentity
+from .utils import parse_ids_names, DefaultAttrGetter
 from ..models.utils import GroupStackGenerator, Merger
 
 
@@ -70,11 +70,57 @@ class GetRelationMixin(object):
 class PrepareResultMixin(object):
     """Mixin with method to transform dict-list to 2-size tuple."""
 
+    @property
+    def prepare_fields(self):
+        """Return fields for model."""
+        return self.model_class.allowed_fields()
+
     def prepare_result(self, found_list):
         """Return tuple with data in format for Lister."""
-        fields = self.model_class.allowed_fields()
-        getter = attrgetter(*fields)
+        fields = self.prepare_fields
+        getter = DefaultAttrGetter(*fields)
         return fields, [getter(i) for i in found_list]
+
+
+class SshConfigPrepareMixin(PrepareResultMixin):
+    """Mixin with methods to render ssh config and ssh identity fields."""
+
+    @property
+    def prepare_fields(self):
+        """Return fields for model."""
+        return (
+            self.instance_fields +
+            self.ssh_config_fields +
+            self.ssh_identity_fields
+        )
+
+    @property
+    def instance_fields(self):
+        """Return instance fields."""
+        return [
+            i for i in list(self.model_class.allowed_fields())
+            if i != 'ssh_config'
+        ]
+
+    @property
+    def ssh_config_fields(self):
+        """Return ssh config fields."""
+        fields = SshConfig.allowed_fields()
+        field_format = 'ssh_config.{}'.format
+        return [
+            field_format(i) for i in fields
+            if i != 'ssh_identity'
+        ]
+
+    @property
+    def ssh_identity_fields(self):
+        """Return ssh identity fields."""
+        fields = SshIdentity.allowed_fields()
+        field_format = 'ssh_config.ssh_identity.{}'.format
+        return [
+            field_format(i) for i in fields
+            if i != 'ssh_identity'
+        ]
 
 
 class GetObjectsMixin(object):

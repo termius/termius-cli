@@ -4,8 +4,9 @@ import functools
 from operator import attrgetter
 from cached_property import cached_property
 from ..core.commands import DetailCommand, ListCommand
-from ..core.commands.mixins import GroupStackGetterMixin
+from ..core.commands.mixins import GroupStackGetterMixin, SshConfigPrepareMixin
 from ..core.models.terminal import Group
+from ..core.storage.strategies import RelatedGetStrategy
 from ..core.exceptions import InvalidArgumentException
 from .ssh_config import SshConfigArgs
 
@@ -61,10 +62,11 @@ class GroupCommand(GroupStackGetterMixin, DetailCommand):
         return instance
 
 
-class GroupsCommand(ListCommand):
+class GroupsCommand(SshConfigPrepareMixin, ListCommand):
     """Manage group objects."""
 
     model_class = Group
+    get_strategy = RelatedGetStrategy
 
     def extend_parser(self, parser):
         """Add more arguments to parser."""
