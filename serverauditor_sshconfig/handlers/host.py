@@ -4,6 +4,8 @@ from operator import attrgetter
 from cached_property import cached_property
 from ..core.commands import DetailCommand, ListCommand
 from ..core.commands.single import RequiredOptions
+from ..core.commands.mixins import SshConfigPrepareMixin
+from ..core.storage.strategies import RelatedGetStrategy
 from ..core.models.terminal import Host, Group, TagHost
 from .taghost import TagListArgs
 from .ssh_config import SshConfigArgs
@@ -69,10 +71,11 @@ class HostCommand(DetailCommand):
         return instance
 
 
-class HostsCommand(ListCommand):
+class HostsCommand(SshConfigPrepareMixin, ListCommand):
     """Manage host objects."""
 
     model_class = Host
+    get_strategy = RelatedGetStrategy
 
     def __init__(self, *args, **kwargs):
         """Construct new hosts command."""
