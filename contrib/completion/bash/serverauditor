@@ -198,7 +198,7 @@ _serverauditor()
   cmds='complete connect fullclean group groups help host hosts identities identity info key keys login logout pfrule pfrules pull push snippet snippets sync tags'
   cmds_complete='-h --help --name --shell'
   cmds_complete_arg_options='--name --shell'
-  cmds_connect='-h --help --log-file'
+  cmds_connect='-h --help --log-file -R --pfrule -H --host'
   cmds_connect_arg_options='--log-file'
   cmds_connect_file_options='--log-file'
   cmds_fullclean='-h --help --log-file -s --strategy -p --password'

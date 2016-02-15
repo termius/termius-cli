@@ -18,12 +18,12 @@ class ConnectCommand(SshCommandFormatterMixin, SshConfigMergerMixin,
         """Add more arguments to parser."""
         parser.add_argument(
             '-H', '--host', const=Host,
-            dest='model', action='store_const',
+            dest='model', action='store_const', default=Host,
             help='Connect to host or start portforwarding rule.'
         )
         parser.add_argument(
             '-R', '--pfrule', const=PFRule,
-            dest='model', action='store_const',
+            dest='model', action='store_const', default=Host,
             help='Connect to host or start portforwarding rule.'
         )
         parser.add_argument(
