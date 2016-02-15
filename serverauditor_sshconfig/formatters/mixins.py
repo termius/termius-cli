@@ -38,5 +38,6 @@ def format_port(port):
 
 
 def format_pfrule(pfrule):
+    """Render port forwarding option."""
     format_str = '-{0.pf_type} {binding}'.format
     return (pfrule and format_str(pfrule, binding=pfrule.binding)) or ''

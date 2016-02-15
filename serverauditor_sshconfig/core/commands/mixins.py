@@ -9,7 +9,7 @@ from ..exceptions import (
     TooManyEntriesException, SkipField
 )
 from ..models.terminal import SshConfig, SshIdentity
-from .utils import parse_ids_names
+from .utils import parse_ids_names, DefaultAttrGetter
 from ..models.utils import GroupStackGenerator, Merger
 
 
@@ -78,11 +78,12 @@ class PrepareResultMixin(object):
     def prepare_result(self, found_list):
         """Return tuple with data in format for Lister."""
         fields = self.prepare_fields
-        getter = attrgetter(*fields)
+        getter = DefaultAttrGetter(*fields)
         return fields, [getter(i) for i in found_list]
 
 
 class SshConfigPrepareMixin(PrepareResultMixin):
+    """Mixin with methods to render ssh config and ssh identity fields."""
 
     @property
     def prepare_fields(self):
@@ -95,6 +96,7 @@ class SshConfigPrepareMixin(PrepareResultMixin):
 
     @property
     def instance_fields(self):
+        """Return instance fields."""
         return [
             i for i in list(self.model_class.allowed_fields())
             if i != 'ssh_config'
@@ -102,6 +104,7 @@ class SshConfigPrepareMixin(PrepareResultMixin):
 
     @property
     def ssh_config_fields(self):
+        """Return ssh config fields."""
         fields = SshConfig.allowed_fields()
         field_format = 'ssh_config.{}'.format
         return [
@@ -111,6 +114,7 @@ class SshConfigPrepareMixin(PrepareResultMixin):
 
     @property
     def ssh_identity_fields(self):
+        """Return ssh identity fields."""
         fields = SshIdentity.allowed_fields()
         field_format = 'ssh_config.ssh_identity.{}'.format
         return [

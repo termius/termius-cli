@@ -56,4 +56,5 @@ class ConnectCommand(SshCommandFormatterMixin, SshConfigMergerMixin,
         )
 
     def get_instance(self, args):
+        """Retrieve instance from storage."""
         return self.get_relation(args.model, args.entry)
