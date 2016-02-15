@@ -253,13 +253,26 @@ class SshConfigMergerMixin(GroupStackGetterMixin, object):
         ssh_config_merger = self.get_ssh_config_merger(full_stack)
         ssh_identity_merger = self.get_ssh_identity_merger(ssh_config_merger)
         ssh_config = ssh_config_merger.merge()
-        ssh_config.ssh_identity = ssh_identity_merger.merge()
+        visible_identity = self.get_visible_ssh_identity(ssh_config_merger)
+        if visible_identity:
+            ssh_config.ssh_identity = visible_identity
+        else:
+            ssh_config.ssh_identity = ssh_identity_merger.merge()
         return ssh_config
 
     # pylint: disable=no-self-use
     def get_ssh_config_merger(self, stack):
         """Create ssh config merger for passed stack."""
         return Merger(stack, 'ssh_config', SshConfig())
+
+    # pylint: disable=no-self-use
+    def get_visible_ssh_identity(self, ssh_config_merger):
+        """Return first of visible ssh identity."""
+        stack = [
+            i.ssh_identity for i in ssh_config_merger.get_entry_stack()
+            if i.ssh_identity.is_visible
+        ]
+        return (stack and stack[0]) or None
 
     # pylint: disable=no-self-use
     def get_ssh_identity_merger(self, ssh_config_merger):
