@@ -4,7 +4,7 @@ import unittest
 from pathlib2 import Path
 from mock import Mock
 from serverauditor_sshconfig.core.storage import ApplicationStorage
-from serverauditor_sshconfig.core.models.terminal import Host, Group
+from serverauditor_sshconfig.core.models.terminal import Host, Group, PFRule
 
 
 # inspired from
@@ -121,6 +121,17 @@ class ServerauditorTestCase(BashCompletionTest):
         self.run_complete('connect As', 'Asparagales')
         self.run_complete('connect xa', 'xanthorrhoeaceae')
 
+    def test_connect_pfrule_label_and_ids(self):
+        self.run_complete('connect', '')
+        first_host = self.client.create_host('localhost', 'a')
+        first = self.client.create_pfrule(first_host, 2222, 'Asparagales')
+        second = self.client.create_pfrule(first_host, 2200, 'xanthorrhoeaceae')
+        instances = (first, second)
+        print((self.client.app_directory / 'storage').read_text())
+        self.run_complete('connect -R ', ids_labels_completion(instances))
+        self.run_complete('connect -R As', 'Asparagales')
+        self.run_complete('connect -R xa', 'xanthorrhoeaceae')
+
     def test_info_host_label_and_ids(self):
         self.run_complete('info', '')
         first = self.client.create_host('localhost', 'Asparagales')
@@ -180,6 +191,13 @@ class ServerauditorClient(object):
 
     def create_host(self, address, label):
         return self._create_instance(Host, label=label, address=address)
+
+    def create_pfrule(self, host_id, local_port, label):
+        return self._create_instance(
+            PFRule, label=label,
+            pftype='L', local_port=local_port,
+            remote_port=22, hostname='localhost'
+        )
 
     def create_group(self, label):
         return self._create_instance(Group, label=label)

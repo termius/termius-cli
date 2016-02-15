@@ -18,7 +18,7 @@ __serverauditor_subcommand_instance() {
       __serverauditor_get_labels_ids $1
       ;;
     connect)
-      __serverauditor_get_labels_ids host
+      __serverauditor_complete_connect
       ;;
     info)
      __serverauditor_complete_info
@@ -35,6 +35,14 @@ __serverauditor_complete_option_value() {
     __serverauditor_complete_common_options $2
   else
     $completion $2
+  fi
+}
+
+__serverauditor_complete_connect() {
+  if [[ " ${words[@]} " =~ " -R " ]] || [[ " ${words[@]} " =~ " --pfrule " ]]; then
+    __serverauditor_get_labels_ids pfrule
+  else
+    __serverauditor_get_labels_ids host
   fi
 }
 
