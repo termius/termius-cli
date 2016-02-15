@@ -4,32 +4,56 @@
 [![Code Climate](https://codeclimate.com/github/Crystalnix/serverauditor-sshconfig/badges/gpa.svg)](https://codeclimate.com/github/Crystalnix/serverauditor-sshconfig)
 [![Test Coverage](https://codeclimate.com/github/Crystalnix/serverauditor-sshconfig/badges/coverage.svg)](https://codeclimate.com/github/Crystalnix/serverauditor-sshconfig/coverage)
 
+## Demo
+
+[![demo](https://asciinema.org/a/9w1l0zgyiax6u3nqkd4qrpg5p.png)](https://asciinema.org/a/9w1l0zgyiax6u3nqkd4qrpg5p?autoplay=1)
 
 ## Installation
 
 Serverauditor ssh config utility can be installed via [pip](http://www.pip-installer.org/en/latest/index.html):
 
 ```bash
-$ pip install -U serverauditor-sshconfig
+pip install -U serverauditor-sshconfig
 ```
 or [easy_install](http://pythonhosted.org/distribute/):
 
 ```bash
-$ easy_install -U serverauditor-sshconfig
+easy_install -U serverauditor-sshconfig
 ```
+
 
 ## Usage
 
-
-If you want to *export* connections from your computer to your Serverauditor's account:
+Login to serverauditor.com
 
 ```bash
-$ serverauditor export
+serverauditor login
 ```
-If you want to *import* connections from your Serverauditor's account to your computer:
+
+Pull data from serverauditor.com
 
 ```bash
-$ serverauditor import
+serverauditor pull
+```
+
+Create host
+```bash
+serverauditor host --address localhost --label myhost
+```
+
+Connect to host
+```
+serverauditor connect myhost
+```
+
+Push data to serverauditor.com
+```bash
+serverauditor push
+```
+
+Create hosts from ssh config
+```bash
+serverauditor sync ssh
 ```
 
 ## License
@@ -46,10 +70,10 @@ Please see [LICENSE](https://github.com/Crystalnix/serverauditor-sshconfig/blob/
 * If installation failed with gcc error, you must install Python Development Libraries, for example:
 
 ```bash
-$ sudo apt-get install python-dev
+sudo apt-get install python-dev
 ```
 or
 
 ```bash
-$ sudo yum  install python-devel.x86_64
+sudo yum  install python-devel.x86_64
 ```
