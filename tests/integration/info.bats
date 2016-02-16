@@ -28,6 +28,15 @@ setup() {
     [ "$status" -eq 0 ]
 }
 
+@test "info host use ssh formatter with exta options" {
+    host=$(serverauditor host -L test --strict-host-key-check yes --keep-alive-packages 20 --timeout 100 --use-ssh-key no --port 2022 --address localhost --username root --password password)
+    run serverauditor info $host -f ssh
+    echo ${lines[*]} >&2
+    cat ~/.serverauditor/storage | jq . >&2
+    [ "$status" -eq 0 ]
+    [ "${lines[0]}" = "ssh -p 2022 -o StrictHostKeyChecking=yes -o IdentitiesOnly=no -o ServerAliveInterval=100 -o ServerAliveCountMax=20 localhost" ]
+}
+
 @test "info group use default formatter" {
     group=$(serverauditor group -L test --port 2022)
     run serverauditor info --group $group --debug
