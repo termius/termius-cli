@@ -23,11 +23,11 @@ setup() {
     [ $(get_models_set_length 'sshconfig_set') -eq 1 ]
     [ $(get_models_set_length 'sshidentity_set') -eq 1 ]
     group=${lines[1]}
-    [ $(get_model_field 'group_set' $group 'label') = '"Group"' ]
+    [ "$(get_model_field 'group_set' $group 'label')" = '"Group"' ]
     ssh_config=$(get_model_field 'group_set' $group 'ssh_config')
     [ $(get_model_field 'sshconfig_set' $ssh_config 'port') -eq 2202 ]
     ssh_identity=$(get_model_field 'sshconfig_set' $ssh_config 'ssh_identity')
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'username') = '"use r name"' ]
+    [ "$(get_model_field 'sshidentity_set' $ssh_identity 'username')" = '"use r name"' ]
     [ $(get_model_field 'sshidentity_set' $ssh_identity 'is_visible') = 'false' ]
     [ $(get_model_field 'sshidentity_set' $ssh_identity 'ssh_key') = 'null' ]
 }
@@ -51,7 +51,7 @@ setup() {
     [ $(get_models_set_length 'group_set') -eq 1 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 1 ]
     [ $(get_models_set_length 'sshidentity_set') -eq 1 ]
-    [ $(get_model_field 'group_set' $group 'label') = '"test group"' ]
+    [ "$(get_model_field 'group_set' $group 'label')" = '"test group"' ]
     ssh_config=$(get_model_field 'group_set' $group 'ssh_config')
     [ $(get_model_field 'sshconfig_set' $ssh_config 'port') -eq 2 ]
     [ $(get_model_field 'sshconfig_set' $ssh_config 'ssh_identity') = "$identity" ]
@@ -67,13 +67,13 @@ setup() {
     [ $(get_models_set_length 'group_set') -eq 1 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 1 ]
     [ $(get_models_set_length 'sshidentity_set') -eq 2 ]
-    [ $(get_model_field 'group_set' $group 'label') = '"test group"' ]
+    [ "$(get_model_field 'group_set' $group 'label')" = '"test group"' ]
     ssh_config=$(get_model_field 'group_set' $group 'ssh_config')
     [ $(get_model_field 'sshconfig_set' $ssh_config 'port') = 'null' ]
     ssh_identity=$(get_model_field 'sshconfig_set' $ssh_config 'ssh_identity')
     [ $ssh_identity != $identity ]
     [ $(get_model_field 'sshidentity_set' $ssh_identity 'label') = 'null' ]
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'username') = '"use r name"' ]
+    [ "$(get_model_field 'sshidentity_set' $ssh_identity 'username')" = '"use r name"' ]
     [ $(get_model_field 'sshidentity_set' $ssh_identity 'is_visible') = 'false' ]
     [ $(get_model_field 'sshidentity_set' $ssh_identity 'ssh_key') = 'null' ]
 }
@@ -85,11 +85,11 @@ setup() {
     [ $(get_models_set_length 'group_set') -eq 1 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 1 ]
     [ $(get_models_set_length 'sshidentity_set') -eq 1 ]
-    [ $(get_model_field 'group_set' $group 'label') = '"test group"' ]
+    [ "$(get_model_field 'group_set' $group 'label')" = '"test group"' ]
     ssh_config=$(get_model_field 'group_set' $group 'ssh_config')
     [ $(get_model_field 'sshconfig_set' $ssh_config 'port') -eq 2 ]
     ssh_identity=$(get_model_field 'sshconfig_set' $ssh_config 'ssh_identity')
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'username') = '"user"' ]
+    [ "$(get_model_field 'sshidentity_set' $ssh_identity 'username')" = '"user"' ]
     [ $(get_model_field 'sshidentity_set' $ssh_identity 'is_visible') = 'false' ]
     [ $(get_model_field 'sshidentity_set' $ssh_identity 'ssh_key') = 'null' ]
 }
@@ -119,7 +119,7 @@ setup() {
     [ $(get_models_set_length 'sshconfig_set') -eq 2 ]
     [ $(get_models_set_length 'sshidentity_set') -eq 2 ]
     [ $(get_model_field 'group_set' $group 'parent_group') = "$parent_group" ]
-    [ $(get_model_field 'group_set' $group 'label') = '"Group"' ]
+    [ "$(get_model_field 'group_set' $group 'label')" = '"Group"' ]
 }
 
 @test "Update many groups" {

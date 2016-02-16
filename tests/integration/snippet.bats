@@ -21,8 +21,8 @@ setup() {
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'snippet_set') -eq 1 ]
     snippet=${lines[1]}
-    [ $(get_model_field 'snippet_set' $snippet 'label') = '"test"' ]
-    [ $(get_model_field 'snippet_set' $snippet 'script') = "\"ls\"" ]
+    [ "$(get_model_field 'snippet_set' $snippet 'label')" = '"test"' ]
+    [ "$(get_model_field 'snippet_set' $snippet 'script')" = "\"ls\"" ]
 }
 
 @test "Add many snippets" {
@@ -38,8 +38,8 @@ setup() {
     run serverauditor snippet --script 'cd /' $snippet
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'snippet_set') -eq 1 ]
-    [ $(get_model_field 'snippet_set' $snippet 'label') = '"test"' ]
-    [ $(get_model_field 'snippet_set' $snippet 'script') = "\"cd /\"" ]
+    [ "$(get_model_field 'snippet_set' $snippet 'label')" = '"test"' ]
+    [ "$(get_model_field 'snippet_set' $snippet 'script')" = "\"cd /\"" ]
 }
 
 @test "Update many snippets" {

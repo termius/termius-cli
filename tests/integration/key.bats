@@ -33,8 +33,8 @@ teardown() {
     [ $(get_models_set_length 'sshkeycrypt_set') -eq 1 ]
     [ $(diff ~/.serverauditor/ssh_keys/test $private_key_path) = ""]
     ssh_key=${lines[1]}
-    [ $(get_model_field 'sshkeycrypt_set' $ssh_key 'label') = '"test"' ]
-    [ $(get_model_field 'sshkeycrypt_set' $ssh_key 'private_key') = "\"$private_key_content\"" ]
+    [ "$(get_model_field 'sshkeycrypt_set' $ssh_key 'label')" = '"test"' ]
+    [ "$(get_model_field 'sshkeycrypt_set' $ssh_key 'private_key')" = "\"$private_key_content\"" ]
     [ $(get_model_field 'sshkeycrypt_set' $ssh_key 'ssh_key') = 'null' ]
 }
 
@@ -55,8 +55,8 @@ teardown() {
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'sshkeycrypt_set') -eq 1 ]
     [ $(diff ~/.serverauditor/ssh_keys/key $second_key_path) = ""]
-    [ $(get_model_field 'sshkeycrypt_set' $key 'label') = '"test"' ]
-    [ $(get_model_field 'sshkeycrypt_set' $key 'private_key') = "\"$second_key_content\"" ]
+    [ "$(get_model_field 'sshkeycrypt_set' $key 'label')" = '"test"' ]
+    [ "$(get_model_field 'sshkeycrypt_set' $key 'private_key')" = "\"$second_key_content\"" ]
     [ $(get_model_field 'sshkeycrypt_set' $key 'ssh_key') = 'null' ]
 }
 

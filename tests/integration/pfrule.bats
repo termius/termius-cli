@@ -22,11 +22,11 @@ setup() {
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'pfrule_set') -eq 1 ]
     pfrule=${lines[1]}
-    [ $(get_model_field 'pfrule_set' $pfrule 'pf_type') = '"L"' ]
+    [ "$(get_model_field 'pfrule_set' $pfrule 'pf_type')" = '"L"' ]
     [ $(get_model_field 'pfrule_set' $pfrule 'host') = $host ]
     [ $(get_model_field 'pfrule_set' $pfrule 'bound_address') = "null" ]
     [ $(get_model_field 'pfrule_set' $pfrule 'local_port') = '2' ]
-    [ $(get_model_field 'pfrule_set' $pfrule 'hostname') = "\"127.0.0.1\"" ]
+    [ "$(get_model_field 'pfrule_set' $pfrule 'hostname')" = "\"127.0.0.1\"" ]
     [ $(get_model_field 'pfrule_set' $pfrule 'remote_port') = "2222" ]
 }
 
@@ -36,11 +36,11 @@ setup() {
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'pfrule_set') -eq 1 ]
     pfrule=${lines[1]}
-    [ $(get_model_field 'pfrule_set' $pfrule 'pf_type') = '"R"' ]
+    [ "$(get_model_field 'pfrule_set' $pfrule 'pf_type')" = '"R"' ]
     [ $(get_model_field 'pfrule_set' $pfrule 'host') = $host ]
     [ $(get_model_field 'pfrule_set' $pfrule 'bound_address') = "null" ]
     [ $(get_model_field 'pfrule_set' $pfrule 'local_port') = "2" ]
-    [ $(get_model_field 'pfrule_set' $pfrule 'hostname') = "\"127.0.0.1\"" ]
+    [ "$(get_model_field 'pfrule_set' $pfrule 'hostname')" = "\"127.0.0.1\"" ]
     [ $(get_model_field 'pfrule_set' $pfrule 'remote_port') = "2222" ]
 }
 
@@ -50,11 +50,11 @@ setup() {
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'pfrule_set') -eq 1 ]
     pfrule=${lines[1]}
-    [ $(get_model_field 'pfrule_set' $pfrule 'pf_type') = '"D"' ]
+    [ "$(get_model_field 'pfrule_set' $pfrule 'pf_type')" = '"D"' ]
     [ $(get_model_field 'pfrule_set' $pfrule 'host') = $host ]
     [ $(get_model_field 'pfrule_set' $pfrule 'bound_address') = "null" ]
     [ $(get_model_field 'pfrule_set' $pfrule 'local_port') = "2222" ]
-    [ $(get_model_field 'pfrule_set' $pfrule 'hostname') = "\"\"" ]
+    [ "$(get_model_field 'pfrule_set' $pfrule 'hostname')" = "\"\"" ]
     [ $(get_model_field 'pfrule_set' $pfrule 'remote_port') = "null" ]
 }
 
@@ -64,11 +64,11 @@ setup() {
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'pfrule_set') -eq 1 ]
     pfrule=${lines[1]}
-    [ $(get_model_field 'pfrule_set' $pfrule 'pf_type') = '"L"' ]
+    [ "$(get_model_field 'pfrule_set' $pfrule 'pf_type')" = '"L"' ]
     [ $(get_model_field 'pfrule_set' $pfrule 'host') = $host ]
     [ $(get_model_field 'pfrule_set' $pfrule 'bound_address') = "\"local\"" ]
     [ $(get_model_field 'pfrule_set' $pfrule 'local_port') = "2" ]
-    [ $(get_model_field 'pfrule_set' $pfrule 'hostname') = "\"127.0.0.1\"" ]
+    [ "$(get_model_field 'pfrule_set' $pfrule 'hostname')" = "\"127.0.0.1\"" ]
     [ $(get_model_field 'pfrule_set' $pfrule 'remote_port') = "2222" ]
 }
 
@@ -78,11 +78,11 @@ setup() {
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'pfrule_set') -eq 1 ]
     pfrule=${lines[1]}
-    [ $(get_model_field 'pfrule_set' $pfrule 'pf_type') = '"R"' ]
+    [ "$(get_model_field 'pfrule_set' $pfrule 'pf_type')" = '"R"' ]
     [ $(get_model_field 'pfrule_set' $pfrule 'host') = $host ]
     [ $(get_model_field 'pfrule_set' $pfrule 'bound_address') = "\"localhost\"" ]
     [ $(get_model_field 'pfrule_set' $pfrule 'local_port') = "2" ]
-    [ $(get_model_field 'pfrule_set' $pfrule 'hostname') = "\"127.0.0.1\"" ]
+    [ "$(get_model_field 'pfrule_set' $pfrule 'hostname')" = "\"127.0.0.1\"" ]
     [ $(get_model_field 'pfrule_set' $pfrule 'remote_port') = "2222" ]
 }
 
@@ -92,9 +92,9 @@ setup() {
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'pfrule_set') -eq 1 ]
     pfrule=${lines[1]}
-    [ $(get_model_field 'pfrule_set' $pfrule 'pf_type') = '"D"' ]
+    [ "$(get_model_field 'pfrule_set' $pfrule 'pf_type')" = '"D"' ]
     [ $(get_model_field 'pfrule_set' $pfrule 'host') = $host ]
-    [ $(get_model_field 'pfrule_set' $pfrule 'bound_address') = "\"127.0.0.1\"" ]
+    [ "$(get_model_field 'pfrule_set' $pfrule 'bound_address')" = "\"127.0.0.1\"" ]
     [ $(get_model_field 'pfrule_set' $pfrule 'local_port') = "2222" ]
     [ $(get_model_field 'pfrule_set' $pfrule 'hostname') = "\"\"" ]
     [ $(get_model_field 'pfrule_set' $pfrule 'remote_port') = "null" ]
@@ -107,9 +107,9 @@ setup() {
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'pfrule_set') -eq 1 ]
     pfrule=${lines[1]}
-    [ $(get_model_field 'pfrule_set' $pfrule 'pf_type') = '"L"' ]
+    [ "$(get_model_field 'pfrule_set' $pfrule 'pf_type')" = '"L"' ]
     [ $(get_model_field 'pfrule_set' $pfrule 'host') = $host ]
-    [ $(get_model_field 'pfrule_set' $pfrule 'bound_address') = "\"local\"" ]
+    [ "$(get_model_field 'pfrule_set' $pfrule 'bound_address')" = "\"local\"" ]
     [ $(get_model_field 'pfrule_set' $pfrule 'local_port') = "2" ]
     [ $(get_model_field 'pfrule_set' $pfrule 'hostname') = "\"127.0.0.1\"" ]
     [ $(get_model_field 'pfrule_set' $pfrule 'remote_port') = "2200" ]

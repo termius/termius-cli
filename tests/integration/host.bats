@@ -22,12 +22,12 @@ setup() {
     [ $(get_models_set_length 'sshconfig_set') -eq 1 ]
     [ $(get_models_set_length 'sshidentity_set') -eq 1 ]
     host=${lines[1]}
-    [ $(get_model_field 'host_set' $host 'label') = '"test"' ]
-    [ $(get_model_field 'host_set' $host 'address') = '"localhost"' ]
+    [ "$(get_model_field 'host_set' $host 'label')" = '"test"' ]
+    [ "$(get_model_field 'host_set' $host 'address')" = '"localhost"' ]
     ssh_config=$(get_model_field 'host_set' $host 'ssh_config')
     [ $(get_model_field 'sshconfig_set' $ssh_config 'port') -eq 2022 ]
     ssh_identity=$(get_model_field 'sshconfig_set' $ssh_config 'ssh_identity')
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'username') = '"root"' ]
+    [ "$(get_model_field 'sshidentity_set' $ssh_identity 'username')" = '"root"' ]
     [ $(get_model_field 'sshidentity_set' $ssh_identity 'is_visible') = 'false' ]
     [ $(get_model_field 'sshidentity_set' $ssh_identity 'ssh_key') = 'null' ]
 }
@@ -40,9 +40,9 @@ setup() {
     [ $(get_models_set_length 'sshconfig_set') -eq 2 ]
     [ $(get_models_set_length 'sshidentity_set') -eq 2 ]
     host=${lines[1]}
-    [ $(get_model_field 'host_set' $host 'label') = '"test"' ]
+    [ "$(get_model_field 'host_set' $host 'label')" = '"test"' ]
     [ $(get_model_field 'host_set' $host 'group') = $group ]
-    [ $(get_model_field 'host_set' $host 'address') = '"localhost"' ]
+    [ "$(get_model_field 'host_set' $host 'address')" = '"localhost"' ]
     ssh_config=$(get_model_field 'host_set' $host 'ssh_config')
     [ $(get_model_field 'sshconfig_set' $ssh_config 'port') = 'null' ]
     ssh_identity=$(get_model_field 'sshconfig_set' $ssh_config 'ssh_identity')
@@ -66,14 +66,14 @@ setup() {
     [ $(get_models_set_length 'host_set') -eq 1 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 1 ]
     [ $(get_models_set_length 'sshidentity_set') -eq 1 ]
-    [ $(get_model_field 'host_set' $host 'label') = '"test_3"' ]
+    [ "$(get_model_field 'host_set' $host 'label')" = '"test_3"' ]
     [ $(get_model_field 'host_set' $host 'group') = 'null' ]
-    [ $(get_model_field 'host_set' $host 'address') = '"google"' ]
+    [ "$(get_model_field 'host_set' $host 'address')" = '"google"' ]
     ssh_config=$(get_model_field 'host_set' $host 'ssh_config')
     [ $(get_model_field 'sshconfig_set' $ssh_config 'port') -eq 22 ]
     ssh_identity=$(get_model_field 'sshconfig_set' $ssh_config 'ssh_identity')
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'username') = '"ROOT"' ]
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'password') = '""' ]
+    [ "$(get_model_field 'sshidentity_set' $ssh_identity 'username')" = '"ROOT"' ]
+    [ "$(get_model_field 'sshidentity_set' $ssh_identity 'password')" = '""' ]
     [ $(get_model_field 'sshidentity_set' $ssh_identity 'is_visible') = 'false' ]
     [ $(get_model_field 'sshidentity_set' $ssh_identity 'ssh_key') = 'null' ]
 }
@@ -86,9 +86,9 @@ setup() {
     [ $(get_models_set_length 'host_set') -eq 1 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 2 ]
     [ $(get_models_set_length 'sshidentity_set') -eq 2 ]
-    [ $(get_model_field 'host_set' $host 'label') = '"test"' ]
+    [ "$(get_model_field 'host_set' $host 'label')" = '"test"' ]
     [ $(get_model_field 'host_set' $host 'group') = $group ]
-    [ $(get_model_field 'host_set' $host 'address') = '"localhost"' ]
+    [ "$(get_model_field 'host_set' $host 'address')" = '"localhost"' ]
     ssh_config=$(get_model_field 'host_set' $host 'ssh_config')
     [ $(get_model_field 'sshconfig_set' $ssh_config 'port') = 'null' ]
     ssh_identity=$(get_model_field 'sshconfig_set' $ssh_config 'ssh_identity')
@@ -105,8 +105,8 @@ setup() {
     [ $(get_models_set_length 'host_set') -eq 1 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 1 ]
     [ $(get_models_set_length 'sshidentity_set') -eq 1 ]
-    [ $(get_model_field 'host_set' $host 'label') = '"test"' ]
-    [ $(get_model_field 'host_set' $host 'address') = '"localhost"' ]
+    [ "$(get_model_field 'host_set' $host 'label')" = '"test"' ]
+    [ "$(get_model_field 'host_set' $host 'address')" = '"localhost"' ]
     ssh_config=$(get_model_field 'host_set' $host 'ssh_config')
     [ $(get_model_field 'sshconfig_set' $ssh_config 'port') -eq 2 ]
     [ $(get_model_field 'sshconfig_set' $ssh_config 'ssh_identity') = "$identity" ]
@@ -122,14 +122,14 @@ setup() {
     [ $(get_models_set_length 'host_set') -eq 1 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 1 ]
     [ $(get_models_set_length 'sshidentity_set') -eq 2 ]
-    [ $(get_model_field 'host_set' $host 'label') = '"test"' ]
-    [ $(get_model_field 'host_set' $host 'address') = '"local"' ]
+    [ "$(get_model_field 'host_set' $host 'label')" = '"test"' ]
+    [ "$(get_model_field 'host_set' $host 'address')" = '"local"' ]
     ssh_config=$(get_model_field 'host_set' $host 'ssh_config')
     [ $(get_model_field 'sshconfig_set' $ssh_config 'port') = 'null' ]
     ssh_identity=$(get_model_field 'sshconfig_set' $ssh_config 'ssh_identity')
     [ $ssh_identity != $identity ]
     [ $(get_model_field 'sshidentity_set' $ssh_identity 'label') = 'null' ]
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'username') = '"use r name"' ]
+    [ "$(get_model_field 'sshidentity_set' $ssh_identity 'username')" = '"use r name"' ]
     [ $(get_model_field 'sshidentity_set' $ssh_identity 'is_visible') = 'false' ]
     [ $(get_model_field 'sshidentity_set' $ssh_identity 'ssh_key') = 'null' ]
 }
