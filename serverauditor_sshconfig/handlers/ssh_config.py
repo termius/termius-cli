@@ -67,7 +67,10 @@ class SshConfigArgs(ArgModelSerializerMixin, object):
     def fields(self):
         """Return dictionary of args serializers to models field."""
         _fields = {
-            i: attrgetter(i) for i in ('port', )
+            i: attrgetter(i) for i in (
+                'port', 'strict_host_key_check', 'use_ssh_key',
+                'keep_alive_packages', 'timeout',
+            )
         }
         _fields['startup_snippet'] = self.command.get_safely_instance_partial(
             Snippet, 'snippet'
@@ -83,10 +86,6 @@ class SshConfigArgs(ArgModelSerializerMixin, object):
             help='Ssh port.'
         )
         parser.add_argument(
-            '-S', '--strict-key-check', action='store_true',
-            help='Provide to force check ssh server public key.'
-        )
-        parser.add_argument(
             '-s', '--snippet', metavar='SNIPPET_ID or SNIPPET_NAME',
             help='Snippet id or snippet name.'
         )
@@ -95,10 +94,26 @@ class SshConfigArgs(ArgModelSerializerMixin, object):
             metavar='SSH_IDENTITY', help="Ssh identity's id or name."
         )
         parser.add_argument(
+            '-S', '--strict-host-key-check', type=str,
+            choices=('yes', 'no'),
+            help='enable force check ssh server public key.'
+        )
+        parser.add_argument(
+            '--use-ssh-key', type=str,
+            choices=('yes', 'no'),
+            help='enable force ssh key use.'
+        )
+        parser.add_argument(
             '-k', '--keep-alive-packages',
             type=int, metavar='PACKAGES_COUNT',
             help='ServerAliveCountMax option from ssh_config.'
         )
+        parser.add_argument(
+            '-T', '--timeout',
+            type=int, metavar='SECONDS',
+            help='ServerAliveInterval option from ssh_config.'
+        )
+
         self.ssh_identity_args.add_args(parser)
         return parser
 
