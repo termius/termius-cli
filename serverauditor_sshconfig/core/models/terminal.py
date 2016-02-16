@@ -63,22 +63,75 @@ class SshConfig(Model):
 
     fields = {
         'port': Field(int, False, None),
-        'color_scheme': Field(str, False, None),
-        'charset': Field(str, False, None),
-        'font_size': Field(str, False, None),
         'ssh_identity': Field(SshIdentity, False, None),
         'startup_snippet': Field(Snippet, False, None),
+        'strict_host_key_check': Field(bool, False, None),
+        'use_ssh_key': Field(bool, False, None),
+        'timeout': Field(int, False, None),
+        'keep_alive_packages': Field(int, False, None),
+        'is_forward_ports': Field(bool, False, None),
+
+        'font_size': Field(str, False, None),
+        'color_scheme': Field(str, False, None),
+        'charset': Field(str, False, None),
+        'cursor_blink': Field(bool, False, None),
     }
     mergable_fields = {
-        'port', 'color_scheme',
-        'font_size', 'charset',
-        'startup_snippet'
+        'port',
+        'ssh_identity',
+        'startup_snippet',
+        'strict_host_key_check',
+        'use_ssh_key',
+        'timeout',
+        'keep_alive_packages',
+        'is_forward_ports',  # not used
+
+        'font_size',
+        'color_scheme',
+        'charset',
+        'cursor_blink',
     }
     set_name = 'sshconfig_set'
 
     def get_ssh_key(self):
         """Retrieve ssh key instance."""
         return self.ssh_identity and self.ssh_identity.ssh_key
+
+    def __setattr__(self, name, value):
+        """Set attribute, but patch value before assign."""
+        self._validate_attr(name)
+        patch_method = 'patch_' + name
+        if hasattr(self, patch_method):
+            value = getattr(self, patch_method)(value)
+        self[name] = value
+
+    # pylint: disable=no-self-use
+    def transform_int(self, value):
+        """Transform value to int or return None."""
+        try:
+            return (value is not None and int(value)) or None
+        except ValueError as exception:
+            return self.handle_value_error(exception)
+
+    # pylint: disable=no-self-use
+    def transform_bool(self, value):
+        """Transform value to bool or return None."""
+        if value not in ('yes', 'no'):
+            if isinstance(value, bool):
+                return value
+            return None
+        return value == 'yes'
+
+    # pylint: disable=no-self-use,unused-argument
+    def handle_value_error(self, error):
+        """Return default value, when transformation error happens."""
+        return None
+
+    patch_port = transform_int
+    patch_timeout = transform_int
+    patch_keep_alive_packages = transform_int
+    patch_use_ssh_key = transform_bool
+    patch_strict_host_key_check = transform_bool
 
 
 # pylint: disable=too-few-public-methods

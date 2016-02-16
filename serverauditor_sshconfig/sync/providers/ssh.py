@@ -34,17 +34,25 @@ class SSHService(BaseSyncService):
 
     def transform_to_instances(self, alias, host):
         """Convert paramico host to application host."""
-        return Host(
+        app_host = Host(
             label=alias,
             address=host['hostname'],
-            ssh_config=SshConfig(
-                port=host.get('port'),
-                ssh_identity=SshIdentity(
-                    username=host.get('user', self.default_user),
-                    ssh_key=self.create_key(host)
-                )
-            ),
         )
+        ssh_config = SshConfig(
+            ssh_identity=SshIdentity(
+                username=host.get('user', self.default_user),
+                ssh_key=self.create_key(host)
+            )
+        )
+
+        ssh_config.port = host.get('port')
+        ssh_config.timeout = host.get('serveraliveinterval')
+        ssh_config.keep_alive_packages = host.get('serveralivecountmax')
+        ssh_config.use_ssh_key = host.get('identitiesonly')
+        ssh_config.strict_host_key_check = host.get('stricthostkeychecking')
+
+        app_host.ssh_config = ssh_config
+        return app_host
 
     def is_endhost(self, hostname):
         """Return true when passed hostname is not wildcarded one."""

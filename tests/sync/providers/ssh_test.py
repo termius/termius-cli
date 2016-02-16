@@ -24,6 +24,10 @@ def test_single_sshconfig(mockpath):
 Host firstone
     HostName localhost
     User ubuntu
+    ServerAliveInterval 100
+    ServerAliveCountMax 3
+    IdentitiesOnly yes
+    StrictHostKeyChecking no
         """
     )
     service = SSHService(None, '')
@@ -34,6 +38,10 @@ Host firstone
             address='localhost',
             ssh_config=SshConfig(
                 port=None,
+                timeout=100,
+                keep_alive_packages=3,
+                use_ssh_key=True,
+                strict_host_key_check=False,
                 ssh_identity=SshIdentity(
                     username='ubuntu',
                     ssh_key=None
@@ -62,7 +70,11 @@ Host firstone
             label='firstone',
             address='localhost',
             ssh_config=SshConfig(
-                port='2022',
+                port=2022,
+                timeout=None,
+                keep_alive_packages=None,
+                use_ssh_key=None,
+                strict_host_key_check=None,
                 ssh_identity=SshIdentity(
                     username='ubuntu',
                     ssh_key=None
@@ -97,6 +109,10 @@ Host firstone
             address='localhost',
             ssh_config=SshConfig(
                 port=None,
+                timeout=None,
+                keep_alive_packages=None,
+                use_ssh_key=None,
+                strict_host_key_check=None,
                 ssh_identity=SshIdentity(
                     username='ubuntu',
                     ssh_key=SshKey(

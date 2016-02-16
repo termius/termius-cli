@@ -16,6 +16,10 @@ class SshCommandFormatterMixin(object):
             format_port(ssh_config['port']),
             format_ssh_identity_file(ssh_key_file),
             format_pfrule(pfrule),
+            format_strict_host_key(ssh_config['strict_host_key_check']),
+            format_use_ssh_key(ssh_config['use_ssh_key']),
+            format_timeout(ssh_config['timeout']),
+            format_keep_alive_packages(ssh_config['keep_alive_packages']),
             ssh_auth(username, address),
         ] if i]) + '\n'
 
@@ -41,3 +45,33 @@ def format_pfrule(pfrule):
     """Render port forwarding option."""
     format_str = '-{0.pf_type} {binding}'.format
     return (pfrule and format_str(pfrule, binding=pfrule.binding)) or ''
+
+
+def format_strict_host_key(strict):
+    """Render strick host key checking option."""
+    format_str = '-o StrictHostKeyChecking={}'.format
+    return _bool_to_text(format_str, strict)
+
+
+def format_use_ssh_key(use_ssh_key):
+    """Render identity only option."""
+    format_str = '-o IdentitiesOnly={}'.format
+    return _bool_to_text(format_str, use_ssh_key)
+
+
+def format_timeout(timeout):
+    """Render server alive interval option."""
+    format_str = '-o ServerAliveInterval={}'.format
+    return (timeout and format_str(timeout)) or ''
+
+
+def format_keep_alive_packages(keep_alive_packages):
+    """Render server alive count max option."""
+    format_str = '-o ServerAliveCountMax={}'.format
+    return (keep_alive_packages and format_str(keep_alive_packages)) or ''
+
+
+def _bool_to_text(format_str, value):
+    if value is None:
+        return ''
+    return value and format_str('yes') or format_str('no')
