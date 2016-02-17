@@ -1,11 +1,14 @@
 __serverauditor_entity_labels() {
-  serverauditor "$1"s -f value -c label
+  serverauditor $1 -f value -c label
 }
 
 __serverauditor_get_labels_ids() {
   case $1 in
     host|group|identity|key|pfrule|snippet)
-      __serverauditor_entity_labels $1
+      __serverauditor_entity_labels "$1"s
+      ;;
+    identity)
+      __serverauditor_entity_labels identities
       ;;
     *) return 0
       ;;
