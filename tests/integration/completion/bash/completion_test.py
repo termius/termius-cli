@@ -4,7 +4,9 @@ import unittest
 from pathlib2 import Path
 from mock import Mock
 from serverauditor_sshconfig.core.storage import ApplicationStorage
-from serverauditor_sshconfig.core.models.terminal import Host, Group, PFRule
+from serverauditor_sshconfig.core.models.terminal import (
+    Host, Group, PFRule, SshIdentity
+)
 
 
 # inspired from
@@ -99,10 +101,11 @@ class ServerauditorTestCase(BashCompletionTest):
         self.run_complete('host --ad', '--address')
         self.run_complete(
             'host -',
-            '-h --help --log-file -t --tag -g --group -a --address '
-            '-p --port -S --strict-key-check -s --snippet --ssh-identity '
-            '-k --keep-alive-packages -u --username -P --password '
-            '-i --identity-file -d --delete -I --interactive -L --label'
+            '-h --help --log-file -t --tag -g --group -a --address -p '
+            '--port -s --snippet --ssh-identity -u --username -P --password '
+            '-i --identity-file -d --delete -I --interactive -L --label -S '
+            '--strict-host-key-check -T --timeout --use-ssh-key '
+            '-k --keep-alive-packages'
         )
         self.run_complete(
             'info -',
@@ -141,6 +144,19 @@ class ServerauditorTestCase(BashCompletionTest):
         self.run_complete('info As', 'Asparagales')
         self.run_complete('info xa', 'xanthorrhoeaceae')
 
+    def test_ssh_identity_option(self):
+        self.client.create_identity('Asparagales1', False)
+        first = self.client.create_identity('Asparagales', True)
+        second = self.client.create_identity('xanthorrhoeaceae', True)
+        instances = (first, second)
+        for i in ('host', 'group'):
+            self.run_complete('{} --ssh-identity '.format(i),
+                              ids_labels_completion(instances))
+            self.run_complete('{} --ssh-identity As'.format(i),
+                              'Asparagales')
+            self.run_complete('{} --ssh-identity xa'.format(i),
+                              'xanthorrhoeaceae')
+
     def test_info_group_label_and_ids(self):
         self.run_complete('info', '')
         first = self.client.create_group('Asparagales')
@@ -174,7 +190,6 @@ class ServerauditorTestCase(BashCompletionTest):
 
     def setUp(self):
         self.client = ServerauditorClient()
-        self.client.clean()
 
     def tearDown(self):
         self.client.clean()
@@ -184,10 +199,13 @@ class ServerauditorClient(object):
 
     def __init__(self):
         self.app_directory = Path('~/.serverauditor/').expanduser()
-        if not self.app_directory.is_dir():
-            self.app_directory.mkdir()
         self.command_mock = Mock(**{'app.directory_path': self.app_directory})
-        self.storage = ApplicationStorage(self.command_mock)
+        self.prepare()
+
+    def create_identity(self, label, is_visible):
+        return self._create_instance(
+            SshIdentity, label=label, is_visible=is_visible
+        )
 
     def create_host(self, address, label):
         return self._create_instance(Host, label=label, address=address)
@@ -207,10 +225,15 @@ class ServerauditorClient(object):
         with self.storage:
             return self.storage.save(instance)
 
+    def prepare(self):
+        self.clean()
+        if not self.app_directory.is_dir():
+            self.app_directory.mkdir()
+        self.storage = ApplicationStorage(self.command_mock)
+
     def clean(self):
         if self.app_directory.is_dir():
             self._clean_dir(self.app_directory)
-        self.storage = ApplicationStorage(self.command_mock)
 
     def _clean_dir(self, dir_path):
         [self._clean_dir(i) for i in dir_path.iterdir() if i.is_dir()]
