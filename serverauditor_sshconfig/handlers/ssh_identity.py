@@ -74,3 +74,9 @@ class SshIdentitiesCommand(ListCommand):
     """Manage ssh identity objects."""
 
     model_class = SshIdentity
+
+    # pylint: disable=unused-argument
+    def take_action(self, parsed_args):
+        """Process CLI call."""
+        instances = self.storage.filter(self.model_class, is_visible=True)
+        return self.prepare_result(instances)
