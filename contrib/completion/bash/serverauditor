@@ -4,7 +4,7 @@ __serverauditor_entity_labels() {
 
 __serverauditor_get_labels_ids() {
   case $1 in
-    host|group|identity|key|pfrule|snippet)
+    host|group|key|pfrule|snippet)
       __serverauditor_entity_labels "$1"s
       ;;
     identity)
