@@ -34,7 +34,7 @@ class SshIdentityCommand(SshKeyGeneratorMixin, DetailCommand):
                 'You can not use ssh key and identity file together!'
             )
         if args.identity_file:
-            return self.generate_ssh_key_instance(args)
+            return self.generate_ssh_key_instance(args.identity_file)
         if args.ssh_key:
             return self.get_safely_instance(SshKey, args.ssh_key)
 
