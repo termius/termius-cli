@@ -12,6 +12,7 @@ def store_ssh_key(sender, command, instance):
     if not path.parent.is_dir():
         path.parent.mkdir(parents=True)
     path.write_text(six.text_type(instance.private_key))
+    path.chmod(instance.file_mode)
 
 
 # pylint: disable=unused-argument
