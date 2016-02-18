@@ -32,6 +32,7 @@ teardown() {
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'sshkeycrypt_set') -eq 1 ]
     [ $(diff ~/.serverauditor/ssh_keys/test $private_key_path) = ""]
+    [ $(stat -F ~/.serverauditor/ssh_keys/test | awk '{print $1}') = '-rw-------' ]
     ssh_key=${lines[1]}
     [ "$(get_model_field 'sshkeycrypt_set' $ssh_key 'label')" = '"test"' ]
     [ "$(get_model_field 'sshkeycrypt_set' $ssh_key 'private_key')" = "\"$private_key_content\"" ]
@@ -45,8 +46,11 @@ teardown() {
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'sshkeycrypt_set') -eq 3 ]
     [ $(diff ~/.serverauditor/ssh_keys/test_1 $private_key_path) = ""]
+    [ $(stat -F ~/.serverauditor/ssh_keys/test_1 | awk '{print $1}') = '-rw-------' ]
     [ $(diff ~/.serverauditor/ssh_keys/test_2 $private_key_path) = ""]
+    [ $(stat -F ~/.serverauditor/ssh_keys/test_1 | awk '{print $1}') = '-rw-------' ]
     [ $(diff ~/.serverauditor/ssh_keys/test_3 $private_key_path) = ""]
+    [ $(stat -F ~/.serverauditor/ssh_keys/test_1 | awk '{print $1}') = '-rw-------' ]
 }
 
 @test "Update key" {
@@ -55,6 +59,7 @@ teardown() {
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'sshkeycrypt_set') -eq 1 ]
     [ $(diff ~/.serverauditor/ssh_keys/key $second_key_path) = ""]
+    [ $(stat -F ~/.serverauditor/ssh_keys/test | awk '{print $1}') = '-rw-------' ]
     [ "$(get_model_field 'sshkeycrypt_set' $key 'label')" = '"test"' ]
     [ "$(get_model_field 'sshkeycrypt_set' $key 'private_key')" = "\"$second_key_content\"" ]
     [ $(get_model_field 'sshkeycrypt_set' $key 'ssh_key') = 'null' ]
@@ -68,8 +73,11 @@ teardown() {
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'sshkeycrypt_set') -eq 3 ]
     [ $(diff ~/.serverauditor/ssh_keys/test_1 $private_key_path) = ""]
+    [ $(stat -F ~/.serverauditor/ssh_keys/test_1 | awk '{print $1}') = '-rw-------' ]
     [ $(diff ~/.serverauditor/ssh_keys/test_2 $private_key_path) = ""]
+    [ $(stat -F ~/.serverauditor/ssh_keys/test_2 | awk '{print $1}') = '-rw-------' ]
     [ $(diff ~/.serverauditor/ssh_keys/test_3 $private_key_path) = ""]
+    [ $(stat -F ~/.serverauditor/ssh_keys/test_2 | awk '{print $1}') = '-rw-------' ]
 }
 
 @test "Delete key" {

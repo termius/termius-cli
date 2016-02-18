@@ -36,6 +36,7 @@ class SshKey(Model):
     }
     set_name = 'sshkeycrypt_set'
     crypto_fields = fields
+    file_mode = 0o600
 
     def file_path(self, command):
         """Return path object to private key file."""
