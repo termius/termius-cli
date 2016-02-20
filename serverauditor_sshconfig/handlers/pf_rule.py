@@ -19,7 +19,7 @@ class PFRuleCommand(DetailCommand):
     def fields(self):
         """Return dictionary of args serializers to models field."""
         _fields = {
-            i: attrgetter(i) for i in ('pf_type',)
+            i: attrgetter(i) for i in ('pf_type', 'label',)
         }
         _fields['host'] = self.get_safely_instance_partial(Host, 'host')
         return _fields

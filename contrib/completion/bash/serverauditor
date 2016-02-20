@@ -322,3 +322,4 @@ _serverauditor()
   return 0
 }
 complete -F _serverauditor serverauditor
+# vim: ft=sh sw=2 ts=2 et

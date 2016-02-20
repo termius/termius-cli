@@ -1,0 +1,400 @@
+#compdef serverauditor
+
+# Serverauditor ZSH completion function
+# Drop this somewhere in your $fpath (like /usr/share/zsh/site-functions)
+# and rename it _serverauditor
+
+_serverauditor() {
+  if (( CURRENT > 2 )); then
+    # shift words so _arguments doesn't have to be concerned with second command
+    (( CURRENT-- ))
+    shift words
+    # use _call_function here in case it doesn't exist
+    _call_function 1 _serverauditor_${words[1]}
+  else
+    _values "serverauditor command" \
+      "complete[Generate shell completion script.]" \
+      "connect[Connect to host or start port forwarding rule.]" \
+      "fullclean[Clean local storage and push it.]" \
+      "group[Host group operations.]" \
+      "groups[List host groups.]" \
+      "help[Display a list of tasks or help for a given task.]" \
+      "host[Host operations.]" \
+      "hosts[List hosts.]" \
+      "identities[List ssh identities.]" \
+      "identity[Ssh identity operations.]" \
+      "info[Display host or group connection arguments.]" \
+      "key[Ssh key operations.]" \
+      "keys[List ssh keys.]" \
+      "login[Authenticate on serverauditor.com.]" \
+      "logout[Remove serverauditor.com credentials.]" \
+      "pfrule[Port forwarding rule operations.]" \
+      "pfrules[List port forwarding rules.]" \
+      "pull[Retrieve data from serverauditor.com.]" \
+      "push[Send local changes to serveraudtor.com.]" \
+      "snippet[Snippet operations.]" \
+      "snippets[List snippets.]" \
+      "sync[Sync IaaS or PaaS service hosts with serverauditor.]" \
+      "tags[List tags.]"
+  fi
+}
+
+_serverauditor_complete() {
+  _arguments \
+    '-h[Display help]' \
+    '--help[Display help]' \
+    '--name[Name]' \
+    '--shell[Shell type]:type:(bash)'
+}
+_serverauditor_connect() {
+  _arguments \
+    '-h[Display help]' \
+    '--help[Display help]' \
+    '--log-file[Log to this file]:filename:_files' \
+    '-R[Start port forwarding rule]:label:->pfrule' \
+    '--pfrule[Start port forwarding rule]:label:->pfrule' \
+    '-H[Connect to host]:label:->host' \
+    '--host[Connect to host]:label:->host'
+  if [[ $state != '' ]];
+  then
+    __serverauditor_instances $state
+  fi
+}
+_serverauditor_fullclean() {
+  _arguments \
+    '-h[Display help]' \
+    '--help[Display help]' \
+    '--log-file[Log to this file]:filename:_files' \
+    '-s[Sync strategy]:strategy:()' \
+    '--strategy[Sync strategy]:strategy:()' \
+    '-p[Password]:isnotsecure:()' \
+    '--password[Password]:isnotsecure:()'
+}
+_serverauditor_group() {
+  _arguments \
+    '-h[Display help]' \
+    '--help[Display help]' \
+    '--log-file[Log to this file]:filename:_files' \
+    '-d[Delete instances]' \
+    '--delete[Delete instances]' \
+    '-L[Instance label]:label:()' \
+    '--label[Instance label]:label:()' \
+    '-u[Host User name]:username:()' \
+    '--username[Host User name]:username:()' \
+    '-p[Host User password]:insecure:()' \
+    '--password[Host User password]:insecure:()' \
+    '-i[Identity file - ssh private key file]:filename:_files' \
+    '--identity-file[Identity file - ssh private key file]:filename:_files' \
+    '-S[Strictly check host or not]:yesno:(yes no)' \
+    '--strict-host-key-check[Strictly check host or not]:yesno:(yes no)' \
+    '--use-ssh-key[Force to use only ssh key for authentication or not]:yesno:(yes no)' \
+    '-k[Count of missed keep alive packages]:packagse:()' \
+    '--keep-alive-packages[Count of missed keep alive packages]:packagse:()' \
+    '-T[Set keep alive packages interval]:time:()' \
+    '--timeout[Set keep alive packages interval]:time (ms)' \
+    '-p[Set SSH Server port]:port:()' \
+    '--port[Set SSH Server port]:port:()' \
+    "-g[Set parent Group]:group_label:($(__serverauditor_entity 'groups'))" \
+    "--parent-group[Set parent Group]:group_label:($(__serverauditor_entity 'groups'))"
+    "-s[Set startup snippet]:snippet_label:($(__serverauditor_entity 'snippets'))" \
+    "--snippet[Set startup snippet]:snippet_label:($(__serverauditor_entity 'snippets'))" \
+    "--ssh-identity[Set ssh identity]:identity_label:($(__serverauditor_entity 'identities'))"
+
+}
+_serverauditor_groups() {
+  _arguments \
+    '-h[Display help]' \
+    '--help[Display help]' \
+    '--log-file[Log to this file]:filename:_files' \
+    '-f[Output format]:formats:(csv json table value yaml)' \
+    '--format[Output format]:formats:(csv json table value yaml)' \
+    '--max-widht[Maximum display width]:width:()' \
+    '--noindent[whether to disable indenting the JSON]' \
+    '-c[The column(s) to include]:columns:()' \
+    '--column[The column(s) to include]:columns:()' \
+    '--quote[When to include quotes]:quote:(all minimal none nonnumeric)' \
+    '-r[Display subgroups recursvely]' \
+    '--recursive[Display subgroups recursvely]' \
+}
+_serverauditor_help() {
+  _arguments \
+    '1:command:(complete connect fullclean group groups help host hosts identities identity info key keys login logout pfrule pfrules pull push snippet snippets sync tags)' \
+    '-h[Display help]' \
+    '--help[Display help]'
+}
+_serverauditor_host() {
+  _arguments \
+    '-h[Display help]' \
+    '--help[Display help]' \
+    '--log-file[Log to this file]:filename:_files' \
+    '-d[Delete instances]' \
+    '--delete[Delete instances]' \
+    '-L[Instance label]:label:()' \
+    '--label[Instance label]:label:()' \
+    '-u[Host User name]:username:()' \
+    '--username[Host User name]:username:()' \
+    '-p[Host User password]:insecure:()' \
+    '--password[Host User password]:insecure:()' \
+    '-i[Identity file - ssh private key file]:filename:_files' \
+    '--identity-file[Identity file - ssh private key file]:filename:_files' \
+    '-S[Strictly check host or not]:yesno:(yes no)' \
+    '--strict-host-key-check[Strictly check host or not]:yesno:(yes no)' \
+    '--use-ssh-key[Force to use only ssh key for authentication or not]:yesno:(yes no)' \
+    '-k[Count of missed keep alive packages]:packagse:()' \
+    '--keep-alive-packages[Count of missed keep alive packages]:packagse:()' \
+    '-T[Set keep alive packages interval]:time:()' \
+    '--timeout[Set keep alive packages interval]:time (ms)' \
+    '-p[Set SSH Server port]:port:()' \
+    '--port[Set SSH Server port]:port:()' \
+    '-a[Set SSH server address]:hostname:_hosts' \
+    '--address[Set SSH server address]:hostname:_hosts' \
+    "-t[Set Tag]:tag_label:($(__serverauditor_entity 'tags'))" \
+    "--tag[Set Tag]:tag_label:($(__serverauditor_entity 'tags'))" \
+    "-g[Set Group]:group_label:($(__serverauditor_entity 'groups'))" \
+    "--group[Set Group]:group_label:($(__serverauditor_entity 'groups'))" \
+    "-s[Set startup snippet]:snippet_label:($(__serverauditor_entity 'snippets'))" \
+    "--snippet[Set startup snippet]:snippet_label:($(__serverauditor_entity 'snippets'))" \
+    "--ssh-identity[Set ssh identity]:identity_label:($(__serverauditor_entity 'identities'))"
+
+}
+_serverauditor_hosts() {
+  _arguments \
+    '-h[Display help]' \
+    '--help[Display help]' \
+    '--log-file[Log to this file]:filename:_files' \
+    '-f[Output format]:formats:(csv json table value yaml)' \
+    '--format[Output format]:formats:(csv json table value yaml)' \
+    '--max-widht[Maximum display width]:width:()' \
+    '--noindent[whether to disable indenting the JSON]' \
+    '-c[The column(s) to include]:columns:()' \
+    '--column[The column(s) to include]:columns:()' \
+    '--quote[When to include quotes]:quote:(all minimal none nonnumeric)' \
+    "-t[Filter by tags]:tag_label:($(__serverauditor_entity 'tags'))" \
+    "--tag[Filter by tags]:tag_label:($(__serverauditor_entity 'tags'))" \
+    "-g[Filter in group]:group_label:($(__serverauditor_entity 'groups'))" \
+    "--group[Filter in group]:group_label:($(__serverauditor_entity 'groups'))"
+}
+_serverauditor_identities() {
+  _arguments \
+    '-h[Display help]' \
+    '--help[Display help]' \
+    '--log-file[Log to this file]:filename:_files' \
+    '-f[Output format]:formats:(csv json table value yaml)' \
+    '--format[Output format]:formats:(csv json table value yaml)' \
+    '--max-widht[Maximum display width]:width:()' \
+    '--noindent[whether to disable indenting the JSON]' \
+    '-c[The column(s) to include]:columns:()' \
+    '--column[The column(s) to include]:columns:()' \
+    '--quote[When to include quotes]:quote:(all minimal none nonnumeric)'
+}
+_serverauditor_identity() {
+  _arguments \
+    '-h[Display help]' \
+    '--help[Display help]' \
+    '--log-file[Log to this file]:filename:_files' \
+    '-d[Delete instances]' \
+    '--delete[Delete instances]' \
+    '-L[Instance label]:label:()' \
+    '--label[Instance label]:label:()' \
+    '-u[Host User name]:username:()' \
+    '--username[Host User name]:username:()' \
+    '-p[Host User password]:insecure:()' \
+    '--password[Host User password]:insecure:()' \
+    '-i[Identity file - ssh private key file]:filename:_files' \
+    '--identity-file[Identity file - ssh private key file]:filename:_files' \
+    "-k[Set key]:key_label:($(__serverauditor_entity 'keys'))" \
+    "--ssh-keySet key]:key_label:($(__serverauditor_entity 'keys'))"
+
+}
+_serverauditor_info() {
+  _arguments \
+    '-h[Display help]' \
+    '--help[Display help]' \
+    '--log-file[Log to this file]:filename:_files' \
+    '--address[Use this address in ssh format]:hostname:()'
+    '-G[Info for Group]:instance type:->group' \
+    '--group[Info for Group]:instance type:->group' \
+    '-H[Info for Host]:instance type:->host' \
+    '--host[Info for Host]:instance type:->host' \
+    '-c[The column(s) to include]:columns:()' \
+    '--column[The column(s) to include]:columns:()' \
+    '--noindent[whether to disable indenting the JSON]' \
+    '--max-widht[Maximum display width]:width:()' \
+    '--prefix[Add a prefix to all shell variable names]:prefix:()' \
+    '-f[Output format]:formats:(json shell ssh table value yaml)' \
+    '--format[Output format]:formats:(json shell ssh table value yaml)'
+}
+_serverauditor_key() {
+  _arguments \
+    '-h[Display help]' \
+    '--help[Display help]' \
+    '--log-file[Log to this file]:filename:_files' \
+    '-d[Delete instances]' \
+    '--delete[Delete instances]' \
+    '-L[Instance label]:label:()' \
+    '--label[Instance label]:label:()'
+    '-i[Identity file - ssh private key file]:filename:_files' \
+    '--identity-file[Identity file - ssh private key file]:filename:_files'
+
+}
+_serverauditor_keys() {
+  _arguments \
+    '-h[Display help]' \
+    '--help[Display help]' \
+    '--log-file[Log to this file]:filename:_files' \
+    '-f[Output format]:formats:(csv json table value yaml)' \
+    '--format[Output format]:formats:(csv json table value yaml)' \
+    '--max-widht[Maximum display width]:width:()' \
+    '--noindent[whether to disable indenting the JSON]' \
+    '-c[The column(s) to include]:columns:()' \
+    '--column[The column(s) to include]:columns:()' \
+    '--quote[When to include quotes]:quote:(all minimal none nonnumeric)'
+}
+_serverauditor_login() {
+  _arguments \
+    '-h[Display help]' \
+    '--help[Display help]' \
+    '--log-file[Log to this file]:filename:_files' \
+    '-u[Username]:username:()' \
+    '--username[Username]:username:()' \
+    '-p[Password]:isnotsecure:()' \
+    '--password[Password]:isnotsecure:()'
+}
+_serverauditor_logout() {
+  _arguments \
+    '-h[Display help]' \
+    '--help[Display help]' \
+    '--log-file[Log to this file]:filename:_files'
+}
+_serverauditor_pfrule() {
+  _arguments \
+    '-h[Display help]' \
+    '--help[Display help]' \
+    '--log-file[Log to this file]:filename:_files' \
+    '--local[Local port forwarding]' \
+    '--remote[Remote port forwarding]' \
+    '--dynamic[Dynamic port forwarding]' \
+    '--binding[Address binding]:binding:()' \
+    '-d[Delete instances]' \
+    '--delete[Delete instances]' \
+    '-L[Instance label]:label:()' \
+    '--label[Instance label]:label:()' \
+    "-H[Set Host]:host_label:($(__serverauditor_entity 'hosts'))" \
+    "--host[Set Host]:host_label:($(__serverauditor_entity 'hosts'))"
+
+}
+
+_serverauditor_pfrules() {
+  _arguments \
+    '-h[Display help]' \
+    '--help[Display help]' \
+    '--log-file[Log to this file]:filename:_files' \
+    '-f[Output format]:formats:(csv json table value yaml)' \
+    '--format[Output format]:formats:(csv json table value yaml)' \
+    '--max-widht[Maximum display width]:width:()' \
+    '--noindent[whether to disable indenting the JSON]' \
+    '-c[The column(s) to include]:columns:()' \
+    '--column[The column(s) to include]:columns:()' \
+    '--quote[When to include quotes]:quote:(all minimal none nonnumeric)'
+}
+_serverauditor_pull() {
+  _arguments \
+    '-h[Display help]' \
+    '--help[Display help]' \
+    '--log-file[Log to this file]:filename:_files' \
+    '-s[Sync strategy]:strategy:()' \
+    '--strategy[Sync strategy]:strategy:()' \
+    '-p[Password]:isnotsecure:()' \
+    '--password[Password]:isnotsecure:()'
+}
+_serverauditor_push() {
+  _arguments \
+    '-h[Display help]' \
+    '--help[Display help]' \
+    '--log-file[Log to this file]:filename:_files' \
+    '-s[Sync strategy]:strategy:()' \
+    '--strategy[Sync strategy]:strategy:()' \
+    '-p[Password]:isnotsecure:()' \
+    '--password[Password]:isnotsecure:()'
+}
+_serverauditor_snippet() {
+  _arguments \
+    '-h[Display help]' \
+    '--help[Display help]' \
+    '--log-file[Log to this file]:filename:_files' \
+    '-L[Instance label]:label:()' \
+    '--label[Instance label]:label:()' \
+    '-s[Script]:script:()' \
+    '--script[Script]:script:()' \
+    '-d[Delete instances]' \
+    '--delete[Delete instances]'
+
+}
+_serverauditor_snippets() {
+  _arguments \
+    '-h[Display help]' \
+    '--help[Display help]' \
+    '--log-file[Log to this file]:filename:_files' \
+    '-f[Output format]:formats:(csv json table value yaml)' \
+    '--format[Output format]:formats:(csv json table value yaml)' \
+    '--max-widht[Maximum display width]:width:()' \
+    '--noindent[whether to disable indenting the JSON]' \
+    '-c[The column(s) to include]:columns:()' \
+    '--column[The column(s) to include]:columns:()' \
+    '--quote[When to include quotes]:quote:(all minimal none nonnumeric)'
+}
+_serverauditor_sync() {
+  _arguments \
+    '-h[Display help]' \
+    '--help[Display help]' \
+    '--log-file[Log to this file]:filename:_files' \
+    '-c[Credential file]:filename:_files' \
+    '--credentials[Credential file]:filename:_files'
+}
+_serverauditor_tags() {
+  _arguments \
+    '-h[Display help]' \
+    '--help[Display help]' \
+    '--log-file[Log to this file]:filename:_files' \
+    '-f[Output format]:formats:(csv json table value yaml)' \
+    '--format[Output format]:formats:(csv json table value yaml)' \
+    '--max-widht[Maximum display width]:width:()' \
+    '--noindent[whether to disable indenting the JSON]' \
+    '-c[The column(s) to include]:columns:()' \
+    '--column[The column(s) to include]:columns:()' \
+    '-d[Delete instances]' \
+    '--delete[Delete instances]' \
+    '--quote[When to include quotes]:quote:(all minimal none nonnumeric)'
+
+}
+
+__serverauditor_entity_labels() {
+  serverauditor $1 -f csv --quote none -c label -c id | awk 'FS="," {if (NR>1) print $2":[id="$1"]" }'
+}
+
+__serverauditor_entity() {
+  serverauditor $1 -f value --quote none -c label
+}
+
+__serverauditor_get_labels_ids() {
+  case $1 in
+    host|group|key|pfrule|snippet)
+      __serverauditor_entity_labels "$1"s
+      ;;
+    identity)
+      __serverauditor_entity_labels identities
+      ;;
+    *) return 0
+      ;;
+  esac
+}
+
+__serverauditor_instances() {
+  instances=($(__serverauditor_get_labels_ids $1))
+  if [[ "X$instances" != "X" ]];
+  then
+    _describe -o "instances_$1" instances
+  fi
+}
+
+# vim: ft=zsh sw=2 ts=2 et
