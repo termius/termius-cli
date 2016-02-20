@@ -100,7 +100,6 @@ _serverauditor_group() {
     "--snippet[Set startup snippet]:snippet_label:($(__serverauditor_entity 'snippets'))" \
     "--ssh-identity[Set ssh identity]:identity_label:($(__serverauditor_entity 'identities'))"
 
-  __serverauditor_instances 'group'
 }
 _serverauditor_groups() {
   _arguments \
@@ -157,7 +156,6 @@ _serverauditor_host() {
     "--snippet[Set startup snippet]:snippet_label:($(__serverauditor_entity 'snippets'))" \
     "--ssh-identity[Set ssh identity]:identity_label:($(__serverauditor_entity 'identities'))"
 
-  __serverauditor_instances 'host'
 }
 _serverauditor_hosts() {
   _arguments \
@@ -207,7 +205,6 @@ _serverauditor_identity() {
     "-k[Set key]:key_label:($(__serverauditor_entity 'keys'))" \
     "--ssh-keySet key]:key_label:($(__serverauditor_entity 'keys'))"
 
-  __serverauditor_instances 'identity'
 }
 _serverauditor_info() {
   _arguments \
@@ -239,7 +236,6 @@ _serverauditor_key() {
     '-i[Identity file - ssh private key file]:filename:_files' \
     '--identity-file[Identity file - ssh private key file]:filename:_files'
 
-  __serverauditor_instances 'key'
 }
 _serverauditor_keys() {
   _arguments \
@@ -286,7 +282,6 @@ _serverauditor_pfrule() {
     "-H[Set Host]:host_label:($(__serverauditor_entity 'hosts'))" \
     "--host[Set Host]:host_label:($(__serverauditor_entity 'hosts'))"
 
-  __serverauditor_instances 'pfrule'
 }
 
 _serverauditor_pfrules() {
@@ -334,7 +329,6 @@ _serverauditor_snippet() {
     '-d[Delete instances]' \
     '--delete[Delete instances]'
 
-  __serverauditor_instances 'snippet'
 }
 _serverauditor_snippets() {
   _arguments \
@@ -372,7 +366,6 @@ _serverauditor_tags() {
     '--delete[Delete instances]' \
     '--quote[When to include quotes]:quote:(all minimal none nonnumeric)'
 
-  __serverauditor_instances 'tags'
 }
 
 __serverauditor_entity_labels() {
