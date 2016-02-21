@@ -211,3 +211,13 @@ class PFRule(Model):
         """Render binding string."""
         bind_gen = self.binding_getter[self.pf_type]
         return ':'.join([str(i) for i in bind_gen(self) if i])
+
+
+# pylint: disable=invalid-name
+clean_order = reversed((
+    SshKey, Snippet,
+    SshIdentity, SshConfig,
+    Tag, Group,
+    Host, PFRule,
+    TagHost
+))

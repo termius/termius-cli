@@ -5,13 +5,7 @@ from base64 import b64decode
 import six
 from ..core.api import API
 from ..core.commands import AbstractCommand
-from ..core.models.terminal import (
-    SshKey, Snippet,
-    SshIdentity, SshConfig,
-    Tag, Group,
-    Host, PFRule,
-    TagHost
-)
+from ..core.models.terminal import clean_order
 from .client.controllers import ApiController
 from .client.cryptor import RNCryptor
 from ..core.storage.strategies import RelatedGetStrategy, SyncSaveStrategy
@@ -86,13 +80,7 @@ class FullCleanCommand(CloudSynchronizationCommand):
     get_strategy = RelatedGetStrategy
     save_strategy = SyncSaveStrategy
 
-    supported_models = reversed((
-        SshKey, Snippet,
-        SshIdentity, SshConfig,
-        Tag, Group,
-        Host, PFRule,
-        TagHost
-    ))
+    supported_models = clean_order
 
     def process_sync(self, api_controller):
         """Pull updated remote instances."""

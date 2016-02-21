@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Handlers for application signals."""
 import six
+from .models.terminal import clean_order
+from .storage.strategies import SoftDeleteStrategy
 
 
 # pylint: disable=unused-argument
@@ -21,3 +23,18 @@ def delete_ssh_key(sender, command, instance):
     path = instance.file_path(command)
     if path.is_file():
         path.unlink()
+
+
+def clean_data(sender, command, email):
+    with command.storage:
+        _clean_data(command.storage)
+
+
+def _clean_data(storage):
+    for model in clean_order:
+        instances = storage.get_all(model)
+        for i in instances:
+            storage.delete(i)
+
+    deleted_set = SoftDeleteStrategy(storage).get_delete_sets()
+    storage.confirm_delete(deleted_set)

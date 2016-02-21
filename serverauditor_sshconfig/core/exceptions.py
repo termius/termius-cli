@@ -30,3 +30,9 @@ class SkipField(Exception):
     """Raise it when needs to skip field."""
 
     pass
+
+
+class OptionNotSetException(Exception):
+    """Raise it when no option in section."""
+
+    pass

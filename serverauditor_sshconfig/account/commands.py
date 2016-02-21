@@ -1,8 +1,30 @@
 # -*- coding: utf-8 -*-
 """Module to keep login and logout command."""
+from contextlib import contextmanager
 import six
 from ..core.commands import AbstractCommand
+from ..core.signals import post_logout
+from ..core.exceptions import OptionNotSetException
 from .managers import AccountManager
+
+
+@contextmanager
+def on_clean_when_logout(command, manager):
+    try:
+        old_username = manager.username
+    except OptionNotSetException:
+        old_username = None
+    yield
+    try:
+        new_username = manager.username
+    except OptionNotSetException:
+        new_username = None
+
+    is_username_changed = (
+        old_username and old_username != new_username
+    )
+    if is_username_changed:
+        post_logout.send(command, command=command, email=old_username)
 
 
 # pylint: disable=abstract-method
@@ -33,7 +55,8 @@ class LoginCommand(BaseAccountCommand):
         """Process CLI call."""
         username = parsed_args.username or self.prompt_username()
         password = parsed_args.password or self.prompt_password()
-        self.manager.login(username, password)
+        with on_clean_when_logout(self, self.manager):
+            self.manager.login(username, password)
         self.log.info('Sign into serverauditor cloud.')
 
 
@@ -42,5 +65,6 @@ class LogoutCommand(BaseAccountCommand):
 
     def take_action(self, _):
         """Process CLI call."""
-        self.manager.logout()
+        with on_clean_when_logout(self, self.manager):
+            self.manager.logout()
         self.log.info('Sign out serverauditor cloud.')
