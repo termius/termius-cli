@@ -29,3 +29,20 @@ get_model_field() {
 clean_storage() {
     rm ~/.serverauditor/storage
 }
+
+populate_storage() {
+    serverauditor host --address localhost
+}
+
+assert_clear_storage() {
+    [ "$(get_models_set 'sshkeycrypt_set')" = "[]" ]
+    [ "$(get_models_set 'tag_set')" = "[]" ]
+    [ "$(get_models_set 'snippet_set')" = "[]" ]
+    [ "$(get_models_set 'snippet_set')" = "[]" ]
+    [ "$(get_models_set 'sshidentity_set')" = "[]" ]
+    [ "$(get_models_set 'taghost_set')" = "[]" ]
+    [ "$(get_models_set 'sshconfig_set')" = "[]" ]
+    [ "$(get_models_set 'group_set')" = "[]" ]
+    [ "$(get_models_set 'host_set')" = "[]" ]
+    [ "$(get_models_set 'pfrule_set')" = "[]" ]
+}
