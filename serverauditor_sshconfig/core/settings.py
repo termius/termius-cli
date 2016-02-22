@@ -27,7 +27,7 @@ class Config(object):
     def ssh_key_dir_path(self):
         """Get path instance to Directory with applications ssh key."""
         try:
-            ssh_keys_path = Path(self.command.config.get(
+            ssh_keys_path = Path(self.config.get(
                 'SSH_keys', 'directory'
             ))
         except (configparser.NoSectionError, configparser.NoOptionError):

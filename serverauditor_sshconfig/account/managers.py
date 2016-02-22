@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Module with Account manager."""
+from six.moves import configparser
 from ..core.api import API
+from ..core.exceptions import OptionNotSetException
 
 
 class AccountManager(object):
@@ -27,3 +29,11 @@ class AccountManager(object):
         """Remove apikey and other credentials."""
         self.config.remove_section('User')
         self.config.write()
+
+    @property
+    def username(self):
+        """Get username."""
+        try:
+            return self.config.get('User', 'username')
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            raise OptionNotSetException

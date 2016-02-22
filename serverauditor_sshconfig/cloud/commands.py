@@ -5,13 +5,7 @@ from base64 import b64decode
 import six
 from ..core.api import API
 from ..core.commands import AbstractCommand
-from ..core.models.terminal import (
-    SshKey, Snippet,
-    SshIdentity, SshConfig,
-    Tag, Group,
-    Host, PFRule,
-    TagHost
-)
+from ..core.models.terminal import clean_order
 from .client.controllers import ApiController
 from .client.cryptor import RNCryptor
 from ..core.storage.strategies import RelatedGetStrategy, SyncSaveStrategy
@@ -86,13 +80,7 @@ class FullCleanCommand(CloudSynchronizationCommand):
     get_strategy = RelatedGetStrategy
     save_strategy = SyncSaveStrategy
 
-    supported_models = reversed((
-        SshKey, Snippet,
-        SshIdentity, SshConfig,
-        Tag, Group,
-        Host, PFRule,
-        TagHost
-    ))
+    supported_models = clean_order
 
     def process_sync(self, api_controller):
         """Pull updated remote instances."""
@@ -110,3 +98,44 @@ class FullCleanCommand(CloudSynchronizationCommand):
             for i in instances:
                 self.storage.delete(i)
             self.log.info('Complete cleaning')
+
+
+class CryptoCommand(CloudSynchronizationCommand):
+    """Command for crypting and decrypting text."""
+
+    def extend_parser(self, parser):
+        """Add more arguments to parser."""
+        super(CryptoCommand, self).extend_parser(parser)
+        parser.add_argument(
+            '-d', '--decrypt',
+            action='store_const', const='decrypt',
+            dest='operation'
+        )
+        parser.add_argument(
+            '-e', '--encrypt',
+            action='store_const', const='encrypt',
+            dest='operation'
+        )
+        parser.add_argument('text', nargs=1, metavar='TEXT', action='store')
+        return parser
+
+    def process_sync(self, api_controller):
+        """Do sync staff here."""
+        pass
+
+    def take_action(self, parsed_args):
+        """Process decrypt and encrypt text."""
+        encryption_salt = b64decode(self.config.get('User', 'salt'))
+        hmac_salt = b64decode(self.config.get('User', 'hmac_salt'))
+        password = parsed_args.password
+        if password is None:
+            password = self.prompt_password()
+        self.validate_password(password)
+        cryptor = RNCryptor()
+        cryptor.password = password
+        cryptor.encryption_salt = encryption_salt
+        cryptor.hmac_salt = hmac_salt
+
+        for i in parsed_args.text:
+            result_text = getattr(cryptor, parsed_args.operation)(i)
+            self.app.stdout.write('{}\n'.format(result_text))

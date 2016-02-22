@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Module for sync api controller."""
+from logging import getLogger
 from .transformers.many import BulkTransformer
 from ...core.api import API
 
@@ -32,8 +33,9 @@ class ApiController(object):
     """Controller to call API."""
 
     mapping = dict(
-        bulk=dict(url='v2/terminal/bulk/', transformer=BulkTransformer)
+        bulk=dict(url='v3/terminal/bulk/', transformer=BulkTransformer)
     )
+    log = getLogger(__name__)
 
     def __init__(self, storage, config, cryptor):
         """Create new API controller."""

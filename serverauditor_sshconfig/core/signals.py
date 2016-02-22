@@ -17,3 +17,6 @@ post_update_instance = signal('post-update-instance')
 pre_delete_instance = signal('pre-delete-instance')
 # pylint: disable=invalid-name
 post_delete_instance = signal('post-delete-instance')
+
+# pylint: disable=invalid-name
+post_logout = signal('post_logout')

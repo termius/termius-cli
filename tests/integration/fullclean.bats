@@ -13,19 +13,11 @@ load test_helper
 
 @test "fullclean logged in" {
     login_serverauditor
+    serverauditor pull -p $SERVERAUDITOR_PASSWORD
 
     run serverauditor fullclean -p $SERVERAUDITOR_PASSWORD
     [ "$status" -eq 0 ]
-    [ "$(get_models_set 'sshkeycrypt_set')" = "[]" ]
-    [ "$(get_models_set 'tag_set')" = "[]" ]
-    [ "$(get_models_set 'snippet_set')" = "[]" ]
-    [ "$(get_models_set 'snippet_set')" = "[]" ]
-    [ "$(get_models_set 'sshidentity_set')" = "[]" ]
-    [ "$(get_models_set 'taghost_set')" = "[]" ]
-    [ "$(get_models_set 'sshconfig_set')" = "[]" ]
-    [ "$(get_models_set 'group_set')" = "[]" ]
-    [ "$(get_models_set 'host_set')" = "[]" ]
-    [ "$(get_models_set 'pfrule_set')" = "[]" ]
+    assert_clear_storage
 }
 
 @test "fullclean logged in incorrect password" {
