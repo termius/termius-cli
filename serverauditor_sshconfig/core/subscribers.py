@@ -26,6 +26,7 @@ def delete_ssh_key(sender, command, instance):
 
 
 def clean_data(sender, command, email):
+    """Clean data for account with email."""
     with command.storage:
         _clean_data(command.storage)
 

@@ -10,6 +10,7 @@ from .managers import AccountManager
 
 @contextmanager
 def on_clean_when_logout(command, manager):
+    """Monitor is account changed and call data clean."""
     try:
         old_username = manager.username
     except OptionNotSetException:

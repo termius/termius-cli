@@ -45,6 +45,7 @@ handlers = [
     'tags = serverauditor_sshconfig.handlers:TagsCommand',
     'info = serverauditor_sshconfig.handlers:InfoCommand',
     'connect = serverauditor_sshconfig.handlers:ConnectCommand',
+    'crypto = serverauditor_sshconfig.cloud.commands:CryptoCommand',
 ]
 
 
