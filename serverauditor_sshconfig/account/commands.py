@@ -75,7 +75,7 @@ class SettingsCommand(BaseAccountCommand):
 
     def extend_parser(self, parser):
         parser.add_argument(
-            '--synchronize_key', action='store',  type=str,
+            '--synchronize-key', action='store',  type=str,
             choices=('yes', 'no'), default='yes',
             help='Sync ssh keys and ssh identities or not.'
         )
