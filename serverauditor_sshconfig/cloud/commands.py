@@ -17,10 +17,6 @@ class CloudSynchronizationCommand(AbstractCommand):
 
     def extend_parser(self, parser):
         """Add more arguments to parser."""
-        parser.add_argument(
-            '-s', '--strategy', metavar='STRATEGY_NAME',
-            help='Force to use specific strategy to merge data.'
-        )
         parser.add_argument('-p', '--password', metavar='PASSWORD')
         return parser
 
@@ -59,6 +55,7 @@ class PushCommand(CloudSynchronizationCommand):
 
     def process_sync(self, api_controller):
         """Push outdated local instances."""
+        api_controller.put_setting()
         api_controller.post_bulk()
         self.log.info('Push data to Serverauditor cloud.')
 
@@ -70,6 +67,7 @@ class PullCommand(CloudSynchronizationCommand):
 
     def process_sync(self, api_controller):
         """Pull updated remote instances."""
+        api_controller.get_settings()
         api_controller.get_bulk()
         self.log.info('Pull data from Serverauditor cloud.')
 

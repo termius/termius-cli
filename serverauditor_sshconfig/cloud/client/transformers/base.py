@@ -8,7 +8,7 @@ import six
 class Transformer(object):
     """Base transformer."""
 
-    def __init__(self, storage):
+    def __init__(self, storage, **kwargs):
         """Create new Transformer."""
         assert storage
         self.storage = storage

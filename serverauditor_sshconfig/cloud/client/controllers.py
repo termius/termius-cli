@@ -2,7 +2,9 @@
 """Module for sync api controller."""
 from logging import getLogger
 from .transformers.many import BulkTransformer
+from .transformers.single import SettingsTransformer
 from ...core.api import API
+from ...account.managers import AccountManager
 
 
 class CryptoController(object):
@@ -33,7 +35,8 @@ class ApiController(object):
     """Controller to call API."""
 
     mapping = dict(
-        bulk=dict(url='v3/terminal/bulk/', transformer=BulkTransformer)
+        bulk=dict(url='v3/terminal/bulk/', transformer=BulkTransformer),
+        settings=dict(url='v2/setting/mobile/', transformer=SettingsTransformer),
     )
     log = getLogger(__name__)
 
@@ -47,15 +50,7 @@ class ApiController(object):
         self.api = API(username, apikey)
         self.storage = storage
         self.crypto_controller = CryptoController(cryptor)
-
-    def _get(self, mapped):
-        transformer = mapped['transformer'](
-            storage=self.storage, crypto_controller=self.crypto_controller
-        )
-        response = self.api.get(mapped['url'])
-
-        model = transformer.to_model(response)
-        return model
+        self.account_manager = AccountManager(config)
 
     def get_bulk(self):
         """Get remote instances."""
@@ -65,16 +60,11 @@ class ApiController(object):
                         model['last_synced'])
         self.config.write()
 
-    def _post(self, mapped, request_model):
-        request_model = request_model
-        transformer = mapped['transformer'](
-            storage=self.storage, crypto_controller=self.crypto_controller
-        )
-
-        payload = transformer.to_payload(request_model)
-        response = self.api.post(mapped['url'], payload)
-        response_model = transformer.to_model(response)
-        return response_model
+    def get_settings(self):
+        """Get remote settings."""
+        mapped = self.mapping['settings']
+        model = self._get(mapped)
+        self.account_manager.set_settings(model)
 
     def post_bulk(self):
         """Send local instances."""
@@ -88,3 +78,39 @@ class ApiController(object):
         self.config.set('CloudSynchronization', 'last_synced',
                         out_model['last_synced'])
         self.config.write()
+
+    def put_setting(self):
+        """Send local settings."""
+        mapped = self.mapping['settings']
+        model = self.account_manager.get_settings()
+        out_model = self._put(mapped, model)
+        self.account_manager.set_settings(out_model)
+
+    def _post(self, mapped, request_model):
+        transformer = mapped['transformer'](
+            storage=self.storage, crypto_controller=self.crypto_controller
+        )
+
+        payload = transformer.to_payload(request_model)
+        response = self.api.post(mapped['url'], payload)
+        response_model = transformer.to_model(response)
+        return response_model
+
+    def _put(self, mapped, request_model):
+        transformer = mapped['transformer'](
+            storage=self.storage, crypto_controller=self.crypto_controller
+        )
+
+        payload = transformer.to_payload(request_model)
+        response = self.api.put(mapped['url'], payload)
+        response_model = transformer.to_model(response)
+        return response_model
+
+    def _get(self, mapped):
+        transformer = mapped['transformer'](
+            storage=self.storage, crypto_controller=self.crypto_controller
+        )
+        response = self.api.get(mapped['url'])
+
+        model = transformer.to_model(response)
+        return model

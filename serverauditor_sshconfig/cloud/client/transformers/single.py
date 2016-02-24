@@ -178,3 +178,12 @@ class CryptoBulkEntryTransformer(BulkEntryTransformer):
         return super(CryptoBulkEntryTransformer, self).to_payload(
             encrypted_model
         )
+
+
+class SettingsTransformer(Transformer):
+
+    def to_model(self, payload):
+        return payload
+
+    def to_payload(self, model):
+        return model
