@@ -8,6 +8,8 @@ from ..core.exceptions import OptionNotSetException
 class AccountManager(object):
     """Class to keep logic for login and logout."""
 
+    setting_names = ('synchronize_key', 'agent_forwarding')
+
     def __init__(self, config):
         """Create new account manager."""
         self.config = config
@@ -25,9 +27,29 @@ class AccountManager(object):
         self.config.set('User', 'salt', salt)
         self.config.write()
 
+    def set_settings(self, dictionary):
+        """Store settings."""
+        filtered_settings = {
+            k: dictionary[k] for k in self.setting_names
+        }
+        for k, i in filtered_settings.items():
+            self.config.set('Settings', k, i)
+        self.config.write()
+
+    def get_settings(self):
+        try:
+            return {
+                i: bool(self.config.get('Settings', i) == 'True')
+                for i in self.setting_names
+            }
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            return {}
+
     def logout(self):
         """Remove apikey and other credentials."""
         self.config.remove_section('User')
+        self.config.remove_section('Settings')
+        self.config.remove_section('CloudSynchronization')
         self.config.write()
 
     @property

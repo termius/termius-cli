@@ -69,3 +69,28 @@ class LogoutCommand(BaseAccountCommand):
         with on_clean_when_logout(self, self.manager):
             self.manager.logout()
         self.log.info('Sign out serverauditor cloud.')
+
+
+class SettingsCommand(BaseAccountCommand):
+
+    def extend_parser(self, parser):
+        parser.add_argument(
+            '--synchronize_key', action='store',  type=str,
+            choices=('yes', 'no'), default='yes',
+            help='Sync ssh keys and ssh identities or not.'
+        )
+        parser.add_argument(
+            '--agent-forwarding', action='store', type=str,
+            choices=('yes', 'no'), default='yes',
+            help='Sync ssh keys and ssh identities or not.'
+        )
+        return parser
+
+    def take_action(self, args):
+        """Process CLI call."""
+        settings = {
+            k: getattr(args, k) == 'yes'
+            for k in ('synchronize_key', 'agent_forwarding')
+        }
+        self.manager.set_settings(settings)
+        self.log.info('Set settings.')

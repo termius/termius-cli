@@ -27,6 +27,7 @@ handlers = [
     'sync = serverauditor_sshconfig.sync.commands:SyncCommand',
     'login = serverauditor_sshconfig.account.commands:LoginCommand',
     'logout = serverauditor_sshconfig.account.commands:LogoutCommand',
+    'settings = serverauditor_sshconfig.account.commands:SettingsCommand',
     'push = serverauditor_sshconfig.cloud.commands:PushCommand',
     'pull = serverauditor_sshconfig.cloud.commands:PullCommand',
     'fullclean = serverauditor_sshconfig.cloud.commands:FullCleanCommand',
