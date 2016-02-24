@@ -6,11 +6,10 @@ from operator import attrgetter
 from ....core.models.base import RemoteInstance
 from ....core.exceptions import DoesNotExistException, SkipField
 from ....core.models.terminal import (
-    SshKey,SshIdentity,
+    SshKey, SshIdentity,
 )
 from .base import Transformer
 from .utils import id_getter, map_zip_model_fields
-
 
 
 def id_getter_wrapper():
@@ -30,7 +29,10 @@ class BulkEntryBaseTransformer(Transformer):
         self.sync_keys = (
             self.account_manager.get_settings().get('synchronize_key')
         )
-        self.skip = self.sync_keys and self.model_class in (SshKey, SshIdentity)
+        self.skip = (
+            not self.sync_keys
+            and self.model_class in (SshKey, SshIdentity)
+        )
 
 
 class BulkPrimaryKeyTransformer(BulkEntryBaseTransformer):
@@ -111,7 +113,7 @@ class BulkEntryTransformer(GetPrimaryKeyTransformerMixin,
                 else:
                     payload[field] = getattr(model, field)
             except SkipField:
-                continue
+                payload.pop(field, None)
         payload['local_id'] = model.id
         return payload
 
@@ -141,9 +143,11 @@ class BulkEntryTransformer(GetPrimaryKeyTransformerMixin,
         for i, mapping in model.fields.items():
             if i in fk_fields:
                 try:
-                    models_fields[i] = self.render_relation_field(mapping, payload[i])
+                    models_fields[i] = self.render_relation_field(
+                        mapping, payload[i]
+                    )
                 except SkipField:
-                    continue
+                    models_fields.pop(i, None)
         model.update(models_fields)
         model.remote_instance = self.create_remote_instance(payload)
         return model
