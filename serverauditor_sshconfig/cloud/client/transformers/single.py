@@ -4,9 +4,13 @@ import logging
 from collections import defaultdict
 from operator import attrgetter
 from ....core.models.base import RemoteInstance
-from ....core.exceptions import DoesNotExistException
+from ....core.exceptions import DoesNotExistException, SkipField
+from ....core.models.terminal import (
+    SshKey,SshIdentity,
+)
 from .base import Transformer
 from .utils import id_getter, map_zip_model_fields
+
 
 
 def id_getter_wrapper():
@@ -23,6 +27,10 @@ class BulkEntryBaseTransformer(Transformer):
         super(BulkEntryBaseTransformer, self).__init__(**kwargs)
         assert model_class
         self.model_class = model_class
+        self.sync_keys = (
+            self.account_manager.get_settings().get('synchronize_key')
+        )
+        self.skip = self.sync_keys and self.model_class in (SshKey, SshIdentity)
 
 
 class BulkPrimaryKeyTransformer(BulkEntryBaseTransformer):
@@ -39,6 +47,8 @@ class BulkPrimaryKeyTransformer(BulkEntryBaseTransformer):
         """Retrieve model from storage by payload."""
         if not payload:
             return None
+        if self.skip:
+            raise SkipField
 
         remote_instance_id = self.id_from_payload(payload)
         model = self.storage.get(
@@ -49,6 +59,8 @@ class BulkPrimaryKeyTransformer(BulkEntryBaseTransformer):
 
     def to_payload(self, model):
         """Convert model to primary key or to set/id reference."""
+        if self.skip:
+            raise SkipField
         if not model:
             return None
         if model.remote_instance:
@@ -64,7 +76,8 @@ class GetPrimaryKeyTransformerMixin(object):
     def get_primary_key_transformer(self, model_class):
         """Create new primary key Transformer."""
         return BulkPrimaryKeyTransformer(
-            storage=self.storage, model_class=model_class
+            storage=self.storage, model_class=model_class,
+            account_manager=self.account_manager,
         )
 
 
@@ -80,6 +93,8 @@ class BulkEntryTransformer(GetPrimaryKeyTransformerMixin,
 
     def to_payload(self, model):
         """Convert model to payload."""
+        if self.skip:
+            raise SkipField
         payload = dict(map_zip_model_fields(model, self.attrgetter))
         if model.remote_instance:
             zipped_remote_instance = map_zip_model_fields(
@@ -88,12 +103,15 @@ class BulkEntryTransformer(GetPrimaryKeyTransformerMixin,
             payload.update(zipped_remote_instance)
 
         for field, mapping in model.fields.items():
-            if field in model.fk_field_names():
-                payload[field] = self.serialize_related_field(
-                    model, field, mapping
-                )
-            else:
-                payload[field] = getattr(model, field)
+            try:
+                if field in model.fk_field_names():
+                    payload[field] = self.serialize_related_field(
+                        model, field, mapping
+                    )
+                else:
+                    payload[field] = getattr(model, field)
+            except SkipField:
+                continue
         payload['local_id'] = model.id
         return payload
 
@@ -105,6 +123,9 @@ class BulkEntryTransformer(GetPrimaryKeyTransformerMixin,
 
     def to_model(self, payload):
         """Convert payload to model."""
+        if self.skip:
+            raise SkipField
+
         model = self.get_or_initialize_model(payload)
         model = self.update_model_fields(model, payload)
         return model
@@ -117,11 +138,12 @@ class BulkEntryTransformer(GetPrimaryKeyTransformerMixin,
             for i, mapping in model.fields.items()
             if i not in fk_fields
         }
-        models_fields.update([
-            (i, self.render_relation_field(mapping, payload[i]))
-            for i, mapping in model.fields.items()
-            if i in fk_fields
-        ])
+        for i, mapping in model.fields.items():
+            if i in fk_fields:
+                try:
+                    models_fields[i] = self.render_relation_field(mapping, payload[i])
+                except SkipField:
+                    continue
         model.update(models_fields)
         model.remote_instance = self.create_remote_instance(payload)
         return model

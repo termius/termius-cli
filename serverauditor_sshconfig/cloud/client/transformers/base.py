@@ -8,10 +8,11 @@ import six
 class Transformer(object):
     """Base transformer."""
 
-    def __init__(self, storage, **kwargs):
+    def __init__(self, storage, account_manager, **kwargs):
         """Create new Transformer."""
         assert storage
         self.storage = storage
+        self.account_manager = account_manager
 
     @abc.abstractmethod
     def to_model(self, payload):

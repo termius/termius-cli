@@ -87,30 +87,29 @@ class ApiController(object):
         self.account_manager.set_settings(out_model)
 
     def _post(self, mapped, request_model):
-        transformer = mapped['transformer'](
-            storage=self.storage, crypto_controller=self.crypto_controller
-        )
-
+        transformer = self._create_transformer(mapped)
         payload = transformer.to_payload(request_model)
         response = self.api.post(mapped['url'], payload)
         response_model = transformer.to_model(response)
         return response_model
 
     def _put(self, mapped, request_model):
-        transformer = mapped['transformer'](
-            storage=self.storage, crypto_controller=self.crypto_controller
-        )
-
+        transformer = self._create_transformer(mapped)
         payload = transformer.to_payload(request_model)
         response = self.api.put(mapped['url'], payload)
         response_model = transformer.to_model(response)
         return response_model
 
     def _get(self, mapped):
-        transformer = mapped['transformer'](
-            storage=self.storage, crypto_controller=self.crypto_controller
-        )
+        transformer = self._create_transformer(mapped)
         response = self.api.get(mapped['url'])
 
         model = transformer.to_model(response)
         return model
+
+    def _create_transformer(self, mapped):
+        return mapped['transformer'](
+            storage=self.storage,
+            crypto_controller=self.crypto_controller,
+            account_manager=self.account_manager,
+        )

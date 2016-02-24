@@ -30,7 +30,7 @@ class AccountManager(object):
     def set_settings(self, dictionary):
         """Store settings."""
         filtered_settings = {
-            k: dictionary[k] for k in self.setting_names
+            k: (dictionary[k] and 'yes') or 'no' for k in self.setting_names
         }
         for k, i in filtered_settings.items():
             self.config.set('Settings', k, i)
@@ -39,7 +39,7 @@ class AccountManager(object):
     def get_settings(self):
         try:
             return {
-                i: bool(self.config.get('Settings', i) == 'True')
+                i: self.config.get('Settings', i) == 'yes'
                 for i in self.setting_names
             }
         except (configparser.NoSectionError, configparser.NoOptionError):
