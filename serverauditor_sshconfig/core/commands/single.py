@@ -62,10 +62,6 @@ class DetailCommand(GetRelationMixin, GetObjectsMixin,
             action='store_true', help='Delete entries.'
         )
         parser.add_argument(
-            '-I', '--interactive', action='store_true',
-            help='Enter to interactive mode.'
-        )
-        parser.add_argument(
             '-L', '--label', metavar='NAME',
             help="Entry's label in Serverauditor"
         )
