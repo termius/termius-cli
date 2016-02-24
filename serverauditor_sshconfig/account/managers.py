@@ -37,6 +37,7 @@ class AccountManager(object):
         self.config.write()
 
     def get_settings(self):
+        """Get settings or return default."""
         try:
             return {
                 i: self.config.get('Settings', i) == 'yes'

@@ -72,10 +72,12 @@ class LogoutCommand(BaseAccountCommand):
 
 
 class SettingsCommand(BaseAccountCommand):
+    """Update account settings."""
 
     def extend_parser(self, parser):
+        """Add more arguments to parser."""
         parser.add_argument(
-            '--synchronize-key', action='store',  type=str,
+            '--synchronize-key', action='store', type=str,
             choices=('yes', 'no'), default='yes',
             help='Sync ssh keys and ssh identities or not.'
         )

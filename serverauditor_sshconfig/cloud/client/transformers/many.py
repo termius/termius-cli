@@ -28,10 +28,13 @@ class ManyTransformer(Transformer):
         ))
 
 
+# pylint: disable=too-few-public-methods
 class SupportedModelsMixin(object):
+    """Mixin to keep sync models."""
 
     @property
     def supported_models(self):
+        """Return model tuple to sync."""
         sync_keys = self.account_manager.get_settings()['synchronize_key']
         if sync_keys:
             return (
@@ -107,6 +110,7 @@ class DeleteSetsTransformer(GetPrimaryKeyTransformerMixin,
 
     @property
     def supported_models(self):
+        """Return model tuple to sync."""
         return reversed(
             super(DeleteSetsTransformer, self).supported_models
         )

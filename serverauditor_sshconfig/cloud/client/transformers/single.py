@@ -30,8 +30,8 @@ class BulkEntryBaseTransformer(Transformer):
             self.account_manager.get_settings()['synchronize_key']
         )
         self.skip = (
-            not self.sync_keys
-            and self.model_class in (SshKey, SshIdentity)
+            not self.sync_keys and
+            self.model_class in (SshKey, SshIdentity)
         )
 
 
@@ -105,20 +105,24 @@ class BulkEntryTransformer(GetPrimaryKeyTransformerMixin,
             payload.update(zipped_remote_instance)
 
         for field, mapping in model.fields.items():
-            try:
-                if field in model.fk_field_names():
-                    payload[field] = self.serialize_related_field(
-                        model, field, mapping
-                    )
-                else:
-                    payload[field] = getattr(model, field)
-            except SkipField:
-                payload.pop(field, None)
+            self.serialize_field(payload, model, field, mapping)
         payload['local_id'] = model.id
         return payload
 
+    def serialize_field(self, payload, model, field, mapping):
+        """Transform field to payload or skip."""
+        try:
+            if field in model.fk_field_names():
+                payload[field] = self.serialize_related_field(
+                    model, field, mapping
+                )
+            else:
+                payload[field] = getattr(model, field)
+        except SkipField:
+            payload.pop(field, None)
+
     def serialize_related_field(self, model, field, mapping):
-        """Transformer relation to payload."""
+        """Transform relation to payload."""
         related_transformer = self.get_primary_key_transformer(mapping.model)
         fk_payload = related_transformer.to_payload(getattr(model, field))
         return fk_payload
@@ -207,9 +211,12 @@ class CryptoBulkEntryTransformer(BulkEntryTransformer):
 
 
 class SettingsTransformer(Transformer):
+    """Transformer for settings."""
 
     def to_model(self, payload):
+        """Convert REST API payload to Application models."""
         return payload
 
     def to_payload(self, model):
+        """Convert Application models to REST API payload."""
         return model

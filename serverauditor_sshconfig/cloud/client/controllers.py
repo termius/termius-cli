@@ -36,7 +36,8 @@ class ApiController(object):
 
     mapping = dict(
         bulk=dict(url='v3/terminal/bulk/', transformer=BulkTransformer),
-        settings=dict(url='v2/setting/mobile/', transformer=SettingsTransformer),
+        settings=dict(url='v2/setting/mobile/',
+                      transformer=SettingsTransformer),
     )
     log = getLogger(__name__)
 
