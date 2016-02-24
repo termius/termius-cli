@@ -32,7 +32,7 @@ class SupportedModelsMixin(object):
 
     @property
     def supported_models(self):
-        sync_keys = self.account_manager.get_settings().get('synchronize_key')
+        sync_keys = self.account_manager.get_settings()['synchronize_key']
         if sync_keys:
             return (
                 SshKey, Snippet,

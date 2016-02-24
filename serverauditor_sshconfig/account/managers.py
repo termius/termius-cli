@@ -43,7 +43,10 @@ class AccountManager(object):
                 for i in self.setting_names
             }
         except (configparser.NoSectionError, configparser.NoOptionError):
-            return {}
+            return {
+                i: 'yes'
+                for i in self.setting_names
+            }
 
     def logout(self):
         """Remove apikey and other credentials."""

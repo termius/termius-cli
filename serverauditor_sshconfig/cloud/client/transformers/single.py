@@ -27,7 +27,7 @@ class BulkEntryBaseTransformer(Transformer):
         assert model_class
         self.model_class = model_class
         self.sync_keys = (
-            self.account_manager.get_settings().get('synchronize_key')
+            self.account_manager.get_settings()['synchronize_key']
         )
         self.skip = (
             not self.sync_keys
