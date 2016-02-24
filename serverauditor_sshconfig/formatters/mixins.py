@@ -20,6 +20,7 @@ class SshCommandFormatterMixin(object):
             format_use_ssh_key(ssh_config['use_ssh_key']),
             format_timeout(ssh_config['timeout']),
             format_keep_alive_packages(ssh_config['keep_alive_packages']),
+            format_agent_forwarding(ssh_config['agent_forwarding']),
             ssh_auth(username, address),
         ] if i]) + '\n'
 
@@ -69,6 +70,12 @@ def format_keep_alive_packages(keep_alive_packages):
     """Render server alive count max option."""
     format_str = '-o ServerAliveCountMax={}'.format
     return (keep_alive_packages and format_str(keep_alive_packages)) or ''
+
+
+def format_agent_forwarding(agent_forwarding):
+    """Render server alive count max option."""
+    format_str = '-o ForwardAgent={}'.format
+    return _bool_to_text(format_str, agent_forwarding)
 
 
 def _bool_to_text(format_str, value):

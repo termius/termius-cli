@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Module for connect command."""
 import subprocess
+from ..account.managers import AccountManager
 from ..core.commands import AbstractCommand
 from ..core.commands.mixins import GetRelationMixin, SshConfigMergerMixin
 from ..core.models.terminal import Host, PFRule
@@ -50,6 +51,9 @@ class ConnectCommand(SshCommandFormatterMixin, SshConfigMergerMixin,
         """Generate ssh command string with arguments from config."""
         ssh_key = config.get_ssh_key()
         ssh_key_path = ssh_key and ssh_key.file_path(self)
+        config['agent_forwarding'] = (
+            AccountManager(self.config).get_settings().get('agent_forwarding')
+        )
         return self.render_command(
             config, address,
             ssh_key_path, pfrule=pfrule

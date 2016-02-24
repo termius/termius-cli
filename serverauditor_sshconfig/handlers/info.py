@@ -2,6 +2,7 @@
 """Module with info command."""
 from operator import attrgetter
 from cliff.show import ShowOne
+from ..account.managers import AccountManager
 from ..core.commands import AbstractCommand
 from ..core.commands.mixins import GetRelationMixin, SshConfigMergerMixin
 from ..core.storage.strategies import RelatedGetStrategy
@@ -55,14 +56,19 @@ class InfoCommand(SshConfigMergerMixin, GetRelationMixin,
         Warning there is one additional field - 'address'.
         """
         ssh_config_fields = tuple(ssh_config.allowed_fields())
-        additional_fields = ('address', 'ssh_key_path')
+        additional_fields = ('address', 'ssh_key_path', 'agent_forwarding')
         keys = ssh_config_fields + additional_fields
         ssh_key = ssh_config.get_ssh_key()
+        agent_forwarding = (
+            AccountManager(self.config).get_settings()
+            .get('agent_forwarding')
+        )
         values = (
             attrgetter(*ssh_config_fields)(ssh_config) +
             (
                 getattr(instance, 'address', ''),
-                ssh_key and ssh_key.file_path(self)
+                ssh_key and ssh_key.file_path(self),
+                agent_forwarding,
             )
         )
         return (keys, values)
