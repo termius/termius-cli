@@ -89,7 +89,7 @@ class ServerauditorTestCase(BashCompletionTest):
             '',
             'complete connect fullclean group groups help host hosts '
             'identities identity info key keys login logout pfrule '
-            'pfrules pull push snippet snippets sync tags'
+            'pfrules pull push snippet snippets sync tags settings'
         )
 
     def test_subcommand(self):
@@ -103,7 +103,7 @@ class ServerauditorTestCase(BashCompletionTest):
             'host -',
             '-h --help --log-file -t --tag -g --group -a --address -p '
             '--port -s --snippet --ssh-identity -u --username -P --password '
-            '-i --identity-file -d --delete -I --interactive -L --label -S '
+            '-i --identity-file -d --delete -L --label -S '
             '--strict-host-key-check -T --timeout --use-ssh-key '
             '-k --keep-alive-packages'
         )

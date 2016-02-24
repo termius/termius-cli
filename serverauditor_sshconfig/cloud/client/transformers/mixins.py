@@ -10,5 +10,6 @@ class CryptoChildTransformerCreatorMixin(object):
         """Generate specific set transformer."""
         return self.child_transformer_class(
             model_class=model_class, storage=self.storage,
-            crypto_controller=self.crypto_controller
+            crypto_controller=self.crypto_controller,
+            account_manager=self.account_manager
         )

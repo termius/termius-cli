@@ -35,7 +35,8 @@ _serverauditor() {
       "snippet[Snippet operations.]" \
       "snippets[List snippets.]" \
       "sync[Sync IaaS or PaaS service hosts with serverauditor.]" \
-      "tags[List tags.]"
+      "tags[List tags.]" \
+      "settings[Configure application settings.]"
   fi
 }
 
@@ -65,10 +66,16 @@ _serverauditor_fullclean() {
     '-h[Display help]' \
     '--help[Display help]' \
     '--log-file[Log to this file]:filename:_files' \
-    '-s[Sync strategy]:strategy:()' \
-    '--strategy[Sync strategy]:strategy:()' \
     '-p[Password]:isnotsecure:()' \
     '--password[Password]:isnotsecure:()'
+}
+_serverauditor_settings() {
+  _arguments \
+    '-h[Display help]' \
+    '--help[Display help]' \
+    '--log-file[Log to this file]:filename:_files' \
+    '--agent-forwarding[Enable agent forwarding]:agent_forwarding:(yes no)' \
+    '--synchronize-key[Enable syncing ssh keys]:synchronize_key:(yes no)'
 }
 _serverauditor_group() {
   _arguments \
@@ -302,8 +309,6 @@ _serverauditor_pull() {
     '-h[Display help]' \
     '--help[Display help]' \
     '--log-file[Log to this file]:filename:_files' \
-    '-s[Sync strategy]:strategy:()' \
-    '--strategy[Sync strategy]:strategy:()' \
     '-p[Password]:isnotsecure:()' \
     '--password[Password]:isnotsecure:()'
 }
@@ -312,8 +317,6 @@ _serverauditor_push() {
     '-h[Display help]' \
     '--help[Display help]' \
     '--log-file[Log to this file]:filename:_files' \
-    '-s[Sync strategy]:strategy:()' \
-    '--strategy[Sync strategy]:strategy:()' \
     '-p[Password]:isnotsecure:()' \
     '--password[Password]:isnotsecure:()'
 }

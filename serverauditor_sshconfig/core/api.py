@@ -75,15 +75,17 @@ class API(object):
 
     def post(self, endpoint, data):
         """Send authorized post request."""
+        self.logger.info('send post = %s', data)
         response = requests.post(self.request_url(endpoint),
                                  json=data, auth=self.auth)
+        self.logger.info('get response = %s', response.text)
         assert response.status_code == 201, response.text
         return response.json()
 
     def get(self, endpoint):
         """Send authorized get request."""
         response = requests.get(self.request_url(endpoint), auth=self.auth)
-        assert response.status_code == 200
+        assert response.status_code == 200, response.text
         return response.json()
 
     def delete(self, endpoint):
@@ -96,5 +98,5 @@ class API(object):
         """Send authorized put request."""
         response = requests.put(self.request_url(endpoint),
                                 json=data, auth=self.auth)
-        assert response.status_code in (200, 204)
+        assert response.status_code in (200, 202), response.text
         return response.json()

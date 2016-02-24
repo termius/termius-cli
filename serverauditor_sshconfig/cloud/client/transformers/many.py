@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """Module with many then 1 entry transformers."""
 from collections import OrderedDict
-from ....core.exceptions import DoesNotExistException
+from ....core.exceptions import DoesNotExistException, SkipField
 from ....core.storage.strategies import SoftDeleteStrategy
 from ....core.models.terminal import (
     Host, Group,
     Tag, SshKey,
     SshIdentity, SshConfig,
     PFRule, TagHost,
-    Snippet, clean_order
+    Snippet
 )
 from .base import Transformer
 from .single import GetPrimaryKeyTransformerMixin, CryptoBulkEntryTransformer
@@ -28,26 +28,45 @@ class ManyTransformer(Transformer):
         ))
 
 
+# pylint: disable=too-few-public-methods
+class SupportedModelsMixin(object):
+    """Mixin to keep sync models."""
+
+    @property
+    def supported_models(self):
+        """Return model tuple to sync."""
+        sync_keys = self.account_manager.get_settings()['synchronize_key']
+        if sync_keys:
+            return (
+                SshKey, Snippet,
+                SshIdentity, SshConfig,
+                Tag, Group,
+                Host, PFRule,
+                TagHost
+            )
+        else:
+            return (
+                Snippet, SshConfig,
+                Tag, Group,
+                Host, PFRule,
+                TagHost
+            )
+
+
 class BulkTransformer(CryptoChildTransformerCreatorMixin,
                       GetPrimaryKeyTransformerMixin,
+                      SupportedModelsMixin,
                       ManyTransformer):
     """Transformer for entry list."""
 
     child_transformer_class = CryptoBulkEntryTransformer
-    supported_models = (
-        SshKey, Snippet,
-        SshIdentity, SshConfig,
-        Tag, Group,
-        Host, PFRule,
-        TagHost
-    )
 
     def __init__(self, crypto_controller, **kwargs):
         """Construct new transformer for entry list."""
         self.crypto_controller = crypto_controller
         super(BulkTransformer, self).__init__(**kwargs)
         self.deleted_sets_transformer = DeleteSetsTransformer(
-            storage=self.storage
+            storage=self.storage, account_manager=self.account_manager
         )
 
     def to_model(self, payload):
@@ -85,10 +104,16 @@ class BulkTransformer(CryptoChildTransformerCreatorMixin,
 
 
 class DeleteSetsTransformer(GetPrimaryKeyTransformerMixin,
+                            SupportedModelsMixin,
                             ManyTransformer):
     """Transformer for deleted_sets field."""
 
-    supported_models = clean_order
+    @property
+    def supported_models(self):
+        """Return model tuple to sync."""
+        return reversed(
+            super(DeleteSetsTransformer, self).supported_models
+        )
 
     def create_child_transformer(self, model):
         """Create transformer for sub transformers."""
@@ -125,5 +150,5 @@ class DeleteSetsTransformer(GetPrimaryKeyTransformerMixin,
     def _map_remote_id_to_model(self, transformer, remote_id):
         try:
             return transformer.to_model(remote_id)
-        except DoesNotExistException:
+        except (DoesNotExistException, SkipField):
             return None
