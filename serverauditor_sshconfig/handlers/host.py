@@ -61,6 +61,10 @@ class HostCommand(DetailCommand):
         tag_instanes = self.taglist_args.get_or_create_tag_instances(tags)
         self.taglist_args.update_taghosts(host, tag_instanes)
 
+    def pre_save(self, instance):
+        """Patch instance fields before saving."""
+        instance.update_interaction_date()
+
     def serialize_args(self, args, instance=None):
         """Convert args to instance."""
         instance = super(HostCommand, self).serialize_args(args, instance)

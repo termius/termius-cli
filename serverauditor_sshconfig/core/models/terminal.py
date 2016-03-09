@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Module with user data models."""
+from datetime import datetime
 from operator import attrgetter
 from .base import Model, Field
 
@@ -168,9 +169,17 @@ class Host(SshConfigMixin, Model):
         'address': Field(str, False, ''),
         'group': Field(Group, False, None),
         'ssh_config': Field(SshConfig, False, None),
+        'interaction_date': Field(str, False, None),
     }
     set_name = 'host_set'
     crypto_fields = {'label', 'address'}
+
+    def update_interaction_date(self):
+        """Set current UTC Time to interaction date."""
+        utcnow = datetime.utcnow
+        stringifyed_now = utcnow().replace(microsecond=0).isoformat()
+        # pylint: disable=attribute-defined-outside-init
+        self.interaction_date = stringifyed_now
 
 
 class TagHost(Model):

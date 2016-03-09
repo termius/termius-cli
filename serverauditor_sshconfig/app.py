@@ -15,7 +15,10 @@ from .core.signals import (
     post_delete_instance,
     post_logout,
 )
-from .core.subscribers import store_ssh_key, delete_ssh_key, clean_data
+from .core.subscribers import (
+    store_ssh_key, delete_ssh_key,
+    clean_data
+)
 from .core.models.terminal import SshKey
 
 
@@ -47,4 +50,5 @@ class ServerauditorApp(App):
         post_create_instance.connect(store_ssh_key, sender=SshKey)
         post_update_instance.connect(store_ssh_key, sender=SshKey)
         post_delete_instance.connect(delete_ssh_key, sender=SshKey)
+
         post_logout.connect(clean_data)
