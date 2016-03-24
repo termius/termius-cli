@@ -15,7 +15,7 @@ from serverauditor_sshconfig.cloud.client.controllers import CryptoController
 from serverauditor_sshconfig.account.managers import AccountManager
 from serverauditor_sshconfig.core.settings import Config
 from serverauditor_sshconfig.core.models.terminal import (
-    Host, SshConfig, SshIdentity, SshKey, Group
+    Host, SshConfig, SshIdentity, SshKey
 )
 
 class BulkTransformerTest(StrategyCase):
@@ -61,7 +61,8 @@ class BulkTransformerTest(StrategyCase):
                     'group': None,
                     'ssh_config': 'sshconfig_set/{}'.format(ssh_config.id),
                     'local_id': host.id,
-                    'address': ''
+                    'address': '',
+                    'interaction_date': host.interaction_date,
                 }
             ],
             'sshconfig_set': [
@@ -145,7 +146,8 @@ class BulkTransformerTest(StrategyCase):
                     'group': None,
                     'ssh_config': 'sshconfig_set/{}'.format(ssh_config.id),
                     'local_id': host.id,
-                    'address': ''
+                    'address': '',
+                    'interaction_date': host.interaction_date,
                 }
             ],
             'sshconfig_set': [
