@@ -9,17 +9,17 @@ cli_command_name = 'serverauditor'
 
 # pylint: disable=invalid-name
 requires = [
-    'cliff==1.15',
-    'stevedore==1.10.0',
-    'requests==2.7.0',
-    'cryptography==1.2.2',
-    'six==1.10.0',
-    'pyopenssl==0.15.1',
-    'ndg-httpsclient==0.4.0',
-    'cached-property==1.3.0',
-    'paramiko==1.16.0',
-    'pathlib2==2.1.0',
-    'blinker==1.4',
+    'cliff>=1.15',
+    'stevedore>=1.10.0',
+    'requests>=2.7.0',
+    'cryptography==1.3.1',
+    'six>=1.10.0',
+    'pyopenssl>=0.15.1',
+    'ndg-httpsclient>=0.4.0',
+    'cached-property>=1.3.0',
+    'paramiko>=1.16.0',
+    'pathlib2>=2.1.0',
+    'blinker>=1.4',
 ]
 
 # pylint: disable=invalid-name
