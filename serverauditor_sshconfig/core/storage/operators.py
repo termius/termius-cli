@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Module to keep operators that using to filter model list."""
-from operator import *  # noqa
+from operator import eq, ne, gt, lt, le, ge, contains, attrgetter # noqa
 
 
 def rcontains(obj, seq):

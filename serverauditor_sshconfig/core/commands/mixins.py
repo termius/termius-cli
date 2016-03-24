@@ -183,6 +183,7 @@ class InstanceOperationMixin(ArgModelSerializerMixin, object):
         """Create new model entry."""
         instance = self.serialize_args(args)
         with self.storage:
+            self.pre_save(instance)
             saved_instance = self.storage.save(instance)
             instance.id = saved_instance.id
             self.update_children(instance, args)
@@ -192,9 +193,15 @@ class InstanceOperationMixin(ArgModelSerializerMixin, object):
         """Update model entry."""
         instance = self.serialize_args(args, instance)
         with self.storage:
+            self.pre_save(instance)
             self.storage.save(instance)
             self.update_children(instance, args)
         self.log_update(instance)
+
+    # pylint: disable=no-self-use,unused-argument
+    def pre_save(self, instance):
+        """Patch instance fields before saving."""
+        pass
 
     def update_children(self, instance, args):
         """Update children of instance.
