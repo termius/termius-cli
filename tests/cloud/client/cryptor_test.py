@@ -6,7 +6,7 @@ from nose.tools import eq_, ok_, raises
 from itertools import product
 from unittest import TestCase
 
-from serverauditor_sshconfig.cloud.client.cryptor import RNCryptor
+from serverauditor_sshconfig.cloud.client.cryptor import RNCryptor, CryptorException
 
 
 def test_dual_encrypt_and_decrypt():
@@ -140,10 +140,11 @@ class CryptorV2Test(TestCase):
         res_web = cryptor.decrypt(encrypted_by_web_value)
         self.assertEquals(expected_result, res_web)
 
-        resIos = cryptor.decrypt(encrypted_by_ios_value)
         if should_faild:
-            self.assertNotEquals(expected_result, resIos)
+            with self.assertRaises(CryptorException):
+                resIos = cryptor.decrypt(encrypted_by_ios_value)
         else:
+            resIos = cryptor.decrypt(encrypted_by_ios_value)
             self.assertEquals(expected_result, resIos)
 
     def generate_cryptor(self, password):
