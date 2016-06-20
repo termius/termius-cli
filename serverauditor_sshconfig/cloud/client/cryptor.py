@@ -171,7 +171,7 @@ class RNCryptor(CryptoSettings):
         initialization_vector = self.initialization_vector
         cipher_text = self._aes_encrypt(initialization_vector, data)
 
-        version = b'\x02'
+        version = b'\x03'
         options = b'\x01'
 
         new_data = b''.join([
