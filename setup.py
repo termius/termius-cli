@@ -9,7 +9,8 @@ cli_command_name = 'serverauditor'
 
 # pylint: disable=invalid-name
 requires = [
-    'cliff>=1.15',
+    'cliff>=2.1',
+    'pbr==1.10.0',
     'stevedore>=1.10.0',
     'requests>=2.7.0',
     'cryptography==1.3.1',
