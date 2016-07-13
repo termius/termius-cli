@@ -9,12 +9,13 @@ import hmac as python_hmac
 import operator
 
 from cached_property import cached_property
+from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.backends import default_backend
 
-from ...core.utils import bchr, bord, to_bytes, to_str
+from ...core.utils import bord, to_bytes, to_str
 
 
 class CryptoSettings(object):
@@ -150,8 +151,10 @@ class RNCryptor(CryptoSettings):
     def pre_encrypt_data(self, data):
         """Do padding for the data for AES (PKCS#7)."""
         data = to_bytes(data)
-        rem = self.AES_BLOCK_SIZE - len(data) % self.AES_BLOCK_SIZE
-        return data + bchr(rem) * rem
+
+        padder = padding.PKCS7(self.AES_BLOCK_SIZE).padder()
+        padded_data = padder.update(data) + padder.finalize()
+        return padded_data
 
     # pylint: disable=no-self-use
     def post_encrypt_data(self, data):

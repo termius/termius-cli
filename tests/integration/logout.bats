@@ -1,6 +1,10 @@
 #!/usr/bin/env bats
 load test_helper
 
+setup() {
+    clean_storage || true
+}
+
 @test "logout help by arg" {
     run serverauditor logout --help
     [ "$status" -eq 0 ]

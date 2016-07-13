@@ -135,7 +135,7 @@ class CryptorV2Test(TestCase):
 
         cryptor = self.generate_cryptor(password)
 
-        val = cryptor.encrypt(expected_result)
+        cryptor.encrypt(expected_result)
 
         res_web = cryptor.decrypt(encrypted_by_web_value)
         self.assertEquals(expected_result, res_web)
@@ -196,7 +196,7 @@ class CryptorV3Test(TestCase):
     def perform_encryption_actions(self, encrypted_value, password, expected_result):
         cryptor = self.generate_cryptor(password)
 
-        val = cryptor.encrypt(expected_result)
+        cryptor.encrypt(expected_result)
 
         res = cryptor.decrypt(encrypted_value)
         self.assertEquals(expected_result, res)
