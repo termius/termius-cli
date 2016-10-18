@@ -33,11 +33,11 @@ class BaseSyncService(object):
             return new_host
         new_host.id = existed_host.id
         new_host.ssh_config.id = existed_host.ssh_config.id
-        existed_ssh_identity = existed_host.ssh_config.ssh_identity
-        if not (existed_ssh_identity and existed_ssh_identity.is_visible):
-            new_host.ssh_config.ssh_identity.id = existed_ssh_identity.id
-        if new_host.ssh_config.ssh_identity.ssh_key:
-            self.assign_ssh_key_ids(new_host.ssh_config.ssh_identity.ssh_key)
+        existed_identity = existed_host.ssh_config.identity
+        if not (existed_identity and existed_identity.is_visible):
+            new_host.ssh_config.identity.id = existed_identity.id
+        if new_host.ssh_config.identity.ssh_key:
+            self.assign_ssh_key_ids(new_host.ssh_config.identity.ssh_key)
 
         return new_host
 

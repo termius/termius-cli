@@ -21,15 +21,15 @@ setup() {
     [ $status -eq 0 ]
     [ $(get_models_set_length 'group_set') -eq 1 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 1 ]
-    [ $(get_models_set_length 'sshidentity_set') -eq 1 ]
+    [ $(get_models_set_length 'identity_set') -eq 1 ]
     group=${lines[1]}
     [ "$(get_model_field 'group_set' $group 'label')" = '"Group"' ]
     ssh_config=$(get_model_field 'group_set' $group 'ssh_config')
     [ $(get_model_field 'sshconfig_set' $ssh_config 'port') -eq 2202 ]
-    ssh_identity=$(get_model_field 'sshconfig_set' $ssh_config 'ssh_identity')
-    [ "$(get_model_field 'sshidentity_set' $ssh_identity 'username')" = '"use r name"' ]
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'is_visible') = 'false' ]
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'ssh_key') = 'null' ]
+    identity=$(get_model_field 'sshconfig_set' $ssh_config 'identity')
+    [ "$(get_model_field 'identity_set' $identity 'username')" = '"use r name"' ]
+    [ $(get_model_field 'identity_set' $identity 'is_visible') = 'false' ]
+    [ $(get_model_field 'identity_set' $identity 'ssh_key') = 'null' ]
 }
 
 @test "Add group to main group" {
@@ -38,7 +38,7 @@ setup() {
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'group_set') -eq 2 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 2 ]
-    [ $(get_models_set_length 'sshidentity_set') -eq 2 ]
+    [ $(get_models_set_length 'identity_set') -eq 2 ]
     created_group=${lines[1]}
     [ $(get_model_field 'group_set' $created_group 'parent_group') = "$group" ]
 }
@@ -46,36 +46,36 @@ setup() {
 @test "Update group assign visible identity" {
     identity=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
     group=$(serverauditor group -L 'test group' --port 2 --username 'use r name')
-    run serverauditor group --ssh-identity $identity $group
+    run serverauditor group --identity $identity $group
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'group_set') -eq 1 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 1 ]
-    [ $(get_models_set_length 'sshidentity_set') -eq 1 ]
+    [ $(get_models_set_length 'identity_set') -eq 1 ]
     [ "$(get_model_field 'group_set' $group 'label')" = '"test group"' ]
     ssh_config=$(get_model_field 'group_set' $group 'ssh_config')
     [ $(get_model_field 'sshconfig_set' $ssh_config 'port') -eq 2 ]
-    [ $(get_model_field 'sshconfig_set' $ssh_config 'ssh_identity') = "$identity" ]
-    [ $(get_model_field 'sshidentity_set' $identity 'is_visible') = 'true' ]
-    [ $(get_model_field 'sshidentity_set' $identity 'ssh_key') = 'null' ]
+    [ $(get_model_field 'sshconfig_set' $ssh_config 'identity') = "$identity" ]
+    [ $(get_model_field 'identity_set' $identity 'is_visible') = 'true' ]
+    [ $(get_model_field 'identity_set' $identity 'ssh_key') = 'null' ]
 }
 
 @test "Update group update visible identity" {
     identity=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
-    group=$(serverauditor group -L 'test group' --ssh-identity $identity)
+    group=$(serverauditor group -L 'test group' --identity $identity)
     run serverauditor group --username 'use r name' $group
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'group_set') -eq 1 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 1 ]
-    [ $(get_models_set_length 'sshidentity_set') -eq 2 ]
+    [ $(get_models_set_length 'identity_set') -eq 2 ]
     [ "$(get_model_field 'group_set' $group 'label')" = '"test group"' ]
     ssh_config=$(get_model_field 'group_set' $group 'ssh_config')
     [ $(get_model_field 'sshconfig_set' $ssh_config 'port') = 'null' ]
-    ssh_identity=$(get_model_field 'sshconfig_set' $ssh_config 'ssh_identity')
-    [ $ssh_identity != $identity ]
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'label') = 'null' ]
-    [ "$(get_model_field 'sshidentity_set' $ssh_identity 'username')" = '"use r name"' ]
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'is_visible') = 'false' ]
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'ssh_key') = 'null' ]
+    result_identity=$(get_model_field 'sshconfig_set' $ssh_config 'identity')
+    [ $result_identity != $identity ]
+    [ $(get_model_field 'identity_set' $result_identity 'label') = 'null' ]
+    [ "$(get_model_field 'identity_set' $result_identity 'username')" = '"use r name"' ]
+    [ $(get_model_field 'identity_set' $result_identity 'is_visible') = 'false' ]
+    [ $(get_model_field 'identity_set' $result_identity 'ssh_key') = 'null' ]
 }
 
 @test "Update group" {
@@ -84,14 +84,14 @@ setup() {
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'group_set') -eq 1 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 1 ]
-    [ $(get_models_set_length 'sshidentity_set') -eq 1 ]
+    [ $(get_models_set_length 'identity_set') -eq 1 ]
     [ "$(get_model_field 'group_set' $group 'label')" = '"test group"' ]
     ssh_config=$(get_model_field 'group_set' $group 'ssh_config')
     [ $(get_model_field 'sshconfig_set' $ssh_config 'port') -eq 2 ]
-    ssh_identity=$(get_model_field 'sshconfig_set' $ssh_config 'ssh_identity')
-    [ "$(get_model_field 'sshidentity_set' $ssh_identity 'username')" = '"user"' ]
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'is_visible') = 'false' ]
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'ssh_key') = 'null' ]
+    identity=$(get_model_field 'sshconfig_set' $ssh_config 'identity')
+    [ "$(get_model_field 'identity_set' $identity 'username')" = '"user"' ]
+    [ $(get_model_field 'identity_set' $identity 'is_visible') = 'false' ]
+    [ $(get_model_field 'identity_set' $identity 'ssh_key') = 'null' ]
 }
 
 @test "Update group add in self" {
@@ -117,7 +117,7 @@ setup() {
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'group_set') -eq 2 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 2 ]
-    [ $(get_models_set_length 'sshidentity_set') -eq 2 ]
+    [ $(get_models_set_length 'identity_set') -eq 2 ]
     [ $(get_model_field 'group_set' $group 'parent_group') = "$parent_group" ]
     [ "$(get_model_field 'group_set' $group 'label')" = '"Group"' ]
 }

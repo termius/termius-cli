@@ -6,7 +6,7 @@ from operator import attrgetter
 from ....core.models.base import RemoteInstance
 from ....core.exceptions import DoesNotExistException, SkipField
 from ....core.models.terminal import (
-    SshKey, SshIdentity,
+    SshKey, Identity,
 )
 from .base import Transformer
 from .utils import id_getter, map_zip_model_fields
@@ -31,7 +31,7 @@ class BulkEntryBaseTransformer(Transformer):
         )
         self.skip = (
             not self.sync_keys and
-            self.model_class in (SshKey, SshIdentity)
+            self.model_class in (SshKey, Identity)
         )
 
 

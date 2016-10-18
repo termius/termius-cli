@@ -32,24 +32,24 @@ teardown() {
 @test "Add general identity" {
     run serverauditor identity -L local --username 'ROOT' --password 'pa'
     [ "$status" -eq 0 ]
-    [ $(get_models_set_length 'sshidentity_set') -eq 1 ]
-    ssh_identity=${lines[1]}
-    [ "$(get_model_field 'sshidentity_set' $ssh_identity 'label')" = '"local"' ]
-    [ "$(get_model_field 'sshidentity_set' $ssh_identity 'username')" = '"ROOT"' ]
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'is_visible') = 'true' ]
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'ssh_key') = 'null' ]
+    [ $(get_models_set_length 'identity_set') -eq 1 ]
+    identity=${lines[1]}
+    [ "$(get_model_field 'identity_set' $identity 'label')" = '"local"' ]
+    [ "$(get_model_field 'identity_set' $identity 'username')" = '"ROOT"' ]
+    [ $(get_model_field 'identity_set' $identity 'is_visible') = 'true' ]
+    [ $(get_model_field 'identity_set' $identity 'ssh_key') = 'null' ]
 }
 
 @test "Add identity with key" {
     run serverauditor identity -L local --identity-file $private_key_path --debug
     [ "$status" -eq 0 ]
-    [ $(get_models_set_length 'sshidentity_set') -eq 1 ]
+    [ $(get_models_set_length 'identity_set') -eq 1 ]
     [ $(get_models_set_length 'sshkeycrypt_set') -eq 1 ]
-    ssh_identity=${lines[1]}
-    [ "$(get_model_field 'sshidentity_set' $ssh_identity 'label')" = '"local"' ]
-    [ "$(get_model_field 'sshidentity_set' $ssh_identity 'username')" = 'null' ]
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'is_visible') = 'true' ]
-    ssh_key=$(get_model_field 'sshidentity_set' $ssh_identity 'ssh_key')
+    identity=${lines[1]}
+    [ "$(get_model_field 'identity_set' $identity 'label')" = '"local"' ]
+    [ "$(get_model_field 'identity_set' $identity 'username')" = 'null' ]
+    [ $(get_model_field 'identity_set' $identity 'is_visible') = 'true' ]
+    ssh_key=$(get_model_field 'identity_set' $identity 'ssh_key')
     [ $(get_model_field 'sshkeycrypt_set' $ssh_key 'label') = '"key1"' ]
     [ "$(get_model_field 'sshkeycrypt_set' $ssh_key 'private_key')" = "\"$private_key_content\"" ]
 }
@@ -58,12 +58,12 @@ teardown() {
     identity=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
     run serverauditor identity --password 'ps' $identity
     [ "$status" -eq 0 ]
-    [ $(get_models_set_length 'sshidentity_set') -eq 1 ]
-    [ "$(get_model_field 'sshidentity_set' $identity 'label')" = '"local"' ]
-    [ "$(get_model_field 'sshidentity_set' $identity 'username')" = '"ROOT"' ]
-    [ "$(get_model_field 'sshidentity_set' $identity 'password')" = '"ps"' ]
-    [ $(get_model_field 'sshidentity_set' $identity 'is_visible') = 'true' ]
-    [ $(get_model_field 'sshidentity_set' $identity 'ssh_key') = 'null' ]
+    [ $(get_models_set_length 'identity_set') -eq 1 ]
+    [ "$(get_model_field 'identity_set' $identity 'label')" = '"local"' ]
+    [ "$(get_model_field 'identity_set' $identity 'username')" = '"ROOT"' ]
+    [ "$(get_model_field 'identity_set' $identity 'password')" = '"ps"' ]
+    [ $(get_model_field 'identity_set' $identity 'is_visible') = 'true' ]
+    [ $(get_model_field 'identity_set' $identity 'ssh_key') = 'null' ]
 }
 
 @test "Update many identities" {
@@ -71,7 +71,7 @@ teardown() {
     identity2=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
     run serverauditor identity -L local --username 'ROOT' --password 'pa' $identity1 $identity2
     [ "$status" -eq 0 ]
-    [ $(get_models_set_length 'sshidentity_set') -eq 2 ]
+    [ $(get_models_set_length 'identity_set') -eq 2 ]
 }
 
 @test "Delete identity" {
@@ -79,7 +79,7 @@ teardown() {
     identity2=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
     run serverauditor identity --delete $identity2
     [ "$status" -eq 0 ]
-    [ $(get_models_set_length 'sshidentity_set') -eq 1 ]
+    [ $(get_models_set_length 'identity_set') -eq 1 ]
 }
 
 @test "Delete many identities" {
@@ -87,5 +87,5 @@ teardown() {
     identity2=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
     run serverauditor identity --delete $identity1 $identity2
     [ "$status" -eq 0 ]
-    [ $(get_models_set_length 'sshidentity_set') -eq 0 ]
+    [ $(get_models_set_length 'identity_set') -eq 0 ]
 }

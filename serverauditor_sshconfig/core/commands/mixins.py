@@ -8,7 +8,7 @@ from ..exceptions import (
     DoesNotExistException, ArgumentRequiredException,
     TooManyEntriesException, SkipField
 )
-from ..models.terminal import SshConfig, SshIdentity
+from ..models.terminal import SshConfig, Identity
 from .utils import parse_ids_names, DefaultAttrGetter
 from ..models.utils import GroupStackGenerator, Merger
 
@@ -83,7 +83,7 @@ class PrepareResultMixin(object):
 
 
 class SshConfigPrepareMixin(PrepareResultMixin):
-    """Mixin with methods to render ssh config and ssh identity fields."""
+    """Mixin with methods to render ssh config and identity fields."""
 
     @property
     def prepare_fields(self):
@@ -91,7 +91,7 @@ class SshConfigPrepareMixin(PrepareResultMixin):
         return (
             self.instance_fields +
             self.ssh_config_fields +
-            self.ssh_identity_fields
+            self.identity_fields
         )
 
     @property
@@ -109,17 +109,17 @@ class SshConfigPrepareMixin(PrepareResultMixin):
         field_format = 'ssh_config.{}'.format
         return [
             field_format(i) for i in fields
-            if i != 'ssh_identity'
+            if i != 'identity'
         ]
 
     @property
-    def ssh_identity_fields(self):
-        """Return ssh identity fields."""
-        fields = SshIdentity.allowed_fields()
-        field_format = 'ssh_config.ssh_identity.{}'.format
+    def identity_fields(self):
+        """Return identity fields."""
+        fields = Identity.allowed_fields()
+        field_format = 'ssh_config.identity.{}'.format
         return [
             field_format(i) for i in fields
-            if i != 'ssh_identity'
+            if i != 'identity'
         ]
 
 
@@ -258,13 +258,13 @@ class SshConfigMergerMixin(GroupStackGetterMixin, object):
     def merge_ssh_config(self, full_stack):
         """Squash full_stack to single ssh_config instance."""
         ssh_config_merger = self.get_ssh_config_merger(full_stack)
-        ssh_identity_merger = self.get_ssh_identity_merger(ssh_config_merger)
+        identity_merger = self.get_identity_merger(ssh_config_merger)
         ssh_config = ssh_config_merger.merge()
-        visible_identity = self.get_visible_ssh_identity(ssh_config_merger)
+        visible_identity = self.get_visible_identity(ssh_config_merger)
         if visible_identity:
-            ssh_config.ssh_identity = visible_identity
+            ssh_config.identity = visible_identity
         else:
-            ssh_config.ssh_identity = ssh_identity_merger.merge()
+            ssh_config.identity = identity_merger.merge()
         return ssh_config
 
     # pylint: disable=no-self-use
@@ -273,19 +273,19 @@ class SshConfigMergerMixin(GroupStackGetterMixin, object):
         return Merger(stack, 'ssh_config', SshConfig())
 
     # pylint: disable=no-self-use
-    def get_visible_ssh_identity(self, ssh_config_merger):
-        """Return first of visible ssh identity."""
+    def get_visible_identity(self, ssh_config_merger):
+        """Return first of visible identity."""
         stack = [
-            i.ssh_identity for i in ssh_config_merger.get_entry_stack()
-            if i.ssh_identity.is_visible
+            i.identity for i in ssh_config_merger.get_entry_stack()
+            if i.identity.is_visible
         ]
         return (stack and stack[0]) or None
 
     # pylint: disable=no-self-use
-    def get_ssh_identity_merger(self, ssh_config_merger):
-        """Create ssh_identity merger for passed merger."""
+    def get_identity_merger(self, ssh_config_merger):
+        """Create identity merger for passed merger."""
         stack = [
             i for i in ssh_config_merger.get_entry_stack()
-            if not i.ssh_identity.is_visible
+            if not i.identity.is_visible
         ]
-        return Merger(stack, 'ssh_identity', SshIdentity())
+        return Merger(stack, 'identity', Identity())

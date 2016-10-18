@@ -22,7 +22,7 @@ _serverauditor() {
       "host[Host operations.]" \
       "hosts[List hosts.]" \
       "identities[List ssh identities.]" \
-      "identity[Ssh identity operations.]" \
+      "identity[identity operations.]" \
       "info[Display host or group connection arguments.]" \
       "key[Ssh key operations.]" \
       "keys[List ssh keys.]" \
@@ -105,7 +105,7 @@ _serverauditor_group() {
     "--parent-group[Set parent Group]:group_label:($(__serverauditor_entity 'groups'))"
     "-s[Set startup snippet]:snippet_label:($(__serverauditor_entity 'snippets'))" \
     "--snippet[Set startup snippet]:snippet_label:($(__serverauditor_entity 'snippets'))" \
-    "--ssh-identity[Set ssh identity]:identity_label:($(__serverauditor_entity 'identities'))"
+    "--identity[Set identity]:identity_label:($(__serverauditor_entity 'identities'))"
 
 }
 _serverauditor_groups() {
@@ -161,7 +161,7 @@ _serverauditor_host() {
     "--group[Set Group]:group_label:($(__serverauditor_entity 'groups'))" \
     "-s[Set startup snippet]:snippet_label:($(__serverauditor_entity 'snippets'))" \
     "--snippet[Set startup snippet]:snippet_label:($(__serverauditor_entity 'snippets'))" \
-    "--ssh-identity[Set ssh identity]:identity_label:($(__serverauditor_entity 'identities'))"
+    "--identity[Set identity]:identity_label:($(__serverauditor_entity 'identities'))"
 
 }
 _serverauditor_hosts() {

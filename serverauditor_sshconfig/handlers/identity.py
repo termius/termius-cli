@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-"""Module for ssh identity command."""
+"""Module for identity command."""
 from operator import attrgetter, truth
 from functools import partial
 from cached_property import cached_property
 from ..core.commands import DetailCommand, ListCommand
-from ..core.models.terminal import SshIdentity, SshKey
+from ..core.models.terminal import Identity, SshKey
 from ..core.exceptions import InvalidArgumentException, DoesNotExistException
 from .ssh_key import SshKeyGeneratorMixin
 
 
-class SshIdentityCommand(SshKeyGeneratorMixin, DetailCommand):
-    """Operate with ssh identity object."""
+class IdentityCommand(SshKeyGeneratorMixin, DetailCommand):
+    """Operate with identity object."""
 
-    model_class = SshIdentity
+    model_class = Identity
 
     @cached_property
     def fields(self):
@@ -63,17 +63,17 @@ class SshIdentityCommand(SshKeyGeneratorMixin, DetailCommand):
 
         Models will match id and label with passed ids__names list.
         """
-        instances = super(SshIdentityCommand, self).get_objects(ids__names)
+        instances = super(IdentityCommand, self).get_objects(ids__names)
         visible_instances = [i for i in instances if i.is_visible]
         if not visible_instances:
             raise DoesNotExistException("There aren't any instance.")
         return instances
 
 
-class SshIdentitiesCommand(ListCommand):
-    """Manage ssh identity objects."""
+class IdentitiesCommand(ListCommand):
+    """Manage identity objects."""
 
-    model_class = SshIdentity
+    model_class = Identity
 
     # pylint: disable=unused-argument
     def take_action(self, parsed_args):

@@ -20,16 +20,16 @@ setup() {
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'host_set') -eq 1 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 1 ]
-    [ $(get_models_set_length 'sshidentity_set') -eq 1 ]
+    [ $(get_models_set_length 'identity_set') -eq 1 ]
     host=${lines[1]}
     [ "$(get_model_field 'host_set' $host 'label')" = '"test"' ]
     [ "$(get_model_field 'host_set' $host 'address')" = '"localhost"' ]
     ssh_config=$(get_model_field 'host_set' $host 'ssh_config')
     [ $(get_model_field 'sshconfig_set' $ssh_config 'port') -eq 2022 ]
-    ssh_identity=$(get_model_field 'sshconfig_set' $ssh_config 'ssh_identity')
-    [ "$(get_model_field 'sshidentity_set' $ssh_identity 'username')" = '"root"' ]
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'is_visible') = 'false' ]
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'ssh_key') = 'null' ]
+    identity=$(get_model_field 'sshconfig_set' $ssh_config 'identity')
+    [ "$(get_model_field 'identity_set' $identity 'username')" = '"root"' ]
+    [ $(get_model_field 'identity_set' $identity 'is_visible') = 'false' ]
+    [ $(get_model_field 'identity_set' $identity 'ssh_key') = 'null' ]
 }
 
 @test "Add host to group" {
@@ -38,17 +38,17 @@ setup() {
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'host_set') -eq 1 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 2 ]
-    [ $(get_models_set_length 'sshidentity_set') -eq 2 ]
+    [ $(get_models_set_length 'identity_set') -eq 2 ]
     host=${lines[1]}
     [ "$(get_model_field 'host_set' $host 'label')" = '"test"' ]
     [ $(get_model_field 'host_set' $host 'group') = $group ]
     [ "$(get_model_field 'host_set' $host 'address')" = '"localhost"' ]
     ssh_config=$(get_model_field 'host_set' $host 'ssh_config')
     [ $(get_model_field 'sshconfig_set' $ssh_config 'port') = 'null' ]
-    ssh_identity=$(get_model_field 'sshconfig_set' $ssh_config 'ssh_identity')
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'username') = 'null' ]
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'is_visible') = 'false' ]
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'ssh_key') = 'null' ]
+    identity=$(get_model_field 'sshconfig_set' $ssh_config 'identity')
+    [ $(get_model_field 'identity_set' $identity 'username') = 'null' ]
+    [ $(get_model_field 'identity_set' $identity 'is_visible') = 'false' ]
+    [ $(get_model_field 'identity_set' $identity 'ssh_key') = 'null' ]
 }
 
 @test "Add many hosts" {
@@ -65,17 +65,17 @@ setup() {
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'host_set') -eq 1 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 1 ]
-    [ $(get_models_set_length 'sshidentity_set') -eq 1 ]
+    [ $(get_models_set_length 'identity_set') -eq 1 ]
     [ "$(get_model_field 'host_set' $host 'label')" = '"test_3"' ]
     [ $(get_model_field 'host_set' $host 'group') = 'null' ]
     [ "$(get_model_field 'host_set' $host 'address')" = '"google"' ]
     ssh_config=$(get_model_field 'host_set' $host 'ssh_config')
     [ $(get_model_field 'sshconfig_set' $ssh_config 'port') -eq 22 ]
-    ssh_identity=$(get_model_field 'sshconfig_set' $ssh_config 'ssh_identity')
-    [ "$(get_model_field 'sshidentity_set' $ssh_identity 'username')" = '"ROOT"' ]
-    [ "$(get_model_field 'sshidentity_set' $ssh_identity 'password')" = '""' ]
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'is_visible') = 'false' ]
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'ssh_key') = 'null' ]
+    identity=$(get_model_field 'sshconfig_set' $ssh_config 'identity')
+    [ "$(get_model_field 'identity_set' $identity 'username')" = '"ROOT"' ]
+    [ "$(get_model_field 'identity_set' $identity 'password')" = '""' ]
+    [ $(get_model_field 'identity_set' $identity 'is_visible') = 'false' ]
+    [ $(get_model_field 'identity_set' $identity 'ssh_key') = 'null' ]
 }
 
 @test "Update host add to group" {
@@ -85,53 +85,53 @@ setup() {
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'host_set') -eq 1 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 2 ]
-    [ $(get_models_set_length 'sshidentity_set') -eq 2 ]
+    [ $(get_models_set_length 'identity_set') -eq 2 ]
     [ "$(get_model_field 'host_set' $host 'label')" = '"test"' ]
     [ $(get_model_field 'host_set' $host 'group') = $group ]
     [ "$(get_model_field 'host_set' $host 'address')" = '"localhost"' ]
     ssh_config=$(get_model_field 'host_set' $host 'ssh_config')
     [ $(get_model_field 'sshconfig_set' $ssh_config 'port') = 'null' ]
-    ssh_identity=$(get_model_field 'sshconfig_set' $ssh_config 'ssh_identity')
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'username') = 'null' ]
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'is_visible') = 'false' ]
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'ssh_key') = 'null' ]
+    identity=$(get_model_field 'sshconfig_set' $ssh_config 'identity')
+    [ $(get_model_field 'identity_set' $identity 'username') = 'null' ]
+    [ $(get_model_field 'identity_set' $identity 'is_visible') = 'false' ]
+    [ $(get_model_field 'identity_set' $identity 'ssh_key') = 'null' ]
 }
 
 @test "Update host assign visible identity" {
     identity=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
     host=$(serverauditor host --address localhost -L 'test' --port 2 --username 'use r name')
-    run serverauditor host --ssh-identity $identity $host
+    run serverauditor host --identity $identity $host
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'host_set') -eq 1 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 1 ]
-    [ $(get_models_set_length 'sshidentity_set') -eq 1 ]
+    [ $(get_models_set_length 'identity_set') -eq 1 ]
     [ "$(get_model_field 'host_set' $host 'label')" = '"test"' ]
     [ "$(get_model_field 'host_set' $host 'address')" = '"localhost"' ]
     ssh_config=$(get_model_field 'host_set' $host 'ssh_config')
     [ $(get_model_field 'sshconfig_set' $ssh_config 'port') -eq 2 ]
-    [ $(get_model_field 'sshconfig_set' $ssh_config 'ssh_identity') = "$identity" ]
-    [ $(get_model_field 'sshidentity_set' $identity 'is_visible') = 'true' ]
-    [ $(get_model_field 'sshidentity_set' $identity 'ssh_key') = 'null' ]
+    [ $(get_model_field 'sshconfig_set' $ssh_config 'identity') = "$identity" ]
+    [ $(get_model_field 'identity_set' $identity 'is_visible') = 'true' ]
+    [ $(get_model_field 'identity_set' $identity 'ssh_key') = 'null' ]
 }
 
 @test "Update host update visible identity" {
     identity=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
-    host=$(serverauditor host -L 'test' --address local --ssh-identity $identity)
+    host=$(serverauditor host -L 'test' --address local --identity $identity)
     run serverauditor host --username 'use r name' $host
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'host_set') -eq 1 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 1 ]
-    [ $(get_models_set_length 'sshidentity_set') -eq 2 ]
+    [ $(get_models_set_length 'identity_set') -eq 2 ]
     [ "$(get_model_field 'host_set' $host 'label')" = '"test"' ]
     [ "$(get_model_field 'host_set' $host 'address')" = '"local"' ]
     ssh_config=$(get_model_field 'host_set' $host 'ssh_config')
     [ $(get_model_field 'sshconfig_set' $ssh_config 'port') = 'null' ]
-    ssh_identity=$(get_model_field 'sshconfig_set' $ssh_config 'ssh_identity')
-    [ $ssh_identity != $identity ]
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'label') = 'null' ]
-    [ "$(get_model_field 'sshidentity_set' $ssh_identity 'username')" = '"use r name"' ]
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'is_visible') = 'false' ]
-    [ $(get_model_field 'sshidentity_set' $ssh_identity 'ssh_key') = 'null' ]
+    result_identity=$(get_model_field 'sshconfig_set' $ssh_config 'identity')
+    [ $result_identity != $identity ]
+    [ $(get_model_field 'identity_set' $result_identity 'label') = 'null' ]
+    [ "$(get_model_field 'identity_set' $result_identity 'username')" = '"use r name"' ]
+    [ $(get_model_field 'identity_set' $result_identity 'is_visible') = 'false' ]
+    [ $(get_model_field 'identity_set' $result_identity 'ssh_key') = 'null' ]
 }
 
 @test "Update many hosts" {

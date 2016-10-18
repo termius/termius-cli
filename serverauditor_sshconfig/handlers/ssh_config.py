@@ -3,16 +3,16 @@
 from operator import attrgetter, not_
 from functools import partial
 from cached_property import cached_property
-from ..core.models.terminal import SshConfig, SshIdentity, Snippet
+from ..core.models.terminal import SshConfig, Identity, Snippet
 from ..core.exceptions import InvalidArgumentException
 from ..core.commands.mixins import ArgModelSerializerMixin
 from .ssh_key import SshKeyGeneratorMixin
 
 
-class SshIdentityArgs(SshKeyGeneratorMixin, ArgModelSerializerMixin, object):
-    """Class for serializing ssh identity instance."""
+class IdentityArgs(SshKeyGeneratorMixin, ArgModelSerializerMixin, object):
+    """Class for serializing identity instance."""
 
-    model_class = SshIdentity
+    model_class = Identity
 
     def __init__(self, command):
         """Contruct new ssh config argument helper."""
@@ -36,7 +36,7 @@ class SshIdentityArgs(SshKeyGeneratorMixin, ArgModelSerializerMixin, object):
 
     # pylint: disable=no-self-use
     def add_args(self, parser):
-        """Add ssh identity args to argparser."""
+        """Add identity args to argparser."""
         parser.add_argument(
             '-u', '--username', metavar='SSH_USERNAME',
             help='Username for authenticate to ssh server.'
@@ -61,7 +61,7 @@ class SshConfigArgs(ArgModelSerializerMixin, object):
     def __init__(self, command):
         """Contruct new ssh config argument helper."""
         self.command = command
-        self.ssh_identity_args = SshIdentityArgs(self.command)
+        self.identity_args = IdentityArgs(self.command)
 
     @cached_property
     def fields(self):
@@ -90,8 +90,8 @@ class SshConfigArgs(ArgModelSerializerMixin, object):
             help='Snippet id or snippet name.'
         )
         parser.add_argument(
-            '--ssh-identity',
-            metavar='SSH_IDENTITY', help="Ssh identity's id or name."
+            '--identity',
+            metavar='IDENTITY', help="Identity's id or name."
         )
         parser.add_argument(
             '-S', '--strict-host-key-check', type=str,
@@ -114,38 +114,38 @@ class SshConfigArgs(ArgModelSerializerMixin, object):
             help='ServerAliveInterval option from ssh_config.'
         )
 
-        self.ssh_identity_args.add_args(parser)
+        self.identity_args.add_args(parser)
         return parser
 
     def serialize_args(self, args, instance=None):
         """Change implementation to add relation serialization."""
         instance = super(SshConfigArgs, self).serialize_args(args, instance)
-        instance.ssh_identity = self.serialize_ssh_identity(args, instance)
+        instance.identity = self.serialize_identity(args, instance)
         return instance
 
-    def serialize_ssh_identity(self, args, instance):
-        """Update ssh_identity field and clean old one."""
-        old = instance and instance.ssh_identity
-        new = self.serialize_ssh_identity_field(args, old)
+    def serialize_identity(self, args, instance):
+        """Update identity field and clean old one."""
+        old = instance and instance.identity
+        new = self.serialize_identity_field(args, old)
         if new and old and new.is_visible and not old.is_visible:
-            self.clean_invisible_ssh_identity(old)
+            self.clean_invisible_identity(old)
         return new
 
-    def clean_invisible_ssh_identity(self, ssh_identity):
-        """Stub cleaning ssh identity."""
-        self.command.storage.delete(ssh_identity)
+    def clean_invisible_identity(self, identity):
+        """Stub cleaning identity."""
+        self.command.storage.delete(identity)
 
-    def serialize_ssh_identity_field(self, args, instance):
-        """Serialize ssh identity."""
-        if (args.password or args.username) and args.ssh_identity:
+    def serialize_identity_field(self, args, instance):
+        """Serialize identity."""
+        if (args.password or args.username) and args.identity:
             raise InvalidArgumentException()
 
-        if args.ssh_identity:
-            ssh_identity = self.command.get_relation(
-                SshIdentity, args.ssh_identity
+        if args.identity:
+            identity = self.command.get_relation(
+                Identity, args.identity
             )
-            if not ssh_identity.is_visible:
-                self.command.fail_not_exist(SshIdentity)
-            return ssh_identity
+            if not identity.is_visible:
+                self.command.fail_not_exist(Identity)
+            return identity
         instance = instance and (not instance.is_visible and instance) or None
-        return self.ssh_identity_args.serialize_args(args, instance)
+        return self.identity_args.serialize_args(args, instance)

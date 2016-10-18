@@ -5,7 +5,7 @@ from pathlib2 import Path
 from mock import Mock
 from serverauditor_sshconfig.core.storage import ApplicationStorage
 from serverauditor_sshconfig.core.models.terminal import (
-    Host, Group, PFRule, SshIdentity
+    Host, Group, PFRule, Identity
 )
 
 
@@ -102,7 +102,7 @@ class ServerauditorTestCase(BashCompletionTest):
         self.run_complete(
             'host -',
             '-h --help --log-file -t --tag -g --group -a --address -p '
-            '--port -s --snippet --ssh-identity -u --username -P --password '
+            '--port -s --snippet --identity -u --username -P --password '
             '-i --identity-file -d --delete -L --label -S '
             '--strict-host-key-check -T --timeout --use-ssh-key '
             '-k --keep-alive-packages'
@@ -144,17 +144,17 @@ class ServerauditorTestCase(BashCompletionTest):
         self.run_complete('info As', 'Asparagales')
         self.run_complete('info xa', 'xanthorrhoeaceae')
 
-    def test_ssh_identity_option(self):
+    def test_identity_option(self):
         self.client.create_identity('Asparagales1', False)
         first = self.client.create_identity('Asparagales', True)
         second = self.client.create_identity('xanthorrhoeaceae', True)
         instances = (first, second)
         for i in ('host', 'group'):
-            self.run_complete('{} --ssh-identity '.format(i),
+            self.run_complete('{} --identity '.format(i),
                               ids_labels_completion(instances))
-            self.run_complete('{} --ssh-identity As'.format(i),
+            self.run_complete('{} --identity As'.format(i),
                               'Asparagales')
-            self.run_complete('{} --ssh-identity xa'.format(i),
+            self.run_complete('{} --identity xa'.format(i),
                               'xanthorrhoeaceae')
 
     def test_info_group_label_and_ids(self):
@@ -204,7 +204,7 @@ class ServerauditorClient(object):
 
     def create_identity(self, label, is_visible):
         return self._create_instance(
-            SshIdentity, label=label, is_visible=is_visible
+            Identity, label=label, is_visible=is_visible
         )
 
     def create_host(self, address, label):

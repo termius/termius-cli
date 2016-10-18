@@ -18,6 +18,7 @@ ignore-patterns:
 pep257:
   disable:
     - D203  # 1 blank line required before
+    - D213
 
 pylint:
   options:

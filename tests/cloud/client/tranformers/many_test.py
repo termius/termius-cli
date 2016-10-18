@@ -15,7 +15,7 @@ from serverauditor_sshconfig.cloud.client.controllers import CryptoController
 from serverauditor_sshconfig.account.managers import AccountManager
 from serverauditor_sshconfig.core.settings import Config
 from serverauditor_sshconfig.core.models.terminal import (
-    Host, SshConfig, SshIdentity, SshKey
+    Host, SshConfig, Identity, SshKey
 )
 
 class BulkTransformerTest(StrategyCase):
@@ -45,11 +45,11 @@ class BulkTransformerTest(StrategyCase):
         )
 
         ssh_config = SshConfig()
-        ssh_identity = SshIdentity(label='ssh_identity')
+        identity = Identity(label='identity')
         ssh_key = SshKey(label='ssh_key')
         host = Host(label='host')
-        ssh_identity.ssh_key = ssh_key.id = self.storage.save(ssh_key).id
-        ssh_config.ssh_identity = ssh_identity.id = self.storage.save(ssh_identity).id
+        identity.ssh_key = ssh_key.id = self.storage.save(ssh_key).id
+        ssh_config.identity = identity.id = self.storage.save(identity).id
         host.ssh_config = ssh_config.id = self.storage.save(ssh_config).id
         host = self.storage.save(host)
         last_synced_data = dict(last_synced='')
@@ -70,7 +70,7 @@ class BulkTransformerTest(StrategyCase):
                     'font_size': None,
                     'keep_alive_packages': None,
                     'charset': None,
-                    'ssh_identity': 'sshidentity_set/{}'.format(ssh_identity.id),
+                    'identity': 'identity_set/{}'.format(identity.id),
                     'local_id': ssh_config.id,
                     'use_ssh_key': None,
                     'timeout': None,
@@ -98,13 +98,13 @@ class BulkTransformerTest(StrategyCase):
             'taghost_set': [],
             'pfrule_set': [],
             'delete_sets': {},
-            'sshidentity_set': [
+            'identity_set': [
                 {
                     'username': '',
                     'is_visible': False,
                     'ssh_key': 'sshkeycrypt_set/{}'.format(ssh_key.id),
-                    'label': payload['sshidentity_set'][0]['label'],
-                    'local_id': ssh_identity.id,
+                    'label': payload['identity_set'][0]['label'],
+                    'local_id': identity.id,
                     'password': ''
                 }
             ]
@@ -115,8 +115,8 @@ class BulkTransformerTest(StrategyCase):
         eq_(ssh_key.label, self.cryptor.decrypt(
             payload['sshkeycrypt_set'][0]['label']
         ))
-        eq_(ssh_identity.label, self.cryptor.decrypt(
-            payload['sshidentity_set'][0]['label']
+        eq_(identity.label, self.cryptor.decrypt(
+            payload['identity_set'][0]['label']
         ))
 
     def test_create_transformer_nosync_key(self):
@@ -130,11 +130,11 @@ class BulkTransformerTest(StrategyCase):
         )
 
         ssh_config = SshConfig()
-        ssh_identity = SshIdentity(label='ssh_identity')
+        identity = Identity(label='identity')
         ssh_key = SshKey(label='ssh_key')
         host = Host(label='host')
-        ssh_identity.ssh_key = ssh_key.id = self.storage.save(ssh_key).id
-        ssh_config.ssh_identity = ssh_identity.id = self.storage.save(ssh_identity).id
+        identity.ssh_key = ssh_key.id = self.storage.save(ssh_key).id
+        ssh_config.identity = identity.id = self.storage.save(identity).id
         host.ssh_config = ssh_config.id = self.storage.save(ssh_config).id
         host = self.storage.save(host)
         last_synced_data = dict(last_synced='')
