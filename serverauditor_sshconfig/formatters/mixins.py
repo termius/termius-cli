@@ -9,12 +9,12 @@ class SshCommandFormatterMixin(object):
     # pylint: disable=no-self-use
     def render_command(self, ssh_config, address, ssh_key_file, pfrule=None):
         """Generate ssh command call."""
-        ssh_identity = ssh_config.get('ssh_identity', dict())
-        username = ssh_identity.get('username', '')
+        identity = ssh_config.get('identity', dict())
+        username = identity.get('username', '')
         return ' '.join([i for i in[
             'ssh',
             format_port(ssh_config['port']),
-            format_ssh_identity_file(ssh_key_file),
+            format_identity_file(ssh_key_file),
             format_pfrule(pfrule),
             format_strict_host_key(ssh_config['strict_host_key_check']),
             format_use_ssh_key(ssh_config['use_ssh_key']),
@@ -32,7 +32,7 @@ def ssh_auth(username, address):
     return '{}'.format(address)
 
 
-def format_ssh_identity_file(ssh_key_file):
+def format_identity_file(ssh_key_file):
     """Render identity file option."""
     return (ssh_key_file and '-i {}'.format(ssh_key_file)) or ''
 

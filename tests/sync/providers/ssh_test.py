@@ -5,7 +5,7 @@ from six import StringIO
 from nose.tools import eq_
 from serverauditor_sshconfig.sync.providers.ssh import SSHService
 from serverauditor_sshconfig.core.models.terminal import (
-    Host, SshConfig, SshIdentity, SshKey
+    Host, SshConfig, Identity, SshKey
 )
 
 
@@ -42,7 +42,7 @@ Host firstone
                 keep_alive_packages=3,
                 use_ssh_key=True,
                 strict_host_key_check=False,
-                ssh_identity=SshIdentity(
+                identity=Identity(
                     username='ubuntu',
                     ssh_key=None
                 )
@@ -75,7 +75,7 @@ Host firstone
                 keep_alive_packages=None,
                 use_ssh_key=None,
                 strict_host_key_check=None,
-                ssh_identity=SshIdentity(
+                identity=Identity(
                     username='ubuntu',
                     ssh_key=None
                 )
@@ -113,7 +113,7 @@ Host firstone
                 keep_alive_packages=None,
                 use_ssh_key=None,
                 strict_host_key_check=None,
-                ssh_identity=SshIdentity(
+                identity=Identity(
                     username='ubuntu',
                     ssh_key=SshKey(
                         label='id_rsa',

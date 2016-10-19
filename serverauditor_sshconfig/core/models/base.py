@@ -134,7 +134,7 @@ class DeleteSets(AbstractModel):
         'tag_set': Field(list, False, None),
         'snippet_set': Field(list, False, None),
         'sshkeycrypt_set': Field(list, False, None),
-        'sshidentity_set': Field(list, False, None),
+        'identity_set': Field(list, False, None),
         'sshconfig_set': Field(list, False, None),
         'group_set': Field(list, False, None),
         'host_set': Field(list, False, None),

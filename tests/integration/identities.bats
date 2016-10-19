@@ -20,5 +20,5 @@ setup() {
     serverauditor identity -L local --username 'ROOT' --password 'pa'
     run serverauditor identities
     [ "$status" -eq 0 ]
-    [ $(get_models_set_length 'sshidentity_set') -eq 1 ]
+    [ $(get_models_set_length 'identity_set') -eq 1 ]
 }

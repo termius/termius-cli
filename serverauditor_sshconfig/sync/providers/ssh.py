@@ -6,7 +6,7 @@ import re
 from pathlib2 import Path
 from paramiko.config import SSHConfig
 from .base import BaseSyncService
-from ...core.models.terminal import Host, SshConfig, SshIdentity, SshKey
+from ...core.models.terminal import Host, SshConfig, Identity, SshKey
 
 
 class SSHService(BaseSyncService):
@@ -39,7 +39,7 @@ class SSHService(BaseSyncService):
             address=host['hostname'],
         )
         ssh_config = SshConfig(
-            ssh_identity=SshIdentity(
+            identity=Identity(
                 username=host.get('user', self.default_user),
                 ssh_key=self.create_key(host)
             )

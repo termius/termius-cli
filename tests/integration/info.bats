@@ -79,10 +79,10 @@ setup() {
     [ "${lines[0]}" = "ssh -p 2022 -o ForwardAgent=no localhost" ]
 }
 
-@test "info host in 2 groups with visible ssh identity" {
+@test "info host in 2 groups with visible identity" {
     serverauditor settings --agent-forwarding yes
-    ssh_identity=$(serverauditor identity --username user)
-    grandgroup=$(serverauditor group -L test --port 22 --ssh-identity $ssh_identity)
+    identity=$(serverauditor identity --username user)
+    grandgroup=$(serverauditor group -L test --port 22 --identity $identity)
     group=$(serverauditor group --parent-group $grandgroup -L test --port 2022 --username local)
     host=$(serverauditor host --group $group --address localhost -L test --username root)
     run serverauditor info $host -f ssh --debug
@@ -91,10 +91,10 @@ setup() {
     [ "${lines[0]}" = "ssh -p 2022 -o ForwardAgent=yes user@localhost" ]
 }
 
-@test "info host in 2 groups with visible ssh identity without agent forwarding" {
+@test "info host in 2 groups with visible identity without agent forwarding" {
     serverauditor settings --agent-forwarding no
-    ssh_identity=$(serverauditor identity --username user)
-    grandgroup=$(serverauditor group -L test --port 22 --ssh-identity $ssh_identity)
+    identity=$(serverauditor identity --username user)
+    grandgroup=$(serverauditor group -L test --port 22 --identity $identity)
     group=$(serverauditor group --parent-group $grandgroup -L test --port 2022 --username local)
     host=$(serverauditor host --group $group --address localhost -L test --username root)
     run serverauditor info $host -f ssh --debug

@@ -1,5 +1,6 @@
 mock
 nose
 coverage
-prospector[with_pyroma]
+prospector
+pyroma==2.0
 paver

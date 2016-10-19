@@ -84,7 +84,7 @@ __serverauditor_complete_options_group() {
     -s|--snippet)
       __serverauditor_get_labels_ids snippet
       ;;
-    --ssh-identity)
+    --identity)
       __serverauditor_get_labels_ids identity
       ;;
     *)
@@ -109,7 +109,7 @@ __serverauditor_complete_options_host() {
     -s|--snippet)
       __serverauditor_get_labels_ids snippet
       ;;
-    --ssh-identity)
+    --identity)
       __serverauditor_get_labels_ids identity
       ;;
     *)
@@ -210,15 +210,15 @@ _serverauditor()
   cmds_fullclean='-h --help --log-file -p --password'
   cmds_fullclean_arg_options='--log-file -p --password'
   cmds_fullclean_file_options='--log-file'
-  cmds_group='-h --help --log-file -g --parent-group -p --port -s --snippet --ssh-identity -S --strict-host-key-check -T --timeout --use-ssh-key -k --keep-alive-packages -u --username -P --password -i --identity-file -d --delete -L --label'
-  cmds_group_arg_options='--log-file -g --parent-group -p --port -s --snippet --ssh-identity -u --username -P --password -i --identity-file -L --label -S --strict-host-key-check -T --timeout --use-ssh-key -k --keep-alive-packages'
+  cmds_group='-h --help --log-file -g --parent-group -p --port -s --snippet --identity -S --strict-host-key-check -T --timeout --use-ssh-key -k --keep-alive-packages -u --username -P --password -i --identity-file -d --delete -L --label'
+  cmds_group_arg_options='--log-file -g --parent-group -p --port -s --snippet --identity -u --username -P --password -i --identity-file -L --label -S --strict-host-key-check -T --timeout --use-ssh-key -k --keep-alive-packages'
   cmds_group_file_options='--log-file -i --identity-file'
   cmds_groups='-h --help -f --format -c --column --max-width --noindent --quote --log-file -r --recursive'
   cmds_groups_arg_options='-f --format -c --column --max-width --log-file'
   cmds_groups_file_options='--log-file'
   cmds_help='-h --help'
-  cmds_host='-h --help --log-file -t --tag -g --group -a --address -p --port -s --snippet --ssh-identity -u --username -P --password -i --identity-file -d --delete -L --label -S --strict-host-key-check -T --timeout --use-ssh-key -k --keep-alive-packages'
-  cmds_host_arg_options='--log-file -t --tag -g --group -a --address -p --port -s --snippet --ssh-identity -u --username -P --password -i --identity-file -L --label -S --strict-host-key-check -T --timeout --use-ssh-key -k --keep-alive-packages'
+  cmds_host='-h --help --log-file -t --tag -g --group -a --address -p --port -s --snippet --identity -u --username -P --password -i --identity-file -d --delete -L --label -S --strict-host-key-check -T --timeout --use-ssh-key -k --keep-alive-packages'
+  cmds_host_arg_options='--log-file -t --tag -g --group -a --address -p --port -s --snippet --identity -u --username -P --password -i --identity-file -L --label -S --strict-host-key-check -T --timeout --use-ssh-key -k --keep-alive-packages'
   cmds_host_file_options='--log-file -i --identity-file'
   cmds_hosts='-h --help -f --format -c --column --max-width --noindent --quote --log-file -t --tag -g --group'
   cmds_hosts_arg_options='-f --format -c --column --max-width --log-file -t --tag -g --group'

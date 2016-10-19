@@ -45,8 +45,8 @@ class SshKey(Model):
         return ssh_keys_path / self.label
 
 
-class SshIdentity(Model):
-    """Model for ssh identity."""
+class Identity(Model):
+    """Model for identity."""
 
     fields = {
         'label': Field(str, False, ''),
@@ -56,7 +56,7 @@ class SshIdentity(Model):
         'ssh_key': Field(SshKey, False, None),
     }
     mergable_fields = {'username', 'password', 'ssh_key'}
-    set_name = 'sshidentity_set'
+    set_name = 'identity_set'
     crypto_fields = {'label', 'username', 'password'}
 
 
@@ -65,7 +65,7 @@ class SshConfig(Model):
 
     fields = {
         'port': Field(int, False, None),
-        'ssh_identity': Field(SshIdentity, False, None),
+        'identity': Field(Identity, False, None),
         'startup_snippet': Field(Snippet, False, None),
         'strict_host_key_check': Field(bool, False, None),
         'use_ssh_key': Field(bool, False, None),
@@ -80,7 +80,7 @@ class SshConfig(Model):
     }
     mergable_fields = {
         'port',
-        'ssh_identity',
+        'identity',
         'startup_snippet',
         'strict_host_key_check',
         'use_ssh_key',
@@ -97,7 +97,7 @@ class SshConfig(Model):
 
     def get_ssh_key(self):
         """Retrieve ssh key instance."""
-        return self.ssh_identity and self.ssh_identity.ssh_key
+        return self.identity and self.identity.ssh_key
 
     def __setattr__(self, name, value):
         """Set attribute, but patch value before assign."""
@@ -225,7 +225,7 @@ class PFRule(Model):
 # pylint: disable=invalid-name
 clean_order = reversed((
     SshKey, Snippet,
-    SshIdentity, SshConfig,
+    Identity, SshConfig,
     Tag, Group,
     Host, PFRule,
     TagHost

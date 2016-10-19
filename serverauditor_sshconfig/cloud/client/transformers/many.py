@@ -6,7 +6,7 @@ from ....core.storage.strategies import SoftDeleteStrategy
 from ....core.models.terminal import (
     Host, Group,
     Tag, SshKey,
-    SshIdentity, SshConfig,
+    Identity, SshConfig,
     PFRule, TagHost,
     Snippet
 )
@@ -39,7 +39,7 @@ class SupportedModelsMixin(object):
         if sync_keys:
             return (
                 SshKey, Snippet,
-                SshIdentity, SshConfig,
+                Identity, SshConfig,
                 Tag, Group,
                 Host, PFRule,
                 TagHost

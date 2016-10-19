@@ -4,7 +4,7 @@ from mock import patch, Mock
 
 from serverauditor_sshconfig.core.models.base import Model
 from serverauditor_sshconfig.core.models.terminal import (
-    Tag, SshKey, SshIdentity, SshConfig, Group, Host, PFRule
+    Tag, SshKey, Identity, SshConfig, Group, Host, PFRule
 )
 
 from serverauditor_sshconfig.core.storage import ApplicationStorage
@@ -13,7 +13,7 @@ from serverauditor_sshconfig.core.storage import ApplicationStorage
 def test_generator():
     model_classes = (
         Host, Group, Tag,
-        SshKey, SshIdentity, SshConfig,
+        SshKey, Identity, SshConfig,
         Group, Host, PFRule
     )
     for model_class in model_classes:
