@@ -174,14 +174,22 @@ Host {host}
                 key_name = os.path.expanduser(get_key_path(key))
 
                 if key['private_key']:
-                    with open(key_name, 'w') as private_file:
-                        private_file.write(key['private_key'])
-                    os.chmod(key_name, stat.S_IWUSR | stat.S_IRUSR)
+                    try:
+                        with open(key_name, 'w') as private_file:
+                            private_file.write(key['private_key'])
+                        os.chmod(key_name, stat.S_IWUSR | stat.S_IRUSR)
+                    except Exception as e:
+                        print('Error writing to file %s' % key['label'])
+                        print(str(e))
 
                 if key['public_key']:
-                    with open(key_name + '.pub', 'w') as public_file:
-                        public_file.write(key['public_key'])
-                    os.chmod(key_name + '.pub', stat.S_IWUSR | stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
+                    try:
+                        with open(key_name + '.pub', 'w') as public_file:
+                            public_file.write(key['public_key'])
+                        os.chmod(key_name + '.pub', stat.S_IWUSR | stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
+                    except Exception as e:
+                        print('Error writing to file %s' % key['label'])
+                        print(str(e))
 
             return
 
