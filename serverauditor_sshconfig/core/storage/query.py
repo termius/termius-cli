@@ -13,6 +13,7 @@ class QueryOperator(object):
         """Construct new operator."""
         splited_field = field.split('.')
         operator_name = splited_field[-1]
+
         if operator_name not in self.operators:
             operator_name = 'eq'
             self.get_field = operators.attrgetter(field)

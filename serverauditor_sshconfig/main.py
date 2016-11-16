@@ -8,6 +8,15 @@ from serverauditor_sshconfig.app import ServerauditorApp
 def main(argv=sys.argv[1:]):
     """Process call from terminal."""
     app = ServerauditorApp()
+
+    if sys.version_info < (3,):
+        decoded_argv = []
+
+        for arg in argv:
+            decoded_argv.append(arg.decode('utf8'))
+
+        return app.run(decoded_argv)
+
     return app.run(argv)
 
 
