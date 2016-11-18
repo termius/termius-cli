@@ -7,17 +7,17 @@ setup() {
 }
 
 @test "group help by arg" {
-    run serverauditor group --help
+    run termius group --help
     [ $status -eq 0 ]
 }
 
 @test "group help command" {
-    run serverauditor help group
+    run termius help group
     [ $status -eq 0 ]
 }
 
 @test "Add general group" {
-    run serverauditor group -L 'Group' --port 2202 --username 'use r name' --debug
+    run termius group -L 'Group' --port 2202 --username 'use r name' --debug
     [ $status -eq 0 ]
     [ $(get_models_set_length 'group_set') -eq 1 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 1 ]
@@ -33,8 +33,8 @@ setup() {
 }
 
 @test "Add group to main group" {
-    group=$(serverauditor group -L 'test group' --port 2 --username 'use r name')
-    run serverauditor group --port 22 --parent-group $group
+    group=$(termius group -L 'test group' --port 2 --username 'use r name')
+    run termius group --port 22 --parent-group $group
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'group_set') -eq 2 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 2 ]
@@ -44,9 +44,9 @@ setup() {
 }
 
 @test "Update group assign visible identity" {
-    identity=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
-    group=$(serverauditor group -L 'test group' --port 2 --username 'use r name')
-    run serverauditor group --identity $identity $group
+    identity=$(termius identity -L local --username 'ROOT' --password 'pa')
+    group=$(termius group -L 'test group' --port 2 --username 'use r name')
+    run termius group --identity $identity $group
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'group_set') -eq 1 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 1 ]
@@ -60,9 +60,9 @@ setup() {
 }
 
 @test "Update group update visible identity" {
-    identity=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
-    group=$(serverauditor group -L 'test group' --identity $identity)
-    run serverauditor group --username 'use r name' $group
+    identity=$(termius identity -L local --username 'ROOT' --password 'pa')
+    group=$(termius group -L 'test group' --identity $identity)
+    run termius group --username 'use r name' $group
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'group_set') -eq 1 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 1 ]
@@ -79,8 +79,8 @@ setup() {
 }
 
 @test "Update group" {
-    group=$(serverauditor group -L 'test group' --port 2 --username 'use r name')
-    run serverauditor group --username 'user' $group
+    group=$(termius group -L 'test group' --port 2 --username 'use r name')
+    run termius group --username 'user' $group
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'group_set') -eq 1 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 1 ]
@@ -95,25 +95,25 @@ setup() {
 }
 
 @test "Update group add in self" {
-    group=$(serverauditor group -L 'test group' --port 2 --username 'name')
-    run serverauditor group --parent-group $group $group
+    group=$(termius group -L 'test group' --port 2 --username 'name')
+    run termius group --parent-group $group $group
     [ "$status" -eq 1 ]
     [ $(get_models_set_length 'group_set') -eq 1 ]
 }
 
 @test "Update group add into infinite loop" {
-    grand_parent_group=$(serverauditor group -L 'test group' --port 2 --username 'name')
-    parent_group=$(serverauditor group -L 'test group' --port 2 --username 'name' --parent-group $grand_parent_group)
-    group=$(serverauditor group -L 'test group' --port 2 --username 'name' --parent-group $parent_group)
-    run serverauditor group -L 'test group' --port 2 --username 'user' --parent-group $group $grand_parent_group
+    grand_parent_group=$(termius group -L 'test group' --port 2 --username 'name')
+    parent_group=$(termius group -L 'test group' --port 2 --username 'name' --parent-group $grand_parent_group)
+    group=$(termius group -L 'test group' --port 2 --username 'name' --parent-group $parent_group)
+    run termius group -L 'test group' --port 2 --username 'user' --parent-group $group $grand_parent_group
     [ "$status" -eq 1 ]
     [ $(get_models_set_length 'group_set') -eq 3 ]
 }
 
 @test "Update group add in parent group" {
-    parent_group=$(serverauditor group -L 'test group' --port 2 --username 'use r name')
-    group=$(serverauditor group -L 'Group' --port 2 --username 'name')
-    run serverauditor group --parent-group $parent_group $group
+    parent_group=$(termius group -L 'test group' --port 2 --username 'use r name')
+    group=$(termius group -L 'Group' --port 2 --username 'name')
+    run termius group --parent-group $parent_group $group
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'group_set') -eq 2 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 2 ]
@@ -123,25 +123,25 @@ setup() {
 }
 
 @test "Update many groups" {
-    group1=$(serverauditor group -L 'test group' --port 2 --username 'use r name')
-    group2=$(serverauditor group -L 'test group' --port 2 --username 'use r name')
-    run serverauditor group -L 'test group' --port 2 --username 'user' $group1 $group2
+    group1=$(termius group -L 'test group' --port 2 --username 'use r name')
+    group2=$(termius group -L 'test group' --port 2 --username 'use r name')
+    run termius group -L 'test group' --port 2 --username 'user' $group1 $group2
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'group_set') -eq 2 ]
 }
 
 @test "Delete group" {
-    group1=$(serverauditor group -L 'test group' --port 2 --username 'use r name')
-    group2=$(serverauditor group -L 'test group' --port 2 --username 'use r name')
-    run serverauditor group --delete $group1
+    group1=$(termius group -L 'test group' --port 2 --username 'use r name')
+    group2=$(termius group -L 'test group' --port 2 --username 'use r name')
+    run termius group --delete $group1
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'group_set') -eq 1 ]
 }
 
 @test "Delete many groups" {
-    group1=$(serverauditor group -L 'test group' --port 2 --username 'use r name')
-    group2=$(serverauditor group -L 'test group' --port 2 --username 'use r name')
-    run serverauditor group --delete $group1 $group2
+    group1=$(termius group -L 'test group' --port 2 --username 'use r name')
+    group2=$(termius group -L 'test group' --port 2 --username 'use r name')
+    run termius group --delete $group1 $group2
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'group_set') -eq 0 ]
 }

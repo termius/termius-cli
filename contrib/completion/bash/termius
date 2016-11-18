@@ -1,197 +1,197 @@
-__serverauditor_entity_labels() {
-  serverauditor $1 -f value -c label
+__termius_entity_labels() {
+  termius $1 -f value -c label
 }
 
-__serverauditor_get_labels_ids() {
+__termius_get_labels_ids() {
   case $1 in
     host|group|key|pfrule|snippet)
-      __serverauditor_entity_labels "$1"s
+      __termius_entity_labels "$1"s
       ;;
     identity)
-      __serverauditor_entity_labels identities
+      __termius_entity_labels identities
       ;;
     *) return 0
       ;;
   esac
 }
 
-__serverauditor_subcommand_instance() {
+__termius_subcommand_instance() {
   case $1 in
     host|group|identity|key|pfrule|snippet)
-      __serverauditor_get_labels_ids $1
+      __termius_get_labels_ids $1
       ;;
     connect)
-      __serverauditor_complete_connect
+      __termius_complete_connect
       ;;
     info)
-     __serverauditor_complete_info
+     __termius_complete_info
       ;;
     *) return 0
       ;;
   esac
 }
 
-__serverauditor_complete_option_value() {
+__termius_complete_option_value() {
   local completion
-  completion="__serverauditor_complete_options_$1"
+  completion="__termius_complete_options_$1"
   if ! type $completion >/dev/null 2>&1; then
-    __serverauditor_complete_common_options $2
+    __termius_complete_common_options $2
   else
     $completion $2
   fi
 }
 
-__serverauditor_complete_connect() {
+__termius_complete_connect() {
   if [[ " ${words[@]} " =~ " -R " ]] || [[ " ${words[@]} " =~ " --pfrule " ]]; then
-    __serverauditor_get_labels_ids pfrule
+    __termius_get_labels_ids pfrule
   else
-    __serverauditor_get_labels_ids host
+    __termius_get_labels_ids host
   fi
 }
 
-__serverauditor_complete_info() {
+__termius_complete_info() {
   if [[ " ${words[@]} " =~ " -g " ]] || [[ " ${words[@]} " =~ " --group " ]]; then
-    __serverauditor_get_labels_ids group
+    __termius_get_labels_ids group
   else
-    __serverauditor_get_labels_ids host
+    __termius_get_labels_ids host
   fi
 }
 
-__serverauditor_complete_options_complete() {
+__termius_complete_options_complete() {
   case $1 in
     --shell)
       echo bash
       ;;
     --name)
-      echo serverauditor
+      echo termius
       ;;
     *)
       return 0
       ;;
   esac
 }
-__serverauditor_complete_options_connect() {
+__termius_complete_options_connect() {
   return 0
 }
-__serverauditor_complete_options_fullclean() {
-  __serverauditor_complete_common_options $1
+__termius_complete_options_fullclean() {
+  __termius_complete_common_options $1
 }
-__serverauditor_complete_options_group() {
+__termius_complete_options_group() {
   case $1 in
     -g|--parent-group)
-      __serverauditor_get_labels_ids group
+      __termius_get_labels_ids group
       ;;
     -s|--snippet)
-      __serverauditor_get_labels_ids snippet
+      __termius_get_labels_ids snippet
       ;;
     --identity)
-      __serverauditor_get_labels_ids identity
+      __termius_get_labels_ids identity
       ;;
     *)
-      __serverauditor_complete_common_options $1
+      __termius_complete_common_options $1
       ;;
   esac
 }
-__serverauditor_complete_options_groups() {
-  __serverauditor_complete_common_list_options $1
+__termius_complete_options_groups() {
+  __termius_complete_common_list_options $1
 }
-__serverauditor_complete_options_help() {
+__termius_complete_options_help() {
   return 0
 }
-__serverauditor_complete_options_host() {
+__termius_complete_options_host() {
   case $1 in
     -g|--group)
-      __serverauditor_get_labels_ids group
+      __termius_get_labels_ids group
       ;;
     -t|--tag)
-      __serverauditor_get_labels_ids tag
+      __termius_get_labels_ids tag
       ;;
     -s|--snippet)
-      __serverauditor_get_labels_ids snippet
+      __termius_get_labels_ids snippet
       ;;
     --identity)
-      __serverauditor_get_labels_ids identity
+      __termius_get_labels_ids identity
       ;;
     *)
-      __serverauditor_complete_common_options $1
+      __termius_complete_common_options $1
       ;;
   esac
 }
-__serverauditor_complete_options_hosts() {
+__termius_complete_options_hosts() {
   case $1 in
     -g|--group)
-      __serverauditor_get_labels_ids group
+      __termius_get_labels_ids group
       ;;
     -t|--tag)
-      __serverauditor_get_labels_ids tag
+      __termius_get_labels_ids tag
       ;;
     *)
-      __serverauditor_complete_common_list_options $1
+      __termius_complete_common_list_options $1
       ;;
   esac
 }
-__serverauditor_complete_options_identities() {
-  __serverauditor_complete_common_list_options $1
+__termius_complete_options_identities() {
+  __termius_complete_common_list_options $1
 }
-__serverauditor_complete_options_identity() {
+__termius_complete_options_identity() {
   case $1 in
     -k|--ssh-key)
-      __serverauditor_get_labels_ids key
+      __termius_get_labels_ids key
       ;;
     *)
-      __serverauditor_complete_common_options $1
+      __termius_complete_common_options $1
       ;;
   esac
 }
-__serverauditor_complete_options_info() {
+__termius_complete_options_info() {
    case $1 in
     -f|--format)
       echo json shell ssh table value yaml
       ;;
     *)
-      __serverauditor_complete_common_options $1
+      __termius_complete_common_options $1
       ;;
   esac
 }
-__serverauditor_complete_options_keys() {
-  __serverauditor_complete_common_list_options $1
+__termius_complete_options_keys() {
+  __termius_complete_common_list_options $1
 }
-__serverauditor_complete_options_pfrule() {
+__termius_complete_options_pfrule() {
    case $1 in
     -H|--host)
-      __serverauditor_get_labels_ids host
+      __termius_get_labels_ids host
       ;;
     *)
-      __serverauditor_complete_common_options $1
+      __termius_complete_common_options $1
       ;;
   esac
 }
-__serverauditor_complete_options_pfrules() {
-  __serverauditor_complete_common_list_options $1
+__termius_complete_options_pfrules() {
+  __termius_complete_common_list_options $1
 }
-__serverauditor_complete_options_snippets() {
-  __serverauditor_complete_common_list_options $1
+__termius_complete_options_snippets() {
+  __termius_complete_common_list_options $1
 }
-__serverauditor_complete_options_tags() {
-  __serverauditor_complete_common_list_options $1
+__termius_complete_options_tags() {
+  __termius_complete_common_list_options $1
 }
 
-__serverauditor_complete_common_list_options() {
+__termius_complete_common_list_options() {
   case $1 in
     -f|--format)
       echo csv json table value yaml
       ;;
     *)
-      __serverauditor_complete_common_options $1
+      __termius_complete_common_options $1
       ;;
   esac
 }
 
-__serverauditor_complete_common_options() {
+__termius_complete_common_options() {
   return 0
 }
 
-_serverauditor()
+_termius()
 {
   local cur prev words
   COMPREPLY=()
@@ -311,10 +311,10 @@ _serverauditor()
         then
           COMPREPLY=( $(compgen -f -- ${cur}) )
         else
-          COMPREPLY=( $(compgen -W "$(__serverauditor_complete_option_value $subcommand $prev)" -- ${cur}) )
+          COMPREPLY=( $(compgen -W "$(__termius_complete_option_value $subcommand $prev)" -- ${cur}) )
         fi
       else
-        COMPREPLY=( $(compgen -W "$(__serverauditor_subcommand_instance $subcommand)" -- ${cur}) )
+        COMPREPLY=( $(compgen -W "$(__termius_subcommand_instance $subcommand)" -- ${cur}) )
       fi
     else
       COMPREPLY=( $( compgen -W "" -- "$cur" ) )
@@ -324,5 +324,5 @@ _serverauditor()
   fi
   return 0
 }
-complete -F _serverauditor serverauditor
+complete -F _termius termius
 # vim: ft=sh sw=2 ts=2 et

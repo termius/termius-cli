@@ -1,11 +1,11 @@
 #!/usr/bin/env bats
 
 @test "connect help by arg" {
-    run serverauditor connect --help
+    run termius connect --help
     [ "$status" -eq 0 ]
 }
 
 @test "connect help command" {
-    run serverauditor help connect
+    run termius help connect
     [ "$status" -eq 0 ]
 }

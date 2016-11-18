@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup, find_packages
 
-from serverauditor_sshconfig import get_version
+from termius import get_version
 
 
 # pylint: disable=invalid-name
-cli_command_name = 'serverauditor'
+cli_command_name = 'termius'
 
 # pylint: disable=invalid-name
 requires = [
@@ -24,29 +24,29 @@ requires = [
 
 # pylint: disable=invalid-name
 handlers = [
-    'sync = serverauditor_sshconfig.sync.commands:SyncCommand',
-    'login = serverauditor_sshconfig.account.commands:LoginCommand',
-    'logout = serverauditor_sshconfig.account.commands:LogoutCommand',
-    'settings = serverauditor_sshconfig.account.commands:SettingsCommand',
-    'push = serverauditor_sshconfig.cloud.commands:PushCommand',
-    'pull = serverauditor_sshconfig.cloud.commands:PullCommand',
-    'fullclean = serverauditor_sshconfig.cloud.commands:FullCleanCommand',
-    'snippet = serverauditor_sshconfig.handlers:SnippetCommand',
-    'snippets = serverauditor_sshconfig.handlers:SnippetsCommand',
-    'host = serverauditor_sshconfig.handlers:HostCommand',
-    'hosts = serverauditor_sshconfig.handlers:HostsCommand',
-    'identity = serverauditor_sshconfig.handlers:IdentityCommand',
-    'identities = serverauditor_sshconfig.handlers:IdentitiesCommand',
-    'key = serverauditor_sshconfig.handlers:SshKeyCommand',
-    'keys = serverauditor_sshconfig.handlers:SshKeysCommand',
-    'group = serverauditor_sshconfig.handlers:GroupCommand',
-    'groups = serverauditor_sshconfig.handlers:GroupsCommand',
-    'pfrule = serverauditor_sshconfig.handlers:PFRuleCommand',
-    'pfrules = serverauditor_sshconfig.handlers:PFRulesCommand',
-    'tags = serverauditor_sshconfig.handlers:TagsCommand',
-    'info = serverauditor_sshconfig.handlers:InfoCommand',
-    'connect = serverauditor_sshconfig.handlers:ConnectCommand',
-    'crypto = serverauditor_sshconfig.cloud.commands:CryptoCommand',
+    'sync = termius.sync.commands:SyncCommand',
+    'login = termius.account.commands:LoginCommand',
+    'logout = termius.account.commands:LogoutCommand',
+    'settings = termius.account.commands:SettingsCommand',
+    'push = termius.cloud.commands:PushCommand',
+    'pull = termius.cloud.commands:PullCommand',
+    'fullclean = termius.cloud.commands:FullCleanCommand',
+    'snippet = termius.handlers:SnippetCommand',
+    'snippets = termius.handlers:SnippetsCommand',
+    'host = termius.handlers:HostCommand',
+    'hosts = termius.handlers:HostsCommand',
+    'identity = termius.handlers:IdentityCommand',
+    'identities = termius.handlers:IdentitiesCommand',
+    'key = termius.handlers:SshKeyCommand',
+    'keys = termius.handlers:SshKeysCommand',
+    'group = termius.handlers:GroupCommand',
+    'groups = termius.handlers:GroupsCommand',
+    'pfrule = termius.handlers:PFRuleCommand',
+    'pfrules = termius.handlers:PFRulesCommand',
+    'tags = termius.handlers:TagsCommand',
+    'info = termius.handlers:InfoCommand',
+    'connect = termius.handlers:ConnectCommand',
+    'crypto = termius.cloud.commands:CryptoCommand',
 ]
 
 
@@ -56,15 +56,15 @@ def get_long_description():
 
 
 setup(
-    name='serverauditor-sshconfig',
+    name='termius',
     version=get_version(),
     license='BSD',
     author='Crystalnix',
     author_email='contacts@crystalnix.com',
     url='https://github.com/Crystalnix/serverauditor-sshconfig',
-    description='Serverauditor ssh-config utility.',
+    description='Termius ssh-config utility.',
     long_description=get_long_description(),
-    keywords=['serverauditor', 'crystalnix'],
+    keywords=['termius', 'crystalnix'],
     packages=find_packages(exclude=['tests']),
     install_requires=requires,
     test_suite='nose.collector',
@@ -83,19 +83,19 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            '{} = serverauditor_sshconfig.main:main'.format(cli_command_name)
+            '{} = termius.main:main'.format(cli_command_name)
         ],
-        'serverauditor.handlers': handlers,
-        'serverauditor.info.formatters': [
-            'ssh = serverauditor_sshconfig.formatters.ssh:SshFormatter',
+        'termius.handlers': handlers,
+        'termius.info.formatters': [
+            'ssh = termius.formatters.ssh:SshFormatter',
             'table = cliff.formatters.table:TableFormatter',
             'shell = cliff.formatters.shell:ShellFormatter',
             'value = cliff.formatters.value:ValueFormatter',
             'yaml = cliff.formatters.yaml_format:YAMLFormatter',
             'json = cliff.formatters.json_format:JSONFormatter',
         ],
-        'serverauditor.sync.providers': [
-            'ssh = serverauditor_sshconfig.sync.providers.ssh:SSHService',
+        'termius.sync.providers': [
+            'ssh = termius.sync.providers.ssh:SSHService',
         ],
     },
 )

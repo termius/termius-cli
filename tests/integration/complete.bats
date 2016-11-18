@@ -1,11 +1,11 @@
 #!/usr/bin/env bats
 
 @test "bash complete output" {
-    run serverauditor complete
+    run termius complete
     [ "$status" -eq 0 ]
 }
 
 @test "bash complete" {
-    run source <(serverauditor complete)
+    run source <(termius complete)
     [ "$status" -eq 0 ]
 }

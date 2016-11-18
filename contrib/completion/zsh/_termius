@@ -1,18 +1,18 @@
-#compdef serverauditor
+#compdef termius
 
-# Serverauditor ZSH completion function
+# termius ZSH completion function
 # Drop this somewhere in your $fpath (like /usr/share/zsh/site-functions)
-# and rename it _serverauditor
+# and rename it _termius
 
-_serverauditor() {
+_termius() {
   if (( CURRENT > 2 )); then
     # shift words so _arguments doesn't have to be concerned with second command
     (( CURRENT-- ))
     shift words
     # use _call_function here in case it doesn't exist
-    _call_function 1 _serverauditor_${words[1]}
+    _call_function 1 _termius_${words[1]}
   else
-    _values "serverauditor command" \
+    _values "termius command" \
       "complete[Generate shell completion script.]" \
       "connect[Connect to host or start port forwarding rule.]" \
       "fullclean[Clean local storage and push it.]" \
@@ -26,28 +26,28 @@ _serverauditor() {
       "info[Display host or group connection arguments.]" \
       "key[Ssh key operations.]" \
       "keys[List ssh keys.]" \
-      "login[Authenticate on serverauditor.com.]" \
-      "logout[Remove serverauditor.com credentials.]" \
+      "login[Authenticate on termius.com.]" \
+      "logout[Remove termius.com credentials.]" \
       "pfrule[Port forwarding rule operations.]" \
       "pfrules[List port forwarding rules.]" \
-      "pull[Retrieve data from serverauditor.com.]" \
+      "pull[Retrieve data from termius.com.]" \
       "push[Send local changes to serveraudtor.com.]" \
       "snippet[Snippet operations.]" \
       "snippets[List snippets.]" \
-      "sync[Sync IaaS or PaaS service hosts with serverauditor.]" \
+      "sync[Sync IaaS or PaaS service hosts with termius.]" \
       "tags[List tags.]" \
       "settings[Configure application settings.]"
   fi
 }
 
-_serverauditor_complete() {
+_termius_complete() {
   _arguments \
     '-h[Display help]' \
     '--help[Display help]' \
     '--name[Name]' \
     '--shell[Shell type]:type:(bash)'
 }
-_serverauditor_connect() {
+_termius_connect() {
   _arguments \
     '-h[Display help]' \
     '--help[Display help]' \
@@ -58,10 +58,10 @@ _serverauditor_connect() {
     '--host[Connect to host]:label:->host'
   if [[ $state != '' ]];
   then
-    __serverauditor_instances $state
+    __termius_instances $state
   fi
 }
-_serverauditor_fullclean() {
+_termius_fullclean() {
   _arguments \
     '-h[Display help]' \
     '--help[Display help]' \
@@ -69,7 +69,7 @@ _serverauditor_fullclean() {
     '-p[Password]:isnotsecure:()' \
     '--password[Password]:isnotsecure:()'
 }
-_serverauditor_settings() {
+_termius_settings() {
   _arguments \
     '-h[Display help]' \
     '--help[Display help]' \
@@ -77,7 +77,7 @@ _serverauditor_settings() {
     '--agent-forwarding[Enable agent forwarding]:agent_forwarding:(yes no)' \
     '--synchronize-key[Enable syncing ssh keys]:synchronize_key:(yes no)'
 }
-_serverauditor_group() {
+_termius_group() {
   _arguments \
     '-h[Display help]' \
     '--help[Display help]' \
@@ -101,14 +101,14 @@ _serverauditor_group() {
     '--timeout[Set keep alive packages interval]:time (ms)' \
     '-p[Set SSH Server port]:port:()' \
     '--port[Set SSH Server port]:port:()' \
-    "-g[Set parent Group]:group_label:($(__serverauditor_entity 'groups'))" \
-    "--parent-group[Set parent Group]:group_label:($(__serverauditor_entity 'groups'))"
-    "-s[Set startup snippet]:snippet_label:($(__serverauditor_entity 'snippets'))" \
-    "--snippet[Set startup snippet]:snippet_label:($(__serverauditor_entity 'snippets'))" \
-    "--identity[Set identity]:identity_label:($(__serverauditor_entity 'identities'))"
+    "-g[Set parent Group]:group_label:($(__termius_entity 'groups'))" \
+    "--parent-group[Set parent Group]:group_label:($(__termius_entity 'groups'))"
+    "-s[Set startup snippet]:snippet_label:($(__termius_entity 'snippets'))" \
+    "--snippet[Set startup snippet]:snippet_label:($(__termius_entity 'snippets'))" \
+    "--identity[Set identity]:identity_label:($(__termius_entity 'identities'))"
 
 }
-_serverauditor_groups() {
+_termius_groups() {
   _arguments \
     '-h[Display help]' \
     '--help[Display help]' \
@@ -123,13 +123,13 @@ _serverauditor_groups() {
     '-r[Display subgroups recursvely]' \
     '--recursive[Display subgroups recursvely]' \
 }
-_serverauditor_help() {
+_termius_help() {
   _arguments \
     '1:command:(complete connect fullclean group groups help host hosts identities identity info key keys login logout pfrule pfrules pull push snippet snippets sync tags)' \
     '-h[Display help]' \
     '--help[Display help]'
 }
-_serverauditor_host() {
+_termius_host() {
   _arguments \
     '-h[Display help]' \
     '--help[Display help]' \
@@ -155,16 +155,16 @@ _serverauditor_host() {
     '--port[Set SSH Server port]:port:()' \
     '-a[Set SSH server address]:hostname:_hosts' \
     '--address[Set SSH server address]:hostname:_hosts' \
-    "-t[Set Tag]:tag_label:($(__serverauditor_entity 'tags'))" \
-    "--tag[Set Tag]:tag_label:($(__serverauditor_entity 'tags'))" \
-    "-g[Set Group]:group_label:($(__serverauditor_entity 'groups'))" \
-    "--group[Set Group]:group_label:($(__serverauditor_entity 'groups'))" \
-    "-s[Set startup snippet]:snippet_label:($(__serverauditor_entity 'snippets'))" \
-    "--snippet[Set startup snippet]:snippet_label:($(__serverauditor_entity 'snippets'))" \
-    "--identity[Set identity]:identity_label:($(__serverauditor_entity 'identities'))"
+    "-t[Set Tag]:tag_label:($(__termius_entity 'tags'))" \
+    "--tag[Set Tag]:tag_label:($(__termius_entity 'tags'))" \
+    "-g[Set Group]:group_label:($(__termius_entity 'groups'))" \
+    "--group[Set Group]:group_label:($(__termius_entity 'groups'))" \
+    "-s[Set startup snippet]:snippet_label:($(__termius_entity 'snippets'))" \
+    "--snippet[Set startup snippet]:snippet_label:($(__termius_entity 'snippets'))" \
+    "--identity[Set identity]:identity_label:($(__termius_entity 'identities'))"
 
 }
-_serverauditor_hosts() {
+_termius_hosts() {
   _arguments \
     '-h[Display help]' \
     '--help[Display help]' \
@@ -176,12 +176,12 @@ _serverauditor_hosts() {
     '-c[The column(s) to include]:columns:()' \
     '--column[The column(s) to include]:columns:()' \
     '--quote[When to include quotes]:quote:(all minimal none nonnumeric)' \
-    "-t[Filter by tags]:tag_label:($(__serverauditor_entity 'tags'))" \
-    "--tag[Filter by tags]:tag_label:($(__serverauditor_entity 'tags'))" \
-    "-g[Filter in group]:group_label:($(__serverauditor_entity 'groups'))" \
-    "--group[Filter in group]:group_label:($(__serverauditor_entity 'groups'))"
+    "-t[Filter by tags]:tag_label:($(__termius_entity 'tags'))" \
+    "--tag[Filter by tags]:tag_label:($(__termius_entity 'tags'))" \
+    "-g[Filter in group]:group_label:($(__termius_entity 'groups'))" \
+    "--group[Filter in group]:group_label:($(__termius_entity 'groups'))"
 }
-_serverauditor_identities() {
+_termius_identities() {
   _arguments \
     '-h[Display help]' \
     '--help[Display help]' \
@@ -194,7 +194,7 @@ _serverauditor_identities() {
     '--column[The column(s) to include]:columns:()' \
     '--quote[When to include quotes]:quote:(all minimal none nonnumeric)'
 }
-_serverauditor_identity() {
+_termius_identity() {
   _arguments \
     '-h[Display help]' \
     '--help[Display help]' \
@@ -209,11 +209,11 @@ _serverauditor_identity() {
     '--password[Host User password]:insecure:()' \
     '-i[Identity file - ssh private key file]:filename:_files' \
     '--identity-file[Identity file - ssh private key file]:filename:_files' \
-    "-k[Set key]:key_label:($(__serverauditor_entity 'keys'))" \
-    "--ssh-keySet key]:key_label:($(__serverauditor_entity 'keys'))"
+    "-k[Set key]:key_label:($(__termius_entity 'keys'))" \
+    "--ssh-keySet key]:key_label:($(__termius_entity 'keys'))"
 
 }
-_serverauditor_info() {
+_termius_info() {
   _arguments \
     '-h[Display help]' \
     '--help[Display help]' \
@@ -231,7 +231,7 @@ _serverauditor_info() {
     '-f[Output format]:formats:(json shell ssh table value yaml)' \
     '--format[Output format]:formats:(json shell ssh table value yaml)'
 }
-_serverauditor_key() {
+_termius_key() {
   _arguments \
     '-h[Display help]' \
     '--help[Display help]' \
@@ -244,7 +244,7 @@ _serverauditor_key() {
     '--identity-file[Identity file - ssh private key file]:filename:_files'
 
 }
-_serverauditor_keys() {
+_termius_keys() {
   _arguments \
     '-h[Display help]' \
     '--help[Display help]' \
@@ -257,7 +257,7 @@ _serverauditor_keys() {
     '--column[The column(s) to include]:columns:()' \
     '--quote[When to include quotes]:quote:(all minimal none nonnumeric)'
 }
-_serverauditor_login() {
+_termius_login() {
   _arguments \
     '-h[Display help]' \
     '--help[Display help]' \
@@ -267,13 +267,13 @@ _serverauditor_login() {
     '-p[Password]:isnotsecure:()' \
     '--password[Password]:isnotsecure:()'
 }
-_serverauditor_logout() {
+_termius_logout() {
   _arguments \
     '-h[Display help]' \
     '--help[Display help]' \
     '--log-file[Log to this file]:filename:_files'
 }
-_serverauditor_pfrule() {
+_termius_pfrule() {
   _arguments \
     '-h[Display help]' \
     '--help[Display help]' \
@@ -286,12 +286,12 @@ _serverauditor_pfrule() {
     '--delete[Delete instances]' \
     '-L[Instance label]:label:()' \
     '--label[Instance label]:label:()' \
-    "-H[Set Host]:host_label:($(__serverauditor_entity 'hosts'))" \
-    "--host[Set Host]:host_label:($(__serverauditor_entity 'hosts'))"
+    "-H[Set Host]:host_label:($(__termius_entity 'hosts'))" \
+    "--host[Set Host]:host_label:($(__termius_entity 'hosts'))"
 
 }
 
-_serverauditor_pfrules() {
+_termius_pfrules() {
   _arguments \
     '-h[Display help]' \
     '--help[Display help]' \
@@ -304,7 +304,7 @@ _serverauditor_pfrules() {
     '--column[The column(s) to include]:columns:()' \
     '--quote[When to include quotes]:quote:(all minimal none nonnumeric)'
 }
-_serverauditor_pull() {
+_termius_pull() {
   _arguments \
     '-h[Display help]' \
     '--help[Display help]' \
@@ -312,7 +312,7 @@ _serverauditor_pull() {
     '-p[Password]:isnotsecure:()' \
     '--password[Password]:isnotsecure:()'
 }
-_serverauditor_push() {
+_termius_push() {
   _arguments \
     '-h[Display help]' \
     '--help[Display help]' \
@@ -320,7 +320,7 @@ _serverauditor_push() {
     '-p[Password]:isnotsecure:()' \
     '--password[Password]:isnotsecure:()'
 }
-_serverauditor_snippet() {
+_termius_snippet() {
   _arguments \
     '-h[Display help]' \
     '--help[Display help]' \
@@ -333,7 +333,7 @@ _serverauditor_snippet() {
     '--delete[Delete instances]'
 
 }
-_serverauditor_snippets() {
+_termius_snippets() {
   _arguments \
     '-h[Display help]' \
     '--help[Display help]' \
@@ -346,7 +346,7 @@ _serverauditor_snippets() {
     '--column[The column(s) to include]:columns:()' \
     '--quote[When to include quotes]:quote:(all minimal none nonnumeric)'
 }
-_serverauditor_sync() {
+_termius_sync() {
   _arguments \
     '-h[Display help]' \
     '--help[Display help]' \
@@ -354,7 +354,7 @@ _serverauditor_sync() {
     '-c[Credential file]:filename:_files' \
     '--credentials[Credential file]:filename:_files'
 }
-_serverauditor_tags() {
+_termius_tags() {
   _arguments \
     '-h[Display help]' \
     '--help[Display help]' \
@@ -371,29 +371,29 @@ _serverauditor_tags() {
 
 }
 
-__serverauditor_entity_labels() {
-  serverauditor $1 -f csv --quote none -c label -c id | awk 'FS="," {if (NR>1) print $2":[id="$1"]" }'
+__termius_entity_labels() {
+  termius $1 -f csv --quote none -c label -c id | awk 'FS="," {if (NR>1) print $2":[id="$1"]" }'
 }
 
-__serverauditor_entity() {
-  serverauditor $1 -f value --quote none -c label
+__termius_entity() {
+  termius $1 -f value --quote none -c label
 }
 
-__serverauditor_get_labels_ids() {
+__termius_get_labels_ids() {
   case $1 in
     host|group|key|pfrule|snippet)
-      __serverauditor_entity_labels "$1"s
+      __termius_entity_labels "$1"s
       ;;
     identity)
-      __serverauditor_entity_labels identities
+      __termius_entity_labels identities
       ;;
     *) return 0
       ;;
   esac
 }
 
-__serverauditor_instances() {
-  instances=($(__serverauditor_get_labels_ids $1))
+__termius_instances() {
+  instances=($(__termius_get_labels_ids $1))
   if [[ "X$instances" != "X" ]];
   then
     _describe -o "instances_$1" instances

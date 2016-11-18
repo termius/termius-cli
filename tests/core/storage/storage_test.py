@@ -3,11 +3,11 @@ import tempfile
 from six import integer_types
 from mock import patch, Mock
 from unittest import TestCase
-from serverauditor_sshconfig.core.models.terminal import (
+from termius.core.models.terminal import (
     Host, SshConfig, Identity, SshKey, Group
 )
-from serverauditor_sshconfig.core.exceptions import DoesNotExistException
-from serverauditor_sshconfig.core.storage.strategies import (
+from termius.core.exceptions import DoesNotExistException
+from termius.core.storage.strategies import (
     GetStrategy, SaveStrategy, RelatedGetStrategy, RelatedSaveStrategy
 )
 
@@ -20,14 +20,14 @@ class StrategyCase(TestCase):
     def setUp(self):
         self.tempfile = tempfile.NamedTemporaryFile()
         self.storage_file_patch = patch(
-            'serverauditor_sshconfig.core.storage.ApplicationStorage.path',
+            'termius.core.storage.ApplicationStorage.path',
             self.tempfile.name
         )
 
         self.assertIsNotNone(self.save_strategy_class)
         self.assertIsNotNone(self.get_strategy_class)
 
-        from serverauditor_sshconfig.core.storage import ApplicationStorage
+        from termius.core.storage import ApplicationStorage
 
         self.storage = ApplicationStorage(
             Mock(**{'app.directory_path.return_value': 'TestCase'}),

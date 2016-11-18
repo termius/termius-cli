@@ -6,12 +6,12 @@ setup() {
 }
 
 @test "logout help by arg" {
-    run serverauditor logout --help
+    run termius logout --help
     [ "$status" -eq 0 ]
 }
 
 @test "logout help command" {
-    run serverauditor help logout
+    run termius help logout
     [ "$status" -eq 0 ]
 }
 
@@ -20,11 +20,11 @@ setup() {
         skip '$SERVERAUDITOR_USERNAME and $SERVERAUDITOR_PASSWORD are not set!'
     fi
 
-    rm ~/.serverauditor/config || true
-    serverauditor login --username $SERVERAUDITOR_USERNAME -p $SERVERAUDITOR_PASSWORD
+    rm ~/.termius/config || true
+    termius login --username $SERVERAUDITOR_USERNAME -p $SERVERAUDITOR_PASSWORD
     populate_storage
-    run serverauditor logout
+    run termius logout
     [ "$status" -eq 0 ]
-    [ -z "$(cat ~/.serverauditor/config)" ]
+    [ -z "$(cat ~/.termius/config)" ]
     assert_clear_storage
 }

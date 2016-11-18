@@ -2,12 +2,12 @@
 import six
 from mock import patch, Mock
 
-from serverauditor_sshconfig.core.models.base import Model
-from serverauditor_sshconfig.core.models.terminal import (
+from termius.core.models.base import Model
+from termius.core.models.terminal import (
     Tag, SshKey, Identity, SshConfig, Group, Host, PFRule
 )
 
-from serverauditor_sshconfig.core.storage import ApplicationStorage
+from termius.core.storage import ApplicationStorage
 
 
 def test_generator():
@@ -28,7 +28,7 @@ def test_generator():
         yield save, instance
 
 
-@patch('serverauditor_sshconfig.core.storage.PersistentDict')
+@patch('termius.core.storage.PersistentDict')
 def save(model, mocked):
 
     storage = ApplicationStorage(Mock(**{

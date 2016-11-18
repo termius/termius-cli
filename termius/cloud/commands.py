@@ -48,7 +48,7 @@ class CloudSynchronizationCommand(AbstractCommand):
 
 
 class PushCommand(CloudSynchronizationCommand):
-    """Push data to Serverauditor cloud."""
+    """Push data to Termius cloud."""
 
     get_strategy = RelatedGetStrategy
     save_strategy = SyncSaveStrategy
@@ -57,11 +57,11 @@ class PushCommand(CloudSynchronizationCommand):
         """Push outdated local instances."""
         api_controller.put_setting()
         api_controller.post_bulk()
-        self.log.info('Push data to Serverauditor cloud.')
+        self.log.info('Push data to Termius cloud.')
 
 
 class PullCommand(CloudSynchronizationCommand):
-    """Pull data from Serverauditor cloud."""
+    """Pull data from Termius cloud."""
 
     save_strategy = SyncSaveStrategy
 
@@ -69,11 +69,11 @@ class PullCommand(CloudSynchronizationCommand):
         """Pull updated remote instances."""
         api_controller.get_settings()
         api_controller.get_bulk()
-        self.log.info('Pull data from Serverauditor cloud.')
+        self.log.info('Pull data from Termius cloud.')
 
 
 class FullCleanCommand(CloudSynchronizationCommand):
-    """Pull, delete all data and push to Serverauditor cloud."""
+    """Pull, delete all data and push to Termius cloud."""
 
     get_strategy = RelatedGetStrategy
     save_strategy = SyncSaveStrategy
@@ -86,7 +86,7 @@ class FullCleanCommand(CloudSynchronizationCommand):
         with self.storage:
             self.full_clean()
         api_controller.post_bulk()
-        self.log.info('Full clean data from Serverauditor cloud.')
+        self.log.info('Full clean data from Termius cloud.')
 
     def full_clean(self):
         """Remove all local and remote instances."""

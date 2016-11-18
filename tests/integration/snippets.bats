@@ -7,18 +7,18 @@ setup() {
 }
 
 @test "snippets help by arg" {
-    run serverauditor snippets --help
+    run termius snippets --help
     [ "$status" -eq 0 ]
 }
 
 @test "snippets help command" {
-    run serverauditor help snippets
+    run termius help snippets
     [ "$status" -eq 0 ]
 }
 
 @test "List snippets in table format" {
-    serverauditor snippet -L test --script 'ls'
-    run serverauditor snippets
+    termius snippet -L test --script 'ls'
+    run termius snippets
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'snippet_set') -eq 1 ]
 }

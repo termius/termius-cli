@@ -12,8 +12,8 @@ RUN apt-get update \
         git \
     && git clone https://github.com/sstephenson/bats.git && cd bats && ./install.sh /usr/local/ && cd -
 
-ADD . /serverauditor
+ADD . /termius
 
-WORKDIR /serverauditor
+WORKDIR /termius
 
 CMD tox

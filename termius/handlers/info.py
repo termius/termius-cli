@@ -19,7 +19,7 @@ class InfoCommand(SshConfigMergerMixin, GetRelationMixin,
     @property
     def formatter_namespace(self):
         """Return entrypoint with cliff formatters."""
-        return 'serverauditor.info.formatters'
+        return 'termius.info.formatters'
 
     def extend_parser(self, parser):
         """Add more arguments to parser."""
