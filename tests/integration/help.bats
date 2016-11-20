@@ -2,6 +2,6 @@
 
 
 @test "help arg" {
-    run serverauditor --help
+    run termius --help
     [ "$status" -eq 0 ]
 }

@@ -1,37 +1,37 @@
-login_serverauditor () {
+login_termius () {
     if [ "$SERVERAUDITOR_USERNAME" == '' ] || [ "$SERVERAUDITOR_PASSWORD" == '' ];then
       skip '$SERVERAUDITOR_USERNAME and $SERVERAUDITOR_PASSWORD are not set!'
     fi
 
-    serverauditor login --username $SERVERAUDITOR_USERNAME -p $SERVERAUDITOR_PASSWORD
+    termius login --username $SERVERAUDITOR_USERNAME -p $SERVERAUDITOR_PASSWORD
 }
 
-pull_serverauditor() {
-    login_serverauditor
+pull_termius() {
+    login_termius
 
-    serverauditor pull -p $SERVERAUDITOR_PASSWORD
+    termius pull -p $SERVERAUDITOR_PASSWORD
 
 }
 
 get_models_set() {
-    cat ~/.serverauditor/storage | jq .$1
+    cat ~/.termius/storage | jq .$1
 }
 
 get_models_set_length() {
-    cat ~/.serverauditor/storage | jq ".$1 | length"
+    cat ~/.termius/storage | jq ".$1 | length"
 }
 
 get_model_field() {
-    instances=$(cat ~/.serverauditor/storage | jq ".$1" | jq ".[] | select(.${4:-id} == $2)")
+    instances=$(cat ~/.termius/storage | jq ".$1" | jq ".[] | select(.${4:-id} == $2)")
     echo $instances | jq ".$3"
 }
 
 clean_storage() {
-    rm ~/.serverauditor/storage
+    rm ~/.termius/storage
 }
 
 populate_storage() {
-    serverauditor host --address localhost
+    termius host --address localhost
 }
 
 assert_clear_storage() {

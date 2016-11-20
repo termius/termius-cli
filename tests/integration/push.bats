@@ -6,33 +6,33 @@ setup() {
 }
 
 @test "push help by arg" {
-    run serverauditor push --help
+    run termius push --help
     [ "$status" -eq 0 ]
 }
 
 @test "push help command" {
-    run serverauditor help push
+    run termius help push
     [ "$status" -eq 0 ]
 }
 
 @test "push logged in" {
-    login_serverauditor
+    login_termius
 
-    serverauditor pull -p $SERVERAUDITOR_PASSWORD
-    run serverauditor push -p $SERVERAUDITOR_PASSWORD
+    termius pull -p $SERVERAUDITOR_PASSWORD
+    run termius push -p $SERVERAUDITOR_PASSWORD
     [ "$status" -eq 0 ]
 }
 
 @test "push nothing logged in incorrect password" {
-    login_serverauditor
+    login_termius
 
-    run serverauditor push -p "" --debug
+    run termius push -p "" --debug
     echo ${lines[*]}
     [ "$status" -eq 1 ]
 }
 
 @test "push not logged in" {
-    serverauditor logout
-    run serverauditor pull -p ""
+    termius logout
+    run termius pull -p ""
     [ "$status" -eq 1 ]
 }

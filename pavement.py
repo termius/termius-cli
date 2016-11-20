@@ -3,7 +3,7 @@
 from paver.easy import task, sh, path  # noqa
 
 # pylint: disable=invalid-name
-cli_command_name = 'serverauditor'
+cli_command_name = 'termius'
 
 
 @task

@@ -23,15 +23,15 @@ from .core.models.terminal import SshKey
 
 
 # pylint: disable=too-few-public-methods
-class ServerauditorApp(App):
+class TermiusApp(App):
     """Class for CLI application."""
 
     def __init__(self):
         """Construct new CLI application."""
-        super(ServerauditorApp, self).__init__(
-            description='Serverauditor app',
+        super(TermiusApp, self).__init__(
+            description='Termius app',
             version=get_version(),
-            command_manager=CommandManager('serverauditor.handlers'),
+            command_manager=CommandManager('termius.handlers'),
         )
         self.configure_signals()
         self.directory_path = Path(expanduser('~/.{}/'.format(self.NAME)))
@@ -40,7 +40,7 @@ class ServerauditorApp(App):
 
     def configure_logging(self):
         """Change logging level for request package."""
-        super(ServerauditorApp, self).configure_logging()
+        super(TermiusApp, self).configure_logging()
         logging.getLogger('requests').setLevel(logging.WARNING)
         return
 

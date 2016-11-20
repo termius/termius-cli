@@ -63,7 +63,7 @@ class DetailCommand(GetRelationMixin, GetObjectsMixin,
         )
         parser.add_argument(
             '-L', '--label', metavar='NAME',
-            help="Entry's label in Serverauditor"
+            help="Entry's label in Termius"
         )
         parser.add_argument(
             'entry', nargs='*', metavar='ID or NAME',

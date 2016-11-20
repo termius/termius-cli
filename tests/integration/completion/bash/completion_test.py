@@ -3,8 +3,8 @@ import subprocess
 import unittest
 from pathlib2 import Path
 from mock import Mock
-from serverauditor_sshconfig.core.storage import ApplicationStorage
-from serverauditor_sshconfig.core.models.terminal import (
+from termius.core.storage import ApplicationStorage
+from termius.core.models.terminal import (
     Host, Group, PFRule, Identity
 )
 
@@ -79,10 +79,10 @@ class BashCompletionTest(unittest.TestCase):
         self.assertEqual(stdout.decode('utf-8'), expected + '\n')
 
 
-class ServerauditorTestCase(BashCompletionTest):
+class TermiusTestCase(BashCompletionTest):
 
-    program = 'serverauditor'
-    completion_file = 'contrib/completion/bash/serverauditor'
+    program = 'termius'
+    completion_file = 'contrib/completion/bash/termius'
 
     def test_nothing(self):
         self.run_complete(
@@ -184,21 +184,21 @@ class ServerauditorTestCase(BashCompletionTest):
             self.run_complete(subcommand + ' --format ', 'csv json table value yaml')
 
     def run_complete(self, command, expected):
-        super(ServerauditorTestCase, self).run_complete(
+        super(TermiusTestCase, self).run_complete(
             self.completion_file, self.program, command, expected
         )
 
     def setUp(self):
-        self.client = ServerauditorClient()
+        self.client = TermiusClient()
 
     def tearDown(self):
         self.client.clean()
 
 
-class ServerauditorClient(object):
+class TermiusClient(object):
 
     def __init__(self):
-        self.app_directory = Path('~/.serverauditor/').expanduser()
+        self.app_directory = Path('~/.termius/').expanduser()
         self.command_mock = Mock(**{'app.directory_path': self.app_directory})
         self.prepare()
 

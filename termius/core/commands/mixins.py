@@ -20,7 +20,7 @@ class PasswordPromptMixin(object):
     # pylint: disable=no-self-use
     def prompt_password(self):
         """Ask user to enter password in secure way."""
-        return getpass.getpass("Serverauditor's password:")
+        return getpass.getpass('Termius password:')
 
 
 class GetRelationMixin(object):

@@ -20,17 +20,17 @@ teardown() {
 
 
 @test "Identity help by arg" {
-    run serverauditor identity --help
+    run termius identity --help
     [ "$status" -eq 0 ]
 }
 
 @test "Identity help command" {
-    run serverauditor help identity
+    run termius help identity
     [ "$status" -eq 0 ]
 }
 
 @test "Add general identity" {
-    run serverauditor identity -L local --username 'ROOT' --password 'pa'
+    run termius identity -L local --username 'ROOT' --password 'pa'
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'identity_set') -eq 1 ]
     identity=${lines[1]}
@@ -41,7 +41,7 @@ teardown() {
 }
 
 @test "Add identity with key" {
-    run serverauditor identity -L local --identity-file $private_key_path --debug
+    run termius identity -L local --identity-file $private_key_path --debug
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'identity_set') -eq 1 ]
     [ $(get_models_set_length 'sshkeycrypt_set') -eq 1 ]
@@ -55,8 +55,8 @@ teardown() {
 }
 
 @test "Update identity" {
-    identity=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
-    run serverauditor identity --password 'ps' $identity
+    identity=$(termius identity -L local --username 'ROOT' --password 'pa')
+    run termius identity --password 'ps' $identity
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'identity_set') -eq 1 ]
     [ "$(get_model_field 'identity_set' $identity 'label')" = '"local"' ]
@@ -67,25 +67,25 @@ teardown() {
 }
 
 @test "Update many identities" {
-    identity1=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
-    identity2=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
-    run serverauditor identity -L local --username 'ROOT' --password 'pa' $identity1 $identity2
+    identity1=$(termius identity -L local --username 'ROOT' --password 'pa')
+    identity2=$(termius identity -L local --username 'ROOT' --password 'pa')
+    run termius identity -L local --username 'ROOT' --password 'pa' $identity1 $identity2
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'identity_set') -eq 2 ]
 }
 
 @test "Delete identity" {
-    identity1=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
-    identity2=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
-    run serverauditor identity --delete $identity2
+    identity1=$(termius identity -L local --username 'ROOT' --password 'pa')
+    identity2=$(termius identity -L local --username 'ROOT' --password 'pa')
+    run termius identity --delete $identity2
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'identity_set') -eq 1 ]
 }
 
 @test "Delete many identities" {
-    identity1=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
-    identity2=$(serverauditor identity -L local --username 'ROOT' --password 'pa')
-    run serverauditor identity --delete $identity1 $identity2
+    identity1=$(termius identity -L local --username 'ROOT' --password 'pa')
+    identity2=$(termius identity -L local --username 'ROOT' --password 'pa')
+    run termius identity --delete $identity1 $identity2
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'identity_set') -eq 0 ]
 }

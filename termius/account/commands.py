@@ -39,12 +39,12 @@ class BaseAccountCommand(AbstractCommand):
 
 
 class LoginCommand(BaseAccountCommand):
-    """Sign into serverauditor cloud."""
+    """Sign into Termius cloud."""
 
     # pylint: disable=no-self-use
     def prompt_username(self):
         """Ask username prompt."""
-        return six.moves.input("Serverauditor's username: ")
+        return six.moves.input("Termius's username: ")
 
     def extend_parser(self, parser):
         """Add more arguments to parser."""
@@ -58,17 +58,17 @@ class LoginCommand(BaseAccountCommand):
         password = parsed_args.password or self.prompt_password()
         with on_clean_when_logout(self, self.manager):
             self.manager.login(username, password)
-        self.log.info('Sign into serverauditor cloud.')
+        self.log.info('Sign into Termius cloud.')
 
 
 class LogoutCommand(BaseAccountCommand):
-    """Sign out serverauditor cloud."""
+    """Sign out Termius cloud."""
 
     def take_action(self, _):
         """Process CLI call."""
         with on_clean_when_logout(self, self.manager):
             self.manager.logout()
-        self.log.info('Sign out serverauditor cloud.')
+        self.log.info('Sign out Termius cloud.')
 
 
 class SettingsCommand(BaseAccountCommand):

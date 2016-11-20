@@ -6,19 +6,19 @@ setup() {
 }
 
 @test "Identities help by arg" {
-    run serverauditor identities --help
+    run termius identities --help
     [ "$status" -eq 0 ]
 }
 
 @test "Identities help command" {
-    run serverauditor help identities
+    run termius help identities
     [ "$status" -eq 0 ]
 }
 
 @test "List general identities in table format" {
-    rm ~/.serverauditor.storage || true
-    serverauditor identity -L local --username 'ROOT' --password 'pa'
-    run serverauditor identities
+    rm ~/.termius.storage || true
+    termius identity -L local --username 'ROOT' --password 'pa'
+    run termius identities
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'identity_set') -eq 1 ]
 }

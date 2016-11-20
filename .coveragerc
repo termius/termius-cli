@@ -1,6 +1,6 @@
 [run]
 branch = True
-include = serverauditor_sshconfig/**.py
+include = termius/**.py
 
 [report]
 precision = 2

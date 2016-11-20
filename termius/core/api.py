@@ -8,7 +8,7 @@ from requests.auth import AuthBase
 
 
 # pylint: disable=too-few-public-methods
-class ServerauditorAuth(AuthBase):
+class TermiusAuth(AuthBase):
     """Authentication method to sync-cloud."""
 
     header_name = 'Authorization'
@@ -47,13 +47,13 @@ class API(object):
     def __init__(self, username=None, apikey=None):
         """Construct new API instance."""
         if username and apikey:
-            self.auth = ServerauditorAuth(username, apikey)
+            self.auth = TermiusAuth(username, apikey)
         else:
             self.auth = None
 
     def set_auth(self, username, apikey):
         """Provide credentials."""
-        self.auth = ServerauditorAuth(username, apikey)
+        self.auth = TermiusAuth(username, apikey)
 
     def request_url(self, endpoint):
         """Create full url to endpoint."""

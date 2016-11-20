@@ -6,21 +6,21 @@ setup() {
 }
 
 @test "info help by arg" {
-    run serverauditor settings --help
+    run termius settings --help
     [ "$status" -eq 0 ]
 }
 
 @test "info help command" {
-    run serverauditor help settings
+    run termius help settings
     [ "$status" -eq 0 ]
 }
 
 @test "Settings yes" {
-    run serverauditor settings --synchronize-key=yes --agent-forwarding yes
+    run termius settings --synchronize-key=yes --agent-forwarding yes
     [ "$status" -eq 0 ]
 }
 
 @test "Settings no" {
-    run serverauditor settings --synchronize-key=no --agent-forwarding no
+    run termius settings --synchronize-key=no --agent-forwarding no
     [ "$status" -eq 0 ]
 }

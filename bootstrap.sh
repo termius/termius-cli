@@ -103,10 +103,10 @@ do_install() {
     fi
     easy_install -U $tar_url
 
-    if command_exists serverauditor; then
+    if command_exists termius; then
 	(
 	    set -x
-	    serverauditor --version
+	    termius --version
 	) || true
     fi
     exit 0

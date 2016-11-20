@@ -3,13 +3,13 @@ import os.path
 from mock import patch, MagicMock
 from six import StringIO
 from nose.tools import eq_
-from serverauditor_sshconfig.sync.providers.ssh import SSHService
-from serverauditor_sshconfig.core.models.terminal import (
+from termius.sync.providers.ssh import SSHService
+from termius.core.models.terminal import (
     Host, SshConfig, Identity, SshKey
 )
 
 
-@patch('serverauditor_sshconfig.sync.providers.ssh.Path')
+@patch('termius.sync.providers.ssh.Path')
 def test_empty_sshconfig(mockpath):
     mockpath.return_value.open.return_value.__enter__.return_value = StringIO()
     service = SSHService(None, '')
@@ -17,7 +17,7 @@ def test_empty_sshconfig(mockpath):
     eq_(ssh_hosts, [])
 
 
-@patch('serverauditor_sshconfig.sync.providers.ssh.Path')
+@patch('termius.sync.providers.ssh.Path')
 def test_single_sshconfig(mockpath):
     mockpath.return_value.open.return_value.__enter__.return_value = StringIO(
         """
@@ -51,7 +51,7 @@ Host firstone
     ])
 
 
-@patch('serverauditor_sshconfig.sync.providers.ssh.Path')
+@patch('termius.sync.providers.ssh.Path')
 def test_single_sshconfig_with_fnmatch(mockpath):
     mockpath.return_value.open.return_value.__enter__.return_value = StringIO(
         """
@@ -84,7 +84,7 @@ Host firstone
     ])
 
 
-@patch('serverauditor_sshconfig.sync.providers.ssh.Path')
+@patch('termius.sync.providers.ssh.Path')
 def test_single_sshconfig_with_keys(mockpath):
     sshconfig_content = """
 Host firstone

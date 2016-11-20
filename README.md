@@ -1,4 +1,4 @@
-# Serverauditor ssh config utility
+# Termius CLI utility
 
 [![Build status](https://travis-ci.org/Crystalnix/serverauditor-sshconfig.svg?branch=master)](https://travis-ci.org/Crystalnix/serverauditor-sshconfig)
 [![Code Climate](https://codeclimate.com/github/Crystalnix/serverauditor-sshconfig/badges/gpa.svg)](https://codeclimate.com/github/Crystalnix/serverauditor-sshconfig)
@@ -10,50 +10,50 @@
 
 ## Installation
 
-Serverauditor ssh config utility can be installed via [pip](http://www.pip-installer.org/en/latest/index.html):
+Termius CLI utility can be installed via [pip](http://www.pip-installer.org/en/latest/index.html):
 
 ```bash
-pip install -U serverauditor-sshconfig
+pip install -U termius
 ```
 or [easy_install](http://pythonhosted.org/distribute/):
 
 ```bash
-easy_install -U serverauditor-sshconfig
+easy_install -U termius
 ```
 
 
 ## Usage
 
-Login to serverauditor.com
+Login to termius.com
 
 ```bash
-serverauditor login
+termius login
 ```
 
-Pull data from serverauditor.com
+Pull data from termius.com
 
 ```bash
-serverauditor pull
+termius pull
 ```
 
 Create host
 ```bash
-serverauditor host --address localhost --label myhost
+termius host --address localhost --label myhost
 ```
 
 Connect to host
 ```
-serverauditor connect myhost
+termius connect myhost
 ```
 
-Push data to serverauditor.com
+Push data to termius.com
 ```bash
-serverauditor push
+termius push
 ```
 
 Create hosts from ssh config
 ```bash
-serverauditor sync ssh
+termius sync ssh
 ```
 
 ## License

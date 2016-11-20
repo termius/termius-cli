@@ -6,7 +6,7 @@ from nose.tools import eq_, ok_, raises
 from itertools import product
 from unittest import TestCase
 
-from serverauditor_sshconfig.cloud.client.cryptor import RNCryptor, CryptorException
+from termius.cloud.client.cryptor import RNCryptor, CryptorException
 
 
 def test_dual_encrypt_and_decrypt():

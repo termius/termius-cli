@@ -2,12 +2,12 @@
 # -*- coding: utf-8 -*-
 """Entrypoint for CLI tool."""
 import sys
-from serverauditor_sshconfig.app import ServerauditorApp
+from termius.app import TermiusApp
 
 
 def main(argv=sys.argv[1:]):
     """Process call from terminal."""
-    app = ServerauditorApp()
+    app = TermiusApp()
 
     if sys.version_info < (3,):
         decoded_argv = []

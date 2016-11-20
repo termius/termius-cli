@@ -5,16 +5,16 @@ from mock import Mock
 from nose.tools import eq_
 from ....core.storage.storage_test import StrategyCase
 from ..cryptor_test import generate_cryptor, config_factory
-from serverauditor_sshconfig.cloud.client.transformers.many import (
+from termius.cloud.client.transformers.many import (
     BulkTransformer
 )
-from serverauditor_sshconfig.core.storage.strategies import (
+from termius.core.storage.strategies import (
     RelatedGetStrategy, SyncSaveStrategy
 )
-from serverauditor_sshconfig.cloud.client.controllers import CryptoController
-from serverauditor_sshconfig.account.managers import AccountManager
-from serverauditor_sshconfig.core.settings import Config
-from serverauditor_sshconfig.core.models.terminal import (
+from termius.cloud.client.controllers import CryptoController
+from termius.account.managers import AccountManager
+from termius.core.settings import Config
+from termius.core.models.terminal import (
     Host, SshConfig, Identity, SshKey
 )
 

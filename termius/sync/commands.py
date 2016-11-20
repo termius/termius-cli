@@ -11,7 +11,7 @@ class SyncCommand(AbstractCommand):
     """Sync with IaaS or PaaS."""
 
     service_manager = ExtensionManager(
-        namespace='serverauditor.sync.providers'
+        namespace='termius.sync.providers'
     )
     save_strategy = RelatedSaveStrategy
     get_strategy = RelatedGetStrategy
