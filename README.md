@@ -6,7 +6,7 @@
 
 ## Demo
 
-[![demo](https://asciinema.org/a/9w1l0zgyiax6u3nqkd4qrpg5p.png)](https://asciinema.org/a/9w1l0zgyiax6u3nqkd4qrpg5p?autoplay=1)
+[![demo](https://asciinema.org/a/9v8xuygkowzau16y3zp19u0ov.png)](https://asciinema.org/a/9v8xuygkowzau16y3zp19u0ov?autoplay=1)
 
 ## Installation
 
