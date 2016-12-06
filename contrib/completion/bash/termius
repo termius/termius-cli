@@ -1,0 +1,328 @@
+__termius_entity_labels() {
+  termius $1 -f value -c label
+}
+
+__termius_get_labels_ids() {
+  case $1 in
+    host|group|key|pfrule|snippet)
+      __termius_entity_labels "$1"s
+      ;;
+    identity)
+      __termius_entity_labels identities
+      ;;
+    *) return 0
+      ;;
+  esac
+}
+
+__termius_subcommand_instance() {
+  case $1 in
+    host|group|identity|key|pfrule|snippet)
+      __termius_get_labels_ids $1
+      ;;
+    connect)
+      __termius_complete_connect
+      ;;
+    info)
+     __termius_complete_info
+      ;;
+    *) return 0
+      ;;
+  esac
+}
+
+__termius_complete_option_value() {
+  local completion
+  completion="__termius_complete_options_$1"
+  if ! type $completion >/dev/null 2>&1; then
+    __termius_complete_common_options $2
+  else
+    $completion $2
+  fi
+}
+
+__termius_complete_connect() {
+  if [[ " ${words[@]} " =~ " -R " ]] || [[ " ${words[@]} " =~ " --pfrule " ]]; then
+    __termius_get_labels_ids pfrule
+  else
+    __termius_get_labels_ids host
+  fi
+}
+
+__termius_complete_info() {
+  if [[ " ${words[@]} " =~ " -g " ]] || [[ " ${words[@]} " =~ " --group " ]]; then
+    __termius_get_labels_ids group
+  else
+    __termius_get_labels_ids host
+  fi
+}
+
+__termius_complete_options_complete() {
+  case $1 in
+    --shell)
+      echo bash
+      ;;
+    --name)
+      echo termius
+      ;;
+    *)
+      return 0
+      ;;
+  esac
+}
+__termius_complete_options_connect() {
+  return 0
+}
+__termius_complete_options_fullclean() {
+  __termius_complete_common_options $1
+}
+__termius_complete_options_group() {
+  case $1 in
+    -g|--parent-group)
+      __termius_get_labels_ids group
+      ;;
+    -s|--snippet)
+      __termius_get_labels_ids snippet
+      ;;
+    --identity)
+      __termius_get_labels_ids identity
+      ;;
+    *)
+      __termius_complete_common_options $1
+      ;;
+  esac
+}
+__termius_complete_options_groups() {
+  __termius_complete_common_list_options $1
+}
+__termius_complete_options_help() {
+  return 0
+}
+__termius_complete_options_host() {
+  case $1 in
+    -g|--group)
+      __termius_get_labels_ids group
+      ;;
+    -t|--tag)
+      __termius_get_labels_ids tag
+      ;;
+    -s|--snippet)
+      __termius_get_labels_ids snippet
+      ;;
+    --identity)
+      __termius_get_labels_ids identity
+      ;;
+    *)
+      __termius_complete_common_options $1
+      ;;
+  esac
+}
+__termius_complete_options_hosts() {
+  case $1 in
+    -g|--group)
+      __termius_get_labels_ids group
+      ;;
+    -t|--tag)
+      __termius_get_labels_ids tag
+      ;;
+    *)
+      __termius_complete_common_list_options $1
+      ;;
+  esac
+}
+__termius_complete_options_identities() {
+  __termius_complete_common_list_options $1
+}
+__termius_complete_options_identity() {
+  case $1 in
+    -k|--ssh-key)
+      __termius_get_labels_ids key
+      ;;
+    *)
+      __termius_complete_common_options $1
+      ;;
+  esac
+}
+__termius_complete_options_info() {
+   case $1 in
+    -f|--format)
+      echo json shell ssh table value yaml
+      ;;
+    *)
+      __termius_complete_common_options $1
+      ;;
+  esac
+}
+__termius_complete_options_keys() {
+  __termius_complete_common_list_options $1
+}
+__termius_complete_options_pfrule() {
+   case $1 in
+    -H|--host)
+      __termius_get_labels_ids host
+      ;;
+    *)
+      __termius_complete_common_options $1
+      ;;
+  esac
+}
+__termius_complete_options_pfrules() {
+  __termius_complete_common_list_options $1
+}
+__termius_complete_options_snippets() {
+  __termius_complete_common_list_options $1
+}
+__termius_complete_options_tags() {
+  __termius_complete_common_list_options $1
+}
+
+__termius_complete_common_list_options() {
+  case $1 in
+    -f|--format)
+      echo csv json table value yaml
+      ;;
+    *)
+      __termius_complete_common_options $1
+      ;;
+  esac
+}
+
+__termius_complete_common_options() {
+  return 0
+}
+
+_termius()
+{
+  local cur prev words
+  COMPREPLY=()
+  _get_comp_words_by_ref -n : cur prev words
+
+  # Command data:
+  cmds='complete connect fullclean group groups help host hosts identities identity info key keys login logout pfrule pfrules pull push snippet snippets sync tags settings'
+  cmds_complete='-h --help --name --shell'
+  cmds_complete_arg_options='--name --shell'
+  cmds_settings='-h --help --synchronize-key --agent-forwarding --log-file'
+  cmds_settings_arg_options='--synchronize-key --agent-forwarding --log-file'
+  cmds_settings_file_options='--log-file'
+  cmds_connect='-h --help --log-file -R --pfrule -H --host'
+  cmds_connect_arg_options='--log-file'
+  cmds_connect_file_options='--log-file'
+  cmds_fullclean='-h --help --log-file -p --password'
+  cmds_fullclean_arg_options='--log-file -p --password'
+  cmds_fullclean_file_options='--log-file'
+  cmds_group='-h --help --log-file -g --parent-group -p --port -s --snippet --identity -S --strict-host-key-check -T --timeout --use-ssh-key -k --keep-alive-packages -u --username -P --password -i --identity-file -d --delete -L --label'
+  cmds_group_arg_options='--log-file -g --parent-group -p --port -s --snippet --identity -u --username -P --password -i --identity-file -L --label -S --strict-host-key-check -T --timeout --use-ssh-key -k --keep-alive-packages'
+  cmds_group_file_options='--log-file -i --identity-file'
+  cmds_groups='-h --help -f --format -c --column --max-width --noindent --quote --log-file -r --recursive'
+  cmds_groups_arg_options='-f --format -c --column --max-width --log-file'
+  cmds_groups_file_options='--log-file'
+  cmds_help='-h --help'
+  cmds_host='-h --help --log-file -t --tag -g --group -a --address -p --port -s --snippet --identity -u --username -P --password -i --identity-file -d --delete -L --label -S --strict-host-key-check -T --timeout --use-ssh-key -k --keep-alive-packages'
+  cmds_host_arg_options='--log-file -t --tag -g --group -a --address -p --port -s --snippet --identity -u --username -P --password -i --identity-file -L --label -S --strict-host-key-check -T --timeout --use-ssh-key -k --keep-alive-packages'
+  cmds_host_file_options='--log-file -i --identity-file'
+  cmds_hosts='-h --help -f --format -c --column --max-width --noindent --quote --log-file -t --tag -g --group'
+  cmds_hosts_arg_options='-f --format -c --column --max-width --log-file -t --tag -g --group'
+  cmds_hosts_file_options='--log-file'
+  cmds_identities='-h --help -f --format -c --column --max-width --noindent --quote --log-file'
+  cmds_identities_arg_options='-f --format -c --column --max-width --log-file'
+  cmds_identities_file_options='--log-file'
+  cmds_identity='-h --help --log-file -u --username -p --password -i --identity-file -k --ssh-key -d --delete -L --label'
+  cmds_identity_arg_options='--log-file -u --username -p --password -i --identity-file -k --ssh-key -L --label'
+  cmds_identity_file_options='--log-file -i --identity-file'
+  cmds_info='-h --help --log-file -G --group -H --host -M --no-merge -f --format -c --column --prefix --noindent --address --max-width'
+  cmds_info_arg_options='--log-file -f --format -c --column --prefix --address'
+  cmds_info_file_options='--log-file'
+  cmds_key='-h --help --log-file -i --identity-file -d --delete -L --label'
+  cmds_key_arg_options='--log-file -i --identity-file -L --label'
+  cmds_key_file_options='--log-file -i --identity-file'
+  cmds_keys='-h --help -f --format -c --column --max-width --noindent --quote --log-file'
+  cmds_keys_arg_options='-f --format -c --column --max-width --log-file'
+  cmds_keys_file_options='--log-file'
+  cmds_login='-h --help --log-file -u --username -p --password'
+  cmds_login_arg_options='--log-file -u --username -p --password'
+  cmds_login_file_options='--log-file'
+  cmds_logout='-h --help --log-file'
+  cmds_logout_arg_options='--log-file'
+  cmds_logout_file_options='--log-file'
+  cmds_pfrule='-h --help --log-file -H --host --dynamic --remote --local --binding -d --delete -L --label'
+  cmds_pfrule_arg_options='--log-file -H --host --binding -L --label'
+  cmds_pfrule_file_options='--log-file'
+  cmds_pfrules='-h --help -f --format -c --column --max-width --noindent --quote --log-file'
+  cmds_pfrules_arg_options='-f --format -c --column --max-width --log-file'
+  cmds_pfrules_file_options='--log-file'
+  cmds_pull='-h --help --log-file -p --password'
+  cmds_pull_arg_options='--log-file -p --password'
+  cmds_pull_file_options='--log-file'
+  cmds_push='-h --help --log-file -p --password'
+  cmds_push_arg_options='--log-file -p --password'
+  cmds_push_file_options='--log-file'
+  cmds_snippet='-h --help --log-file -s --script -d --delete -L --label'
+  cmds_snippet_arg_options='--log-file -s --script -L --label'
+  cmds_snippet_file_options='--log-file'
+  cmds_snippets='-h --help -f --format -c --column --max-width --noindent --quote --log-file'
+  cmds_snippets_arg_options='-f --format -c --column --max-width --log-file'
+  cmds_snippets_file_options='--log-file'
+  cmds_sync='-h --help --log-file -c --credentials'
+  cmds_sync_arg_options='--log-file -c --credentials'
+  cmds_sync_file_options='--log-file -c --credentials'
+  cmds_tags='-h --help -f --format -c --column --max-width --noindent --quote --log-file -d --delete'
+  cmds_tags_arg_options='-f --format -c --column --max-width --log-file'
+  cmds_tags_file_options='--log-file'
+
+  cmd=""
+  words[0]=""
+  completed_options="${cmds}"
+  for var in "${words[@]:1}"
+  do
+    if [[ ${var} == -* ]] ; then
+      break
+    fi
+    if [ -z "${cmd}" ] ; then
+      proposed="${var}"
+    else
+      proposed="${cmd}_${var}"
+    fi
+    local i="cmds_${proposed}"
+    local comp="${!i}"
+    if [ -z "${comp}" ] ; then
+      break
+    fi
+    if [[ ${comp} == -* ]] ; then
+      if [[ ${cur} != -* ]] ; then
+        completed_options=""
+        break
+      fi
+    fi
+    cmd="${proposed}"
+    completed_options="${comp}"
+  done
+
+  subcommand=${words[1]}
+  arg_options="cmds_${subcommand}_arg_options"
+  arg_file_options="cmds_${subcommand}_file_options"
+
+  if [ -z "${completed_options}" ] ;
+  then
+    if [ -n "${subcommand}" ] ;
+    then
+      if [[ "${prev}" == -* ]] && [[ " ${!arg_options} " =~ " ${prev} " ]];
+      then
+        if [[ " ${!arg_file_options} " =~ " ${prev} " ]];
+        then
+          COMPREPLY=( $(compgen -f -- ${cur}) )
+        else
+          COMPREPLY=( $(compgen -W "$(__termius_complete_option_value $subcommand $prev)" -- ${cur}) )
+        fi
+      else
+        COMPREPLY=( $(compgen -W "$(__termius_subcommand_instance $subcommand)" -- ${cur}) )
+      fi
+    else
+      COMPREPLY=( $( compgen -W "" -- "$cur" ) )
+    fi
+  else
+    COMPREPLY=( $(compgen -W "${completed_options}" -- ${cur}) )
+  fi
+  return 0
+}
+complete -F _termius termius
+# vim: ft=sh sw=2 ts=2 et

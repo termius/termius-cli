@@ -1,0 +1,6 @@
+mock
+nose
+coverage
+prospector
+pyroma==2.0
+paver

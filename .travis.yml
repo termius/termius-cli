@@ -1,0 +1,19 @@
+language: python
+python:
+  - "2.7"
+  - "3.4"
+  - "3.5"
+  - "3.5-dev" # 3.5 development branch
+install:
+  - git clone https://github.com/sstephenson/bats.git && cd bats && ./install.sh .. && cd -
+  - pip install -U pip setuptools
+  - pip install -U . -r dev-requirements.txt
+# command to run tests
+script:
+  - paver lint
+  - paver coverage
+  - PATH=$PWD/bin:$PATH paver bats
+
+addons:
+  code_climate:
+    repo_token: f12006bd2fc1828b90e76ba38458b741fbf1f6ec67b46d4653a40814b17d23e0

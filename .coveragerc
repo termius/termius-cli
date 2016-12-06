@@ -1,0 +1,7 @@
+[run]
+branch = True
+include = termius/**.py
+
+[report]
+precision = 2
+show_missing = True
