@@ -4,6 +4,10 @@
 [![Code Climate](https://codeclimate.com/github/Crystalnix/serverauditor-sshconfig/badges/gpa.svg)](https://codeclimate.com/github/Crystalnix/serverauditor-sshconfig)
 [![Test Coverage](https://codeclimate.com/github/Crystalnix/serverauditor-sshconfig/badges/coverage.svg)](https://codeclimate.com/github/Crystalnix/serverauditor-sshconfig/coverage)
 
+Provides command line interface for cross-platform terminal Termius.
+
+[this project used to be named serverauditor-sshconfig in the past]
+
 ## Demo
 
 [![demo](https://asciinema.org/a/9v8xuygkowzau16y3zp19u0ov.png)](https://asciinema.org/a/9v8xuygkowzau16y3zp19u0ov?autoplay=1)
