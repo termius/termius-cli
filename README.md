@@ -1,8 +1,12 @@
 # Termius CLI utility
 
-[![Build status](https://travis-ci.org/Crystalnix/serverauditor-sshconfig.svg?branch=master)](https://travis-ci.org/Crystalnix/serverauditor-sshconfig)
-[![Code Climate](https://codeclimate.com/github/Crystalnix/serverauditor-sshconfig/badges/gpa.svg)](https://codeclimate.com/github/Crystalnix/serverauditor-sshconfig)
-[![Test Coverage](https://codeclimate.com/github/Crystalnix/serverauditor-sshconfig/badges/coverage.svg)](https://codeclimate.com/github/Crystalnix/serverauditor-sshconfig/coverage)
+[![Build status](https://travis-ci.org/Crystalnix/termius-cli.svg?branch=master)](https://travis-ci.org/Crystalnix/termius-cli)
+[![Code Climate](https://codeclimate.com/github/Crystalnix/termius-cli/badges/gpa.svg)](https://codeclimate.com/github/Crystalnix/termius-cli)
+[![Test Coverage](https://codeclimate.com/github/Crystalnix/termius-cli/badges/coverage.svg)](https://codeclimate.com/github/Crystalnix/termius-cli/coverage)
+
+Provides command line interface for cross-platform terminal Termius.
+
+[this project used to be named serverauditor-sshconfig in the past]
 
 ## Demo
 
