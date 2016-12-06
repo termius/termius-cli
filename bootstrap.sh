@@ -1,5 +1,5 @@
 #!/bin/sh
-tar_url='https://github.com/EvgeneOskin/serverauditor-sshconfig/archive/feature/cliff.tar.gz'
+tar_url='https://github.com/Crystalnix/serverauditor-sshconfig/archive/master.zip'
 
 command_exists() {
     command -v "$@" > /dev/null 2>&1
@@ -36,7 +36,9 @@ do_install() {
 	curl='busybox wget -qO-'
     fi
 
-    requirements='python'
+    apt_requirements='python gcc python-dev libffi-dev libssl-dev'
+    yum_requirements='python gcc python-devel libffi-devel openssl-devel'
+    zypper_requirements='python gcc python-devel libffi-devel openssl-devel'
 
     lsb_dist=''
     if command_exists lsb_release; then
@@ -61,14 +63,14 @@ do_install() {
         amzn|fedora|centos)
 	    (
 	        set -x
-	        $sh_c "sleep 3; yum -y -q install $requirements"
+	        $sh_c "sleep 3; yum -y -q install $yum_requirements"
 	    )
 	    ;;
 
         'opensuse project'|opensuse|'suse linux'|sled)
 	    (
 	        set -x
-	        $sh_c "sleep 3; zypper -n install $requirements"
+	        $sh_c "sleep 3; zypper -n install $zypper_requirements"
 	    )
 	    ;;
 
@@ -93,12 +95,12 @@ do_install() {
 	    apt_get_update
             (
 	        set -x
-	        $sh_c "sleep 3; apt-get install -y -q $requirements"
+	        $sh_c "sleep 3; apt-get install -y -q $apt_requirements"
 	    )
 	    ;;
     esac
 
-    if !(command_exists easy_install); then
+    if ! (command_exists easy_install); then
         $sh_c "$curl https://bootstrap.pypa.io/ez_setup.py |  python"
     fi
     easy_install -U $tar_url
@@ -106,7 +108,6 @@ do_install() {
     if command_exists termius; then
 	(
 	    set -x
-	    termius --version
 	) || true
     fi
     exit 0
