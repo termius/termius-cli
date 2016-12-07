@@ -5,3 +5,5 @@ prospector
 pyroma==2.0
 paver
 bumpversion
+pypandoc
+pygments
