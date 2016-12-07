@@ -8,8 +8,6 @@ ignore-paths:
   - setup.py
   - build
   - tests
-  - termius/core/ssh_config.py  # it's too complex
-  - termius/core/cryptor.py  # it's too complex
   - termius/core/utils.py  # it's too complex
 
 ignore-patterns:
