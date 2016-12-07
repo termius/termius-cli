@@ -6,6 +6,7 @@ python:
   - "3.5-dev" # 3.5 development branch
 install:
   - git clone https://github.com/sstephenson/bats.git && cd bats && ./install.sh .. && cd -
+  - sudo apt-get install pandoc
   - pip install -U pip setuptools
   - pip install -U . -r dev-requirements.txt
 # command to run tests
