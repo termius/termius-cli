@@ -8,7 +8,7 @@ from cliff.app import App
 # pylint: disable=import-error
 from cliff.commandmanager import CommandManager
 
-from . import get_version
+from . import __version__
 from .core.signals import (
     post_create_instance,
     post_update_instance,
@@ -30,7 +30,7 @@ class TermiusApp(App):
         """Construct new CLI application."""
         super(TermiusApp, self).__init__(
             description='Termius app',
-            version=get_version(),
+            version=__version__,
             command_manager=CommandManager('termius.handlers'),
         )
         self.configure_signals()

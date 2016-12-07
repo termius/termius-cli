@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup, find_packages
 
-from termius import get_version
+from termius import __version__
 
 
 # pylint: disable=invalid-name
@@ -57,7 +57,7 @@ def get_long_description():
 
 setup(
     name='termius',
-    version=get_version(),
+    version=__version__,
     license='BSD',
     author='Crystalnix',
     author_email='contacts@crystalnix.com',
