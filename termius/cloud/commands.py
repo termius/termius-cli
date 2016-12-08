@@ -3,6 +3,7 @@
 import abc
 from base64 import b64decode
 import six
+from six.moves import configparser
 from ..core.api import API
 from ..core.commands import AbstractCommand
 from ..core.models.terminal import clean_order
@@ -55,9 +56,13 @@ class PushCommand(CloudSynchronizationCommand):
 
     def process_sync(self, api_controller):
         """Push outdated local instances."""
-        api_controller.put_setting()
-        api_controller.post_bulk()
-        self.log.info('Push data to Termius cloud.')
+        try:
+            api_controller.put_setting()
+            api_controller.post_bulk()
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            self.log.error('Call pull at first.')
+        else:
+            self.log.info('Push data to Termius cloud.')
 
 
 class PullCommand(CloudSynchronizationCommand):
