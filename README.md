@@ -25,6 +25,11 @@ or [easy_install](http://pythonhosted.org/distribute/):
 easy_install -U termius
 ```
 
+For Linux users, there is a `bootstrap.sh` script. Usage:
+
+```bash
+$ curl -sSL https://raw.githubusercontent.com/Crystalnix/termius-cli/master/bootstrap.sh | bash
+```
 
 ## Usage
 
@@ -60,24 +65,10 @@ Create hosts from ssh config
 termius sync ssh
 ```
 
-## License
 
+## License
 
 Please see [LICENSE](https://github.com/Crystalnix/serverauditor-sshconfig/blob/master/LICENSE).
 
 
-## Notes
 
-
-* Some stages of utility's work may last for several seconds (depends on amount of the connections and your computer's performance).
-
-* If installation failed with gcc error, you must install Python Development Libraries, for example:
-
-```bash
-sudo apt-get install python-dev
-```
-or
-
-```bash
-sudo yum  install python-devel.x86_64
-```
