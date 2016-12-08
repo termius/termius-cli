@@ -65,7 +65,7 @@ setup(
     license='BSD',
     author='Crystalnix',
     author_email='contacts@crystalnix.com',
-    url='https://github.com/Crystalnix/serverauditor-sshconfig',
+    url='https://github.com/Crystalnix/termius-cli',
     description='Termius ssh-config utility.',
     long_description=get_long_description(),
     keywords=['termius', 'crystalnix'],

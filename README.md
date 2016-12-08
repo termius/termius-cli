@@ -63,7 +63,7 @@ termius sync ssh
 ## License
 
 
-Please see [LICENSE](https://github.com/Crystalnix/serverauditor-sshconfig/blob/master/LICENSE).
+Please see [LICENSE](https://github.com/Crystalnix/termius-cli/blob/master/LICENSE).
 
 
 ## Notes
