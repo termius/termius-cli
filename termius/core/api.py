@@ -75,10 +75,10 @@ class API(object):
 
     def post(self, endpoint, data):
         """Send authorized post request."""
-        self.logger.info('send post = %s', data)
+        self.logger.debug('send post = %s', data)
         response = requests.post(self.request_url(endpoint),
                                  json=data, auth=self.auth)
-        self.logger.info('get response = %s', response.text)
+        self.logger.debug('get response = %s', response.text)
         assert response.status_code == 201, response.text
         return response.json()
 
