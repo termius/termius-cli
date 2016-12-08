@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Module with mixin utils for formatting."""
+from six.moves import shlex_quote
 
 
 # pylint: disable=too-few-public-methods
@@ -34,7 +35,11 @@ def ssh_auth(username, address):
 
 def format_identity_file(ssh_key_file):
     """Render identity file option."""
-    return (ssh_key_file and '-i {}'.format(ssh_key_file)) or ''
+    if ssh_key_file:
+        safe_key_path = shlex_quote(str(ssh_key_file))
+        return '-i {}'.format(safe_key_path)
+    else:
+        return ''
 
 
 def format_port(port):
