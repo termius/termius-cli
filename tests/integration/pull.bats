@@ -19,7 +19,7 @@ setup() {
 @test "pull logged in" {
     login_termius
 
-    run termius pull -p $SERVERAUDITOR_PASSWORD
+    run termius pull -p $TERMIUS_PASSWORD
     [ "$status" -eq 0 ]
 }
 

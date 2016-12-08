@@ -1,5 +1,5 @@
 #!/bin/sh
-tar_url='https://github.com/Crystalnix/serverauditor-sshconfig/archive/master.zip'
+tar_url='https://github.com/Crystalnix/termius-cli/archive/master.zip'
 
 command_exists() {
     command -v "$@" > /dev/null 2>&1

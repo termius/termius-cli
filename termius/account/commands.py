@@ -4,6 +4,7 @@ from contextlib import contextmanager
 import six
 from ..core.commands import AbstractCommand
 from ..core.signals import post_logout
+from ..core.commands.arg_types import boolean_yes_no
 from ..core.exceptions import OptionNotSetException
 from .managers import AccountManager
 
@@ -77,13 +78,13 @@ class SettingsCommand(BaseAccountCommand):
     def extend_parser(self, parser):
         """Add more arguments to parser."""
         parser.add_argument(
-            '--synchronize-key', action='store', type=str,
-            choices=('yes', 'no'), default='yes',
+            '--synchronize-key', action='store', type=boolean_yes_no,
+            choices=(False, True), default=True,
             help='Sync ssh keys and ssh identities or not.'
         )
         parser.add_argument(
-            '--agent-forwarding', action='store', type=str,
-            choices=('yes', 'no'), default='yes',
+            '--agent-forwarding', action='store', type=boolean_yes_no,
+            choices=(False, True), default=True,
             help='Sync ssh keys and ssh identities or not.'
         )
         return parser
@@ -91,7 +92,7 @@ class SettingsCommand(BaseAccountCommand):
     def take_action(self, args):
         """Process CLI call."""
         settings = {
-            k: getattr(args, k) == 'yes'
+            k: getattr(args, k)
             for k in ('synchronize_key', 'agent_forwarding')
         }
         self.manager.set_settings(settings)
