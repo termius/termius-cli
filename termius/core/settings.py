@@ -27,9 +27,7 @@ class Config(object):
     def ssh_key_dir_path(self):
         """Get path instance to Directory with applications ssh key."""
         try:
-            ssh_keys_path = Path(self.config.get(
-                'SSH_keys', 'directory'
-            ))
+            ssh_keys_path = Path(self.config.get('SSH_keys', 'directory'))
         except (configparser.NoSectionError, configparser.NoOptionError):
             ssh_keys_path = self.command.app.directory_path / 'ssh_keys'
             self.set('SSH_keys', 'directory', str(ssh_keys_path))
@@ -50,6 +48,14 @@ class Config(object):
     def get(self, *args, **kwargs):
         """Get option value from config."""
         return self.config.get(*args, **kwargs)
+
+    def get_safe(self, *args, **kwargs):
+        """Get option value from config."""
+        default = kwargs.pop('default', None)
+        try:
+            return self.config.get(*args, **kwargs)
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            return default
 
     def set(self, section, option, value):
         """Set option value to config."""

@@ -25,8 +25,8 @@ setup() {
 
 @test "List groups in subgroup in table format" {
     parent=$(termius group -L 'test group' --port 2 --username 'use r name')
-    termius group -L 'test group' --parent-group $parent --port 2 --username 'use r name'
-    run termius groups $parent
+    child=$(termius group -L 'test group' --parent-group $parent --port 2 --username 'use r name')
+    run termius groups -f csv -c id $parent
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'group_set') -eq 2 ]
 }

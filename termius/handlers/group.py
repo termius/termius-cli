@@ -62,6 +62,7 @@ class GroupCommand(GroupStackGetterMixin, DetailCommand):
         return instance
 
 
+
 class GroupsCommand(SshConfigPrepareMixin, ListCommand):
     """Manage group objects."""
 
