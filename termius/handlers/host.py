@@ -4,7 +4,7 @@ from operator import attrgetter
 from cached_property import cached_property
 from ..core.commands import DetailCommand, ListCommand
 from ..core.commands.single import RequiredOptions
-from ..core.commands.mixins import SshConfigPrepareMixin
+from ..core.commands.mixins import SshConfigPrepareMixin, GroupStackGetterMixin
 from ..core.storage.strategies import RelatedGetStrategy
 from ..core.models.terminal import Host, Group, TagHost
 from .taghost import TagListArgs
@@ -75,7 +75,7 @@ class HostCommand(DetailCommand):
         return instance
 
 
-class HostsCommand(SshConfigPrepareMixin, ListCommand):
+class HostsCommand(SshConfigPrepareMixin, GroupStackGetterMixin, ListCommand):
     """Manage host objects."""
 
     model_class = Host
@@ -102,22 +102,27 @@ class HostsCommand(SshConfigPrepareMixin, ListCommand):
     # pylint: disable=unused-argument
     def take_action(self, parsed_args):
         """Process CLI call."""
-        group_id = self.get_group_id(parsed_args)
-        hosts = self.get_hosts(group_id)
+        group = self.get_group(parsed_args)
+        hosts = self.get_hosts(group)
         if parsed_args.tags:
             hosts = self.filter_host_by_tags(hosts, parsed_args.tags)
         return self.prepare_result(hosts)
 
-    def get_hosts(self, group_id):
+    def get_hosts(self, parent_group):
         """Get host list by group id."""
-        if group_id:
-            return self.storage.filter(Host, **{'group.id': group_id})
+        if not parent_group:
+            return self.storage.get_all(Host)
+        group_stack = self.get_group_stack(parent_group)
+        group_id_stack = [i.id for i in group_stack]
+        if len(group_id_stack) > 0:
+            filter_operation = {'group.id.rcontains': group_id_stack, 'group': None}
         else:
-            return self.storage.filter(Host, **{'group': None})
+            filter_operation = {'group': None}
+        return self.storage.exclude(Host, any, **filter_operation)
 
-    def get_group_id(self, args):
+    def get_group(self, args):
         """Get group id by group id or label."""
-        return args.group and self.get_relation(Group, args.group).id
+        return args.group and self.get_relation(Group, args.group)
 
     def filter_host_by_tags(self, hosts, tags):
         """Filter host list by tag csv list."""
