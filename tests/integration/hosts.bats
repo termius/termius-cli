@@ -28,15 +28,18 @@ setup() {
 
     run termius hosts --tag A
     [ "$status" -eq 0 ]
+    [ "${lines[1]}" = "$host" ]
+    [ "${lines[2]}" = "" ]
     [ $(get_models_set_length 'host_set') -eq 2 ]
 }
 
 @test "List hosts in group" {
     group=$(termius group --port 2022)
-    termius host -L test --group $group --address localhost --username root --password password
+    host_id=$(termius host -L test --group $group --address localhost --username root --password password)
 
-    run termius hosts --group $group
+    run termius hosts --group $group -f csv -c id
     [ "$status" -eq 0 ]
+
     [ $(get_models_set_length 'host_set') -eq 1 ]
 }
 

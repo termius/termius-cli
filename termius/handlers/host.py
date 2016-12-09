@@ -110,7 +110,7 @@ class HostsCommand(SshConfigPrepareMixin, ListCommand):
 
     def get_hosts(self, group_id):
         """Get host list by group id."""
-        return self.storage.filter(Host, **{'group': group_id})
+        return self.storage.filter(Host, **{'group.id': group_id})
 
     def get_group_id(self, args):
         """Get group id by group id or label."""
