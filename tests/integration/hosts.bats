@@ -24,11 +24,11 @@ setup() {
 
 @test "List hosts filter by tag" {
     termius host -L test --port 2022 --address localhost --username root --password password
-    termius host -L test --port 2022 --address localhost --username root --password password -t A
+    host_id=$(termius host -L test --port 2022 --address localhost --username root --password password -t A)
 
-    run termius hosts --tag A
+    run termius hosts --tag A -f csv -c id
     [ "$status" -eq 0 ]
-    [ "${lines[1]}" = "$host" ]
+    [ "${lines[1]}" = "$host_id" ]
     [ "${lines[2]}" = "" ]
     [ $(get_models_set_length 'host_set') -eq 2 ]
 }
@@ -40,14 +40,19 @@ setup() {
     run termius hosts --group $group -f csv -c id
     [ "$status" -eq 0 ]
 
+    [ "${lines[1]}" = "$host_id" ]
+    [ "${lines[2]}" = "" ]
     [ $(get_models_set_length 'host_set') -eq 1 ]
 }
 
 @test "List hosts in group filter by tag" {
     group=$(termius group --port 2022)
-    termius host -L test --group $group --address localhost --username root --password password -t A
+    host_id=$(termius host -L test --group $group --address localhost --username root --password password -t A)
+    termius host -L test --address localhost --username root --password password -t A
 
-    run termius hosts --tag A --group $group
+    run termius hosts --tag A --group $group -f csv -c id
     [ "$status" -eq 0 ]
-    [ $(get_models_set_length 'host_set') -eq 1 ]
+    [ "${lines[1]}" = "$host_id" ]
+    [ "${lines[2]}" = "" ]
+    [ $(get_models_set_length 'host_set') -eq 2 ]
 }

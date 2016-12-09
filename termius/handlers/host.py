@@ -110,7 +110,10 @@ class HostsCommand(SshConfigPrepareMixin, ListCommand):
 
     def get_hosts(self, group_id):
         """Get host list by group id."""
-        return self.storage.filter(Host, **{'group.id': group_id})
+        if group_id:
+            return self.storage.filter(Host, **{'group.id': group_id})
+        else:
+            return self.storage.filter(Host, **{'group': None})
 
     def get_group_id(self, args):
         """Get group id by group id or label."""
@@ -122,10 +125,10 @@ class HostsCommand(SshConfigPrepareMixin, ListCommand):
         tag_ids = [i.id for i in tags]
         host_ids = [i.id for i in hosts]
         taghost_instances = self.storage.filter(TagHost, all, **{
-            'tag.rcontains': tag_ids
+            'tag.id.rcontains': tag_ids
         })
-        filtered_host_id = {i.host for i in taghost_instances}
-        intersected_host_ids = set(host_ids) and filtered_host_id
+        filtered_host_ids = {i.host.id for i in taghost_instances}
+        intersected_host_ids = set(host_ids) & filtered_host_ids
         return self.storage.filter(
             Host, **{'id.rcontains': intersected_host_ids}
         )
