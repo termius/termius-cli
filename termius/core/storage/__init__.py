@@ -157,7 +157,7 @@ class ApplicationStorage(object):
         return self.model_constructor(single_model, model_class)
 
     def filter(self, model_class, query_union=None, **kwargs):
-        """Filter model list with passed lookups.
+        """Filter the model list with passed lookups.
 
         Usage:
             list = storage.filter(Model, any, **{'field.ge': 1, 'field.le': 5}
@@ -167,6 +167,19 @@ class ApplicationStorage(object):
         query = Query(query_union, **kwargs)
         models = self.get_all(model_class)
         founded_models = [i for i in models if query(i)]
+        return founded_models
+
+    def exclude(self, model_class, query_union=None, **kwargs):
+        """Exclude the model list when matches the lookups.
+
+        Usage:
+            list = storage.exclude(Model, any, **{'field.ge': 1, 'field.le': 5}
+        """
+        assert isinstance(model_class, type)
+        assert kwargs
+        query = Query(query_union, **kwargs)
+        models = self.get_all(model_class)
+        founded_models = [i for i in models if not query(i)]
         return founded_models
 
     def get_all(self, model_class):
