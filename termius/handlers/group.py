@@ -92,9 +92,11 @@ class GroupsCommand(SshConfigPrepareMixin, ListCommand):
 
     def get_groups(self, group_id):
         """Retrieve all child groups of passed group."""
-        return self.storage.filter(
-            Group, **{'parent_group': group_id}
-        )
+        if group_id:
+            filter_operation = {'parent_group.id': group_id}
+        else:
+            filter_operation = {'parent_group': None}
+        return self.storage.filter(Group, **filter_operation)
 
     def get_parent_group_id(self, args):
         """Return parent group id  or None from command line arguments."""
