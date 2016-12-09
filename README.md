@@ -14,6 +14,20 @@ Provides command line interface for cross-platform terminal Termius.
 
 ## Installation
 
+For macOS users, there is a [Homebrew](http://brew.sh/) formulae. Usage:
+
+```bash
+$ brew install termius
+```
+
+**Note**: By default, the command above installs bash and zsh completions.
+
+For Linux users, there is a `bootstrap.sh` script. Usage:
+
+```bash
+$ curl -sSL https://raw.githubusercontent.com/Crystalnix/termius-cli/master/bootstrap.sh | bash
+```
+
 Termius CLI utility can be installed via [pip](http://www.pip-installer.org/en/latest/index.html):
 
 ```bash
@@ -24,7 +38,6 @@ or [easy_install](http://pythonhosted.org/distribute/):
 ```bash
 easy_install -U termius
 ```
-
 
 ## Usage
 
@@ -60,24 +73,10 @@ Create hosts from ssh config
 termius sync ssh
 ```
 
+
 ## License
 
-
-Please see [LICENSE](https://github.com/Crystalnix/serverauditor-sshconfig/blob/master/LICENSE).
-
-
-## Notes
+Please see [LICENSE](https://github.com/Crystalnix/termius-cli/blob/master/LICENSE).
 
 
-* Some stages of utility's work may last for several seconds (depends on amount of the connections and your computer's performance).
 
-* If installation failed with gcc error, you must install Python Development Libraries, for example:
-
-```bash
-sudo apt-get install python-dev
-```
-or
-
-```bash
-sudo yum  install python-devel.x86_64
-```

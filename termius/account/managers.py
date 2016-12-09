@@ -38,16 +38,10 @@ class AccountManager(object):
 
     def get_settings(self):
         """Get settings or return default."""
-        try:
-            return {
-                i: self.config.get('Settings', i) == 'yes'
-                for i in self.setting_names
-            }
-        except (configparser.NoSectionError, configparser.NoOptionError):
-            return {
-                i: 'yes'
-                for i in self.setting_names
-            }
+        return {
+            i: self.config.get_safe('Settings', i, default='yes') == 'yes'
+            for i in self.setting_names
+        }
 
     def logout(self):
         """Remove apikey and other credentials."""

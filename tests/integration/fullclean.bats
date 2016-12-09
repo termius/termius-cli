@@ -13,9 +13,9 @@ load test_helper
 
 @test "fullclean logged in" {
     login_termius
-    termius pull -p $SERVERAUDITOR_PASSWORD
+    termius pull -p $TERMIUS_PASSWORD
 
-    run termius fullclean -p $SERVERAUDITOR_PASSWORD
+    run termius fullclean -p $TERMIUS_PASSWORD
     [ "$status" -eq 0 ]
     assert_clear_storage
 }

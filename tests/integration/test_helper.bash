@@ -1,15 +1,15 @@
 login_termius () {
-    if [ "$SERVERAUDITOR_USERNAME" == '' ] || [ "$SERVERAUDITOR_PASSWORD" == '' ];then
-      skip '$SERVERAUDITOR_USERNAME and $SERVERAUDITOR_PASSWORD are not set!'
+    if [ "$TERMIUS_USERNAME" == '' ] || [ "$TERMIUS_PASSWORD" == '' ];then
+      skip '$TERMIUS_USERNAME and $TERMIUS_PASSWORD are not set!'
     fi
 
-    termius login --username $SERVERAUDITOR_USERNAME -p $SERVERAUDITOR_PASSWORD
+    termius login --username $TERMIUS_USERNAME -p $TERMIUS_PASSWORD
 }
 
 pull_termius() {
     login_termius
 
-    termius pull -p $SERVERAUDITOR_PASSWORD
+    termius pull -p $TERMIUS_PASSWORD
 
 }
 

@@ -18,8 +18,8 @@ setup() {
 @test "push logged in" {
     login_termius
 
-    termius pull -p $SERVERAUDITOR_PASSWORD
-    run termius push -p $SERVERAUDITOR_PASSWORD
+    termius pull -p $TERMIUS_PASSWORD
+    run termius push -p $TERMIUS_PASSWORD
     [ "$status" -eq 0 ]
 }
 

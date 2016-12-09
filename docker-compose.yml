@@ -1,5 +1,5 @@
 cli:
   build: .
   environment:
-    SERVERAUDITOR_USERNAME:
-    SERVERAUDITOR_PASSWORD:
+    TERMIUS_USERNAME:
+    TERMIUS_PASSWORD:
