@@ -14,6 +14,20 @@ Provides command line interface for cross-platform terminal Termius.
 
 ## Installation
 
+For macOS users, there is a [Homebrew](http://brew.sh/) formulae. Usage:
+
+```bash
+$ brew install termius
+```
+
+**Note**: By default, the command above installs bash and zsh completions.
+
+For Linux users, there is a `bootstrap.sh` script. Usage:
+
+```bash
+$ curl -sSL https://raw.githubusercontent.com/Crystalnix/termius-cli/master/bootstrap.sh | bash
+```
+
 Termius CLI utility can be installed via [pip](http://www.pip-installer.org/en/latest/index.html):
 
 ```bash
@@ -23,12 +37,6 @@ or [easy_install](http://pythonhosted.org/distribute/):
 
 ```bash
 easy_install -U termius
-```
-
-For Linux users, there is a `bootstrap.sh` script. Usage:
-
-```bash
-$ curl -sSL https://raw.githubusercontent.com/Crystalnix/termius-cli/master/bootstrap.sh | bash
 ```
 
 ## Usage
