@@ -14,13 +14,13 @@ Provides command line interface for cross-platform terminal Termius.
 
 ## Installation
 
-For macOS users, there is a [Homebrew](http://brew.sh/) formulae. Usage:
+For MacOS users, there is a [Homebrew](http://brew.sh/) formula. Usage:
 
 ```bash
 $ brew install termius
 ```
 
-**Note**: By default, the command above installs bash and zsh completions.
+**Note**: By default, the command above installs Bash and zsh completions.
 
 For Linux users, there is a `bootstrap.sh` script. Usage:
 
