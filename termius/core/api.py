@@ -5,6 +5,7 @@ import hashlib
 import six
 import requests
 from requests.auth import AuthBase
+from .exceptions import AuthyTokenIssue
 
 
 # pylint: disable=too-few-public-methods
@@ -59,18 +60,24 @@ class API(object):
         """Create full url to endpoint."""
         return self.base_url + endpoint
 
-    def login(self, username, password):
+    def login(self, email, password, authy_token=None):
         """Return user's auth token."""
         password = hash_password(password)
-        response = requests.get(self.request_url('v1/token/auth/'),
-                                auth=(username, password))
+        payload = dict(password=password, email=email)
+        if authy_token is not None:
+            payload['authy_token'] = authy_token
+
+        response = requests.post(self.request_url('v3/login/'), data=payload)
+        if response.status_code == 487:
+            raise AuthyTokenIssue(response.json)
         if response.status_code != 200:
             self.logger.warning('Can not login!\nResponse %s', response.text)
+
         assert response.status_code == 200
 
         response_payload = response.json()
-        apikey = response_payload['key']
-        self.set_auth(username, apikey)
+        apikey = response_payload['token']
+        self.set_auth(email, apikey)
         return response_payload
 
     def post(self, endpoint, data):
