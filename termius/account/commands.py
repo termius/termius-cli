@@ -6,27 +6,8 @@ from ..core.commands import AbstractCommand
 from ..core.signals import post_logout
 from ..core.commands.arg_types import boolean_yes_no
 from ..core.exceptions import OptionNotSetException
+from ..core.api import AuthyTokenIssue
 from .managers import AccountManager
-
-
-@contextmanager
-def on_clean_when_logout(command, manager):
-    """Monitor is account changed and call data clean."""
-    try:
-        old_username = manager.username
-    except OptionNotSetException:
-        old_username = None
-    yield
-    try:
-        new_username = manager.username
-    except OptionNotSetException:
-        new_username = None
-
-    is_username_changed = (
-        old_username and old_username != new_username
-    )
-    if is_username_changed:
-        post_logout.send(command, command=command, email=old_username)
 
 
 # pylint: disable=abstract-method
@@ -47,6 +28,11 @@ class LoginCommand(BaseAccountCommand):
         """Ask username prompt."""
         return six.moves.input("Termius's username: ")
 
+    # pylint: disable=no-self-use
+    def prompt_authy_token(self):
+        """Ask authy token prompt."""
+        return six.moves.input('Authy token: ')
+
     def extend_parser(self, parser):
         """Add more arguments to parser."""
         parser.add_argument('-u', '--username', metavar='USERNAME')
@@ -58,7 +44,11 @@ class LoginCommand(BaseAccountCommand):
         username = parsed_args.username or self.prompt_username()
         password = parsed_args.password or self.prompt_password()
         with on_clean_when_logout(self, self.manager):
-            self.manager.login(username, password)
+            try:
+                self.manager.login(username, password)
+            except AuthyTokenIssue:
+                authy_token = self.prompt_authy_token()
+                self.manager.login(username, password, authy_token=authy_token)
         self.log.info('Sign into Termius cloud.')
 
 
@@ -97,3 +87,23 @@ class SettingsCommand(BaseAccountCommand):
         }
         self.manager.set_settings(settings)
         self.log.info('Set settings.')
+
+
+@contextmanager
+def on_clean_when_logout(command, manager):
+    """Monitor is account changed and call data clean."""
+    try:
+        old_username = manager.username
+    except OptionNotSetException:
+        old_username = None
+    yield
+    try:
+        new_username = manager.username
+    except OptionNotSetException:
+        new_username = None
+
+    is_username_changed = (
+        old_username and old_username != new_username
+    )
+    if is_username_changed:
+        post_logout.send(command, command=command, email=old_username)

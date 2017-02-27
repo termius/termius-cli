@@ -13,6 +13,7 @@ class CryptoController(object):
     def __init__(self, cryptor):
         """Construct new crypto Controller."""
         self.cryptor = cryptor
+        self.bad_encrypted_exception = cryptor.bad_encrypted_exception
 
     # pylint: disable=no-self-use
     def _mutate_fields(self, model, mutator):

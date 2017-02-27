@@ -60,7 +60,7 @@ def test_encrypt_none():
     cryptor.encrypt(None)
 
 
-@raises(TypeError)
+@raises(CryptorException)
 def test_decrypt_none():
     cryptor = generate_cryptor(**config_factory('pa$$'))
     cryptor.decrypt(None)
