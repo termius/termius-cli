@@ -69,8 +69,9 @@ class SoftDeleteMixin(object):
             return self.get_delete_strategy().delete(model)
 
     def delete_list(self, models):
+        """Delete models from the storage and put it to deleted_set."""
         for i in models:
-            self.storage.delete(i)
+            self.soft_delete(i)
 
     def get_delete_strategy(self):
         """Create delete strategy."""
@@ -104,7 +105,7 @@ class BulkTransformer(CryptoChildTransformerCreatorMixin,
             saved, to_delete = self.to_model_child_list(
                 transformer, payload[set_name]
             )
-            bad_encrypted_models.extends(to_delete)
+            bad_encrypted_models.extend(to_delete)
             models[set_name] = saved
 
         models['deleted_sets'] = self.deleted_sets_transformer.to_model(
@@ -132,6 +133,11 @@ class BulkTransformer(CryptoChildTransformerCreatorMixin,
         return payload
 
     def to_model_child_list(self, transformer, payload):
+        """Process dictionary list with tranformer.
+
+        This returns 2-size tuple where the first item is saved model list and
+        second one is model list for soft delete.
+        """
         bad_encrypted_models = []
         models = []
         for i in payload:
