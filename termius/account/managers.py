@@ -15,11 +15,11 @@ class AccountManager(object):
         self.config = config
         self.api = API()
 
-    def login(self, username, password):
+    def login(self, username, password, authy_token=None):
         """Retrieve apikey and crypto settings from server."""
-        response = self.api.login(username, password)
+        response = self.api.login(username, password, authy_token)
         self.config.set('User', 'username', username)
-        apikey = response['key']
+        apikey = response['token']
         self.config.set('User', 'apikey', apikey)
         hmac_salt = response['hmac_salt']
         self.config.set('User', 'hmac_salt', hmac_salt)
