@@ -2,6 +2,7 @@
 """Transformers is like django rest framework transformer."""
 import abc
 import six
+from ....core.exceptions import TermiusException
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -18,9 +19,15 @@ class Transformer(object):
     @abc.abstractmethod
     def to_model(self, payload):
         """Convert REST API payload to Application models."""
-        pass
 
     @abc.abstractmethod
     def to_payload(self, model):
         """Convert Application models to REST API payload."""
-        pass
+
+
+class DeletBadEncrypted(TermiusException):
+    """Raise it when badly encrypted is founded and cleaning is required."""
+
+    def __init__(self, model):
+        """Create new exception and keep model for reuse."""
+        self.model = model

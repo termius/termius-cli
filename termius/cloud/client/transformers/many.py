@@ -10,7 +10,7 @@ from ....core.models.terminal import (
     PFRule, TagHost,
     Snippet
 )
-from .base import Transformer
+from .base import Transformer, DeletBadEncrypted
 from .single import GetPrimaryKeyTransformerMixin, CryptoBulkEntryTransformer
 from .mixins import CryptoChildTransformerCreatorMixin
 
@@ -53,9 +53,30 @@ class SupportedModelsMixin(object):
             )
 
 
+class SoftDeleteMixin(object):
+    """Class is a mixin that implements soft_delete."""
+
+    def soft_delete(self, model):
+        """Soft delete a model instance from the storage.
+
+        The main difference between this and soft delete in storage is that
+        this method adds a remote_id to delete_set in case when the model is
+        missed in the storage.
+        """
+        if model.id:
+            return self.storage.delete(model)
+        else:
+            return self.get_delete_strategy().delete(model)
+
+    def get_delete_strategy(self):
+        """Create delete strategy."""
+        return SoftDeleteStrategy(self.storage)
+
+
 class BulkTransformer(CryptoChildTransformerCreatorMixin,
                       GetPrimaryKeyTransformerMixin,
                       SupportedModelsMixin,
+                      SoftDeleteMixin,
                       ManyTransformer):
     """Transformer for entry list."""
 
@@ -71,17 +92,24 @@ class BulkTransformer(CryptoChildTransformerCreatorMixin,
 
     def to_model(self, payload):
         """Convert payload with set list."""
-        models = {}
+        models = {i: [] for i in self.mapping}
         models['last_synced'] = payload.pop('now')
-        deleted_sets = payload.pop('deleted_sets')
+        bad_encrypted_models = []
+
         for set_name, transformer in self.mapping.items():
-            models[set_name] = [
-                transformer.to_model(i) for i in payload[set_name]
-            ]
+            for i in payload[set_name]:
+                try:
+                    child_model = transformer.to_model(i)
+                except DeletBadEncrypted as e:
+                    bad_encrypted_models.append(e.model)
+                else:
+                    models[set_name].append(child_model)
 
         models['deleted_sets'] = self.deleted_sets_transformer.to_model(
-            deleted_sets
+            payload.pop('deleted_sets')
         )
+        for i in bad_encrypted_models:
+            self.soft_delete(i)
         return models
 
     def to_payload(self, model):
@@ -105,6 +133,7 @@ class BulkTransformer(CryptoChildTransformerCreatorMixin,
 
 class DeleteSetsTransformer(GetPrimaryKeyTransformerMixin,
                             SupportedModelsMixin,
+                            SoftDeleteMixin,
                             ManyTransformer):
     """Transformer for deleted_sets field."""
 
@@ -121,6 +150,16 @@ class DeleteSetsTransformer(GetPrimaryKeyTransformerMixin,
 
     def to_model(self, payload):
         """Handle payload to local models and delete them completely."""
+        model = self.soft_delete_entries(payload)
+        self.storage.confirm_delete(payload)
+        return model
+
+    def to_payload(self, model):
+        """Retrieve local deleted_set."""
+        return self.get_delete_strategy().get_delete_sets()
+
+    def soft_delete_entries(self, payload):
+        """Remove user data and add them to local delete_sets."""
         model = {}
         for set_name, transformer in self.mapping.items():
             deleted_set_with_none = [
@@ -129,22 +168,11 @@ class DeleteSetsTransformer(GetPrimaryKeyTransformerMixin,
             ]
             deleted_set = [i for i in deleted_set_with_none if i]
             model[set_name] = deleted_set
-            self.soft_delete_entries(deleted_set)
-        self.storage.confirm_delete(payload)
+
+            for i in model[set_name]:
+                self.storage.delete(i)
+
         return model
-
-    def to_payload(self, model):
-        """Retrieve local deleted_set."""
-        return self.get_delete_strategy().get_delete_sets()
-
-    def soft_delete_entries(self, models):
-        """Remove user data and add them to local delete_sets."""
-        for i in models:
-            self.storage.delete(i)
-
-    def get_delete_strategy(self):
-        """Create delete strategy."""
-        return SoftDeleteStrategy(self.storage)
 
     # pylint: disable=no-self-use
     def _map_remote_id_to_model(self, transformer, remote_id):
