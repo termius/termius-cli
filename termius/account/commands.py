@@ -30,7 +30,7 @@ class LoginCommand(BaseAccountCommand):
 
     # pylint: disable=no-self-use
     def prompt_authy_token(self):
-        """Ask username prompt."""
+        """Ask authy token prompt."""
         return six.moves.input('Authy token: ')
 
     def extend_parser(self, parser):
