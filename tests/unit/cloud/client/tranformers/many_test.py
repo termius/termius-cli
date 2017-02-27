@@ -17,6 +17,8 @@ from termius.core.settings import Config
 from termius.core.models.terminal import (
     Host, SshConfig, Identity, SshKey
 )
+from termius.core.models.base import RemoteInstance
+
 
 class BulkTransformerTest(StrategyCase):
 
@@ -38,11 +40,7 @@ class BulkTransformerTest(StrategyCase):
         self._clean_dir(Path(self.app_tempdir))
 
     def test_create_transformer_sync_key(self):
-        self.transformer = BulkTransformer(
-            storage=self.storage,
-            crypto_controller=self.crypto_controller,
-            account_manager=self.account_manager,
-        )
+        self.transformer = self.get_transformer()
 
         ssh_config = SshConfig()
         identity = Identity(label='identity')
@@ -123,11 +121,7 @@ class BulkTransformerTest(StrategyCase):
         self.account_manager.set_settings({
             'synchronize_key': False, 'agent_forwarding': True
         })
-        self.transformer = BulkTransformer(
-            storage=self.storage,
-            crypto_controller=self.crypto_controller,
-            account_manager=self.account_manager,
-        )
+        self.transformer = self.get_transformer()
 
         ssh_config = SshConfig()
         identity = Identity(label='identity')
@@ -178,7 +172,91 @@ class BulkTransformerTest(StrategyCase):
             payload['host_set'][0]['label']
         ))
 
+    def test_bad_encrytped_data_no_in_storage(self):
+        self.transformer = self.get_transformer()
+
+        last_synced_data = dict(
+            now='',
+            deleted_sets=self.empty_set(),
+            **self.empty_set()
+        )
+        last_synced_data['host_set'] = [
+            {
+                'id': id,
+                'label': i,
+                'interaction_date': '',
+                'address': '',
+                'group': None,
+                'ssh_config': None,
+            }
+            for id, i in enumerate(['not encrypted plain text',
+                                    '123' + self.cryptor.encrypt('1')])
+        ]
+
+        payload = self.transformer.to_model(last_synced_data)
+        self.assertEqual(payload['host_set'], [])
+        self.assertEqual(
+            self.storage.strategies.deleter.get_delete_sets(),
+            {'host_set': [0, 1]}
+        )
+
+    def test_bad_encrytped_data_in_storage(self):
+        self.transformer = self.get_transformer()
+
+        last_synced_data = dict(
+            now='',
+            deleted_sets=self.empty_set(),
+            **self.empty_set()
+        )
+        first_host, second_host = [
+            self.storage.save(Host(
+                address='host', remote_instance=RemoteInstance(id=i)
+            )) for i in range(2)
+        ]
+        last_synced_data['host_set'] = [
+            {
+                'id': i.remote_instance.id,
+                'label': label,
+                'interaction_date': '',
+                'address': '',
+                'group': None,
+                'ssh_config': None,
+            }
+            for i, label in zip(
+                [first_host, second_host],
+                ['not encrypted plain text', '13' + self.cryptor.encrypt('1')]
+            )
+        ]
+
+        payload = self.transformer.to_model(last_synced_data)
+        self.assertEqual(payload['host_set'], [])
+        self.assertEqual(
+            self.storage.strategies.deleter.get_delete_sets(),
+            {'host_set': [0, 1]}
+        )
+        self.assertEqual(self.storage.get_all(Host), [])
+
     def _clean_dir(self, dir_path):
         [self._clean_dir(i) for i in dir_path.iterdir() if i.is_dir()]
         [i.unlink() for i in dir_path.iterdir() if i.is_file()]
         dir_path.rmdir()
+
+    def get_transformer(self):
+        return BulkTransformer(
+            storage=self.storage,
+            crypto_controller=self.crypto_controller,
+            account_manager=self.account_manager,
+        )
+
+    def empty_set(self):
+        return dict(
+            snippet_set=[],
+            group_set=[],
+            tag_set=[],
+            taghost_set=[],
+            pfrule_set=[],
+            identity_set=[],
+            sshkeycrypt_set=[],
+            sshconfig_set=[],
+            host_set=[],
+        )

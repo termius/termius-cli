@@ -9,12 +9,12 @@ install:
   - sudo apt-get install pandoc
   - pip install -U pip setuptools
   - pip install -U . -r dev-requirements.txt
+  - pip install codecov
 # command to run tests
 script:
   - paver lint
   - paver coverage
   - PATH=$PWD/bin:$PATH paver bats
 
-addons:
-  code_climate:
-    repo_token: 184a6ec8293cad700aa6dd0076d3d7296b25a7b432717acfbff3053dc7cce88a
+after_success:
+  - codecov

@@ -8,7 +8,7 @@ from ....core.exceptions import DoesNotExistException, SkipField
 from ....core.models.terminal import (
     SshKey, Identity,
 )
-from .base import Transformer
+from .base import Transformer, DeletBadEncrypted
 from .utils import id_getter, map_zip_model_fields
 
 
@@ -41,10 +41,6 @@ class BulkPrimaryKeyTransformer(BulkEntryBaseTransformer):
     logger = logging.getLogger(__name__)
     to_model_mapping = defaultdict(id_getter_wrapper, {int: int, })
 
-    def id_from_payload(self, payload):
-        """Get remote id from payload."""
-        return self.to_model_mapping[type(payload)](payload)
-
     def to_model(self, payload):
         """Retrieve model from storage by payload."""
         if not payload:
@@ -69,6 +65,10 @@ class BulkPrimaryKeyTransformer(BulkEntryBaseTransformer):
             return model.remote_instance.id
         else:
             return '{model.set_name}/{model.id}'.format(model=model)
+
+    def id_from_payload(self, payload):
+        """Get remote id from payload."""
+        return self.to_model_mapping[type(payload)](payload)
 
 
 # pylint: disable=too-few-public-methods
@@ -199,8 +199,11 @@ class CryptoBulkEntryTransformer(BulkEntryTransformer):
     def to_model(self, payload):
         """Decrypt model after serialization."""
         model = super(CryptoBulkEntryTransformer, self).to_model(payload)
-        descrypted_model = self.crypto_controller.decrypt(model)
-        self.storage.save(descrypted_model)
+        try:
+            descrypted_model = self.crypto_controller.decrypt(model)
+        except self.crypto_controller.bad_encrypted_exception:
+            raise DeletBadEncrypted(model)
+        return self.storage.save(descrypted_model)
 
     def to_payload(self, model):
         """Encrypt model before deserialization."""
