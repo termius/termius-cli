@@ -4,6 +4,8 @@ import logging
 
 # pylint: disable=import-error
 from cliff.command import Command
+from google_measurement_protocol import Event, report
+
 from ..settings import Config
 from ..storage import ApplicationStorage
 from ..storage.strategies import (
@@ -45,3 +47,30 @@ class AbstractCommand(PasswordPromptMixin, Command):
     def extend_parser(self, parser):
         """Add more arguments to parser."""
         return parser
+
+    def run(self, parsed_args):
+        """Invoked by the application when the command is run.
+
+        Developers implementing commands should override
+        :meth:`take_action`.
+
+        Developers creating new command base classes (such as
+        :class:`Lister` and :class:`ShowOne`) should override this
+        method to wrap :meth:`take_action`.
+
+        Return the value returned by :meth:`take_action` or 0.
+        """
+        self.send_analytics()
+        return super(AbstractCommand, self).run(parsed_args)
+
+    def send_analytics(self):
+        event = self.generate_event()
+        client_id = self.config
+        report(self.tracking_id, client_id, event)
+
+    def generate_event(self):
+        return Event('profile', 'settings')
+
+    @property
+    def tracking_id(self):
+        return 'UA-92775225-1'

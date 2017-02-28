@@ -20,6 +20,7 @@ requires = [
     'paramiko>=1.16.0',
     'pathlib2>=2.1.0',
     'blinker>=1.4',
+    'google-measurement-protocol>=0.1.6',
 ]
 
 # pylint: disable=invalid-name
