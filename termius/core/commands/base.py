@@ -2,10 +2,9 @@
 """Module with comprehensive base commands."""
 import logging
 
-# pylint: disable=import-error
 from cliff.command import Command
-from google_measurement_protocol import Event, report
 
+from ..analytics import Analytics
 from ..settings import Config
 from ..storage import ApplicationStorage
 from ..storage.strategies import (
@@ -60,17 +59,7 @@ class AbstractCommand(PasswordPromptMixin, Command):
 
         Return the value returned by :meth:`take_action` or 0.
         """
-        self.send_analytics()
+        analytics = Analytics(self.app, self.config)
+        analytics.send_analytics(self.cmd_name)
+
         return super(AbstractCommand, self).run(parsed_args)
-
-    def send_analytics(self):
-        event = self.generate_event()
-        client_id = self.config
-        report(self.tracking_id, client_id, event)
-
-    def generate_event(self):
-        return Event('profile', 'settings')
-
-    @property
-    def tracking_id(self):
-        return 'UA-92775225-1'

@@ -28,9 +28,9 @@ class GroupCommand(GroupStackGetterMixin, DetailCommand):
         )
         return _fields
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, app, app_args, cmd_name=None):
         """Construct new group command."""
-        super(GroupCommand, self).__init__(*args, **kwargs)
+        super(GroupCommand, self).__init__(app, app_args, cmd_name)
         self.ssh_config_args = SshConfigArgs(self)
 
     def extend_parser(self, parser):

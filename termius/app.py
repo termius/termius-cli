@@ -8,6 +8,7 @@ from cliff.app import App
 # pylint: disable=import-error
 from cliff.commandmanager import CommandManager
 
+from termius.handlers.help import HelpCommand
 from . import __version__
 from .core.signals import (
     post_create_instance,
@@ -33,6 +34,8 @@ class TermiusApp(App):
             version=__version__,
             command_manager=CommandManager('termius.handlers'),
         )
+        self.command_manager.add_command('help', HelpCommand)
+
         self.configure_signals()
         self.directory_path = Path(expanduser('~/.{}/'.format(self.NAME)))
         if not self.directory_path.is_dir():

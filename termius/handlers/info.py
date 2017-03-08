@@ -2,6 +2,8 @@
 """Module with info command."""
 from operator import attrgetter
 from cliff.show import ShowOne
+
+from termius.core.analytics import Analytics
 from ..account.managers import AccountManager
 from ..core.commands import AbstractCommand
 from ..core.commands.mixins import GetRelationMixin, SshConfigMergerMixin
@@ -20,6 +22,13 @@ class InfoCommand(SshConfigMergerMixin, GetRelationMixin,
     def formatter_namespace(self):
         """Return entrypoint with cliff formatters."""
         return 'termius.info.formatters'
+
+    def run(self, parsed_args):
+        """Overridden to collect analytics."""
+        analytics = Analytics(self.app)
+        analytics.send_analytics(self.cmd_name)
+
+        return super(InfoCommand, self).run(parsed_args)
 
     def extend_parser(self, parser):
         """Add more arguments to parser."""

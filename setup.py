@@ -47,7 +47,7 @@ handlers = [
     'tags = termius.handlers:TagsCommand',
     'info = termius.handlers:InfoCommand',
     'connect = termius.handlers:ConnectCommand',
-    'crypto = termius.cloud.commands:CryptoCommand',
+    'crypto = termius.cloud.commands:CryptoCommand'
 ]
 
 
