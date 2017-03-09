@@ -3,7 +3,6 @@
 from operator import attrgetter
 from cliff.show import ShowOne
 
-from termius.core.analytics import Analytics
 from ..account.managers import AccountManager
 from ..core.commands import AbstractCommand
 from ..core.commands.mixins import GetRelationMixin, SshConfigMergerMixin

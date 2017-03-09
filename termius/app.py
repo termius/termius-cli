@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Module for main app class."""
 import logging
+import os
+
 from os.path import expanduser
 from pathlib2 import Path
 # pylint: disable=import-error
@@ -56,8 +58,13 @@ class TermiusApp(App):
         post_logout.connect(clean_data)
 
     def prepare_to_run_command(self, cmd):
+        """Collect analytics if it`s not disabled."""
+        if os.getenv('NOT_COLLECT_STAT'):
+            return
+
         self.collect_analytics(cmd)
 
     def collect_analytics(self, cmd):
+        """Make Analytics instance and send analytics."""
         analytics = Analytics(self, getattr(cmd, 'config', None))
         analytics.send_analytics(cmd.cmd_name)

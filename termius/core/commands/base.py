@@ -4,7 +4,6 @@ import logging
 
 from cliff.command import Command
 
-from ..analytics import Analytics
 from ..settings import Config
 from ..storage import ApplicationStorage
 from ..storage.strategies import (

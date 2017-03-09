@@ -1,7 +1,7 @@
 mock
 nose
 coverage
-prospector
+prospector[with_pyroma]
 pyroma==2.0
 paver
 bumpversion
