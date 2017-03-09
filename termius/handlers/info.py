@@ -23,13 +23,6 @@ class InfoCommand(SshConfigMergerMixin, GetRelationMixin,
         """Return entrypoint with cliff formatters."""
         return 'termius.info.formatters'
 
-    def run(self, parsed_args):
-        """Overridden to collect analytics."""
-        analytics = Analytics(self.app)
-        analytics.send_analytics(self.cmd_name)
-
-        return super(InfoCommand, self).run(parsed_args)
-
     def extend_parser(self, parser):
         """Add more arguments to parser."""
         parser.add_argument(

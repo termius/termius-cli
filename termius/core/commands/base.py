@@ -46,20 +46,3 @@ class AbstractCommand(PasswordPromptMixin, Command):
     def extend_parser(self, parser):
         """Add more arguments to parser."""
         return parser
-
-    def run(self, parsed_args):
-        """Invoked by the application when the command is run.
-
-        Developers implementing commands should override
-        :meth:`take_action`.
-
-        Developers creating new command base classes (such as
-        :class:`Lister` and :class:`ShowOne`) should override this
-        method to wrap :meth:`take_action`.
-
-        Return the value returned by :meth:`take_action` or 0.
-        """
-        analytics = Analytics(self.app, self.config)
-        analytics.send_analytics(self.cmd_name)
-
-        return super(AbstractCommand, self).run(parsed_args)
