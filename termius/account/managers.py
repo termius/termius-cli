@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """Module with Account manager."""
+import uuid
+
 from six.moves import configparser
 from ..core.api import API
 from ..core.exceptions import OptionNotSetException
@@ -49,6 +51,19 @@ class AccountManager(object):
         self.config.remove_section('Settings')
         self.config.remove_section('CloudSynchronization')
         self.config.write()
+
+    @property
+    def analytics_id(self):
+        """Get or create analytics id for device."""
+        try:
+            client_id = self.config.get('User', 'analytics_id')
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            client_id = uuid.uuid4()
+
+            self.config.set('User', 'analytics_id', client_id)
+            self.config.write()
+
+        return client_id
 
     @property
     def username(self):

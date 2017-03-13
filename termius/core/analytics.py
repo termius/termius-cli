@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 """Module with logic for Analytics."""
 
-import uuid
+import platform
 
 from google_measurement_protocol import Event, report
-from six.moves import configparser
 
+from termius.account.managers import AccountManager
 from termius.core.settings import Config
+from termius import __version__
 
 
 class Analytics(object):
@@ -20,21 +21,26 @@ class Analytics(object):
         if self.config is None:
             self.config = Config(self)
 
-    def get_client_id(self):
-        """Get user`s email or generate random id."""
-        try:
-            client_id = self.config.get('User', 'username')
-        except configparser.NoSectionError:
-            client_id = uuid.uuid4()
-
-        return client_id
+        self.manager = AccountManager(self.config)
 
     def send_analytics(self, cmd_name):
         """Send event to google analytics."""
-        event = Event('cli', cmd_name)
-        client_id = self.get_client_id()
+        os_info = '%s %s' % (platform.system(), platform.release())
 
-        report(self.tracking_id, client_id, event)
+        info = [
+            {'av': __version__},
+            {'an': 'Termius CLI'},
+            {'ua': os_info},
+            {'ostype': os_info}
+        ]
+
+        event = Event('cli', cmd_name)
+        report(
+            self.tracking_id,
+            self.manager.analytics_id,
+            event,
+            extra_info=info
+        )
 
     @property
     def tracking_id(self):

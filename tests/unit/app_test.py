@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-import mock as mock
+import mock
 
 from termius.app import TermiusApp
 from termius.handlers import HostCommand
@@ -12,7 +12,7 @@ class TestApp(TestCase):
 
     @mock.patch('termius.app.os.getenv')
     @mock.patch('termius.app.Analytics')
-    def test_prepare_to_run_with_ga(self, analytics_class, getenv):
+    def test_prepare_to_run_with_analytics(self, analytics_class, getenv):
         analytics = mock.Mock()
         analytics_class.return_value = analytics
         getenv.return_value = None
@@ -28,7 +28,7 @@ class TestApp(TestCase):
 
     @mock.patch('termius.app.os.getenv')
     @mock.patch('termius.app.TermiusApp.collect_analytics')
-    def test_prepare_to_run_without_ga(self, collect_analytics, getenv):
+    def test_prepare_to_run_without_analytics(self, collect_analytics, getenv):
         getenv.return_value = True
         command = HostCommand(self.app, None, 'command')
 

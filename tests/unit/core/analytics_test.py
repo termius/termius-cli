@@ -1,8 +1,10 @@
 from unittest import TestCase
 
 import mock as mock
+import platform
 from six.moves import configparser
 
+from termius import __version__
 from termius.app import TermiusApp
 from termius.core.analytics import Analytics
 
@@ -19,50 +21,34 @@ class TestAnalytics(TestCase):
     def tearDown(self):
         self.config_patch.stop()
 
-    def test_get_client_id(self):
-        client_id = 'client'
-
-        self.config.get.return_value = client_id
-
-        analytics = Analytics(self.app)
-        result = analytics.get_client_id()
-
-        self.assertEquals(result, client_id)
-        self.config_class.assert_called_once_with(analytics)
-        self.config.get.assert_called_once_with('User', 'username')
-
-
-
-    @mock.patch('termius.core.analytics.uuid')
-    def test_get_client_id_when_not_logged(self, uuid):
-        random_id = 'uuid'
-        uuid.uuid4.return_value = random_id
-
-        self.config.get.side_effect = configparser.NoSectionError('msg')
-
-        analytics = Analytics(self.app)
-        result = analytics.get_client_id()
-
-        self.assertEquals(result, random_id)
-        self.config_class.assert_called_once_with(analytics)
-        self.config.get.assert_called_once_with('User', 'username')
-        uuid.uuid4.assert_called_once()
-
     @mock.patch('termius.core.analytics.report')
-    @mock.patch('termius.core.analytics.Analytics.get_client_id')
+    @mock.patch(
+        'termius.core.analytics.AccountManager.analytics_id',
+        new_callable=mock.PropertyMock
+    )
     @mock.patch('termius.core.analytics.Event')
-    def test_send_analytics(self, event_class, get_client_id, report):
+    def test_send_analytics(self, event_class, analytics_id, report):
         cmd_name = 'command'
         client_id = 'client'
 
+        os = '%s %s' % (platform.system(), platform.release())
+
+        info = [
+            {'av': __version__},
+            {'an': 'Termius CLI'},
+            {'ua': os},
+            {'ostype': os}
+        ]
+
         event = mock.Mock()
         event_class.return_value = event
-        get_client_id.return_value = client_id
+        analytics_id.return_value = client_id
 
         analytics = Analytics(self.app)
         analytics.send_analytics(cmd_name)
 
+        analytics_id.assert_called_once_with()
         event_class.assert_called_once_with('cli', cmd_name)
         report.assert_called_once_with(
-            analytics.tracking_id, client_id, event
+            analytics.tracking_id, client_id, event, extra_info=info
         )
