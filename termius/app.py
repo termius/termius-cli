@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Module for main app class."""
 import logging
+import os
+
 from os.path import expanduser
 from pathlib2 import Path
 # pylint: disable=import-error
@@ -8,6 +10,7 @@ from cliff.app import App
 # pylint: disable=import-error
 from cliff.commandmanager import CommandManager
 
+from termius.core.analytics import Analytics
 from . import __version__
 from .core.signals import (
     post_create_instance,
@@ -33,6 +36,7 @@ class TermiusApp(App):
             version=__version__,
             command_manager=CommandManager('termius.handlers'),
         )
+
         self.configure_signals()
         self.directory_path = Path(expanduser('~/.{}/'.format(self.NAME)))
         if not self.directory_path.is_dir():
@@ -52,3 +56,15 @@ class TermiusApp(App):
         post_delete_instance.connect(delete_ssh_key, sender=SshKey)
 
         post_logout.connect(clean_data)
+
+    def prepare_to_run_command(self, cmd):
+        """Collect analytics if it`s not disabled."""
+        if os.getenv('NOT_COLLECT_STAT'):
+            return
+
+        self.collect_analytics(cmd)
+
+    def collect_analytics(self, cmd):
+        """Make Analytics instance and send analytics."""
+        analytics = Analytics(self, getattr(cmd, 'config', None))
+        analytics.send_analytics(cmd.cmd_name)

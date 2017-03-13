@@ -2,8 +2,8 @@
 """Module with comprehensive base commands."""
 import logging
 
-# pylint: disable=import-error
 from cliff.command import Command
+
 from ..settings import Config
 from ..storage import ApplicationStorage
 from ..storage.strategies import (

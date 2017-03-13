@@ -2,6 +2,7 @@
 """Module with info command."""
 from operator import attrgetter
 from cliff.show import ShowOne
+
 from ..account.managers import AccountManager
 from ..core.commands import AbstractCommand
 from ..core.commands.mixins import GetRelationMixin, SshConfigMergerMixin

@@ -26,9 +26,9 @@ class HostCommand(DetailCommand):
         _fields['group'] = self.get_safely_instance_partial(Group, 'group')
         return _fields
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, app, app_args, cmd_name=None):
         """Construct new host command."""
-        super(HostCommand, self).__init__(*args, **kwargs)
+        super(HostCommand, self).__init__(app, app_args, cmd_name)
         self.ssh_config_args = SshConfigArgs(self)
         self.taglist_args = TagListArgs(self)
 
@@ -81,9 +81,9 @@ class HostsCommand(SshConfigPrepareMixin, GroupStackGetterMixin, ListCommand):
     model_class = Host
     get_strategy = RelatedGetStrategy
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, app, app_args, cmd_name=None):
         """Construct new hosts command."""
-        super(HostsCommand, self).__init__(*args, **kwargs)
+        super(HostsCommand, self).__init__(app, app_args, cmd_name)
         self.taglist_args = TagListArgs(self)
 
     def extend_parser(self, parser):
