@@ -25,10 +25,14 @@ class SSHService(BaseSyncService):
 
     def hosts(self):
         """Retrieve host instances from ssh config."""
+        local_instances = self.storage.get_all(Host)
+
         config = SSHConfig()
         with Path(self.user_config).open() as fileobj:
             config.parse(fileobj)
         hostnames = [i for i in config.get_hostnames() if self.is_endhost(i)]
+        import pudb; pu.db
+        return None
         return [self.transform_to_instances(i, config.lookup(i))
                 for i in hostnames]
 

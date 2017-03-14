@@ -24,6 +24,7 @@ _termius() {
       "identities[List ssh identities.]" \
       "identity[identity operations.]" \
       "info[Display host or group connection arguments.]" \
+      "info[Initialize termius cli.]" \
       "key[Ssh key operations.]" \
       "keys[List ssh keys.]" \
       "login[Authenticate on termius.com.]" \
@@ -125,7 +126,7 @@ _termius_groups() {
 }
 _termius_help() {
   _arguments \
-    '1:command:(complete connect fullclean group groups help host hosts identities identity info key keys login logout pfrule pfrules pull push snippet snippets sync tags)' \
+    '1:command:(complete connect fullclean group groups help host hosts identities identity info init key keys login logout pfrule pfrules pull push snippet snippets sync tags)' \
     '-h[Display help]' \
     '--help[Display help]'
 }
@@ -317,6 +318,16 @@ _termius_push() {
     '-h[Display help]' \
     '--help[Display help]' \
     '--log-file[Log to this file]:filename:_files' \
+    '-p[Password]:isnotsecure:()' \
+    '--password[Password]:isnotsecure:()'
+}
+_termius_init() {
+  _arguments \
+    '-h[Display help]' \
+    '--help[Display help]' \
+    '--log-file[Log to this file]:filename:_files' \
+    '-u[Username]:username:()' \
+    '--username[Username]:username:()' \
     '-p[Password]:isnotsecure:()' \
     '--password[Password]:isnotsecure:()'
 }
