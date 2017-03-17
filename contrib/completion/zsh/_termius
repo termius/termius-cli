@@ -35,7 +35,8 @@ _termius() {
       "push[Send local changes to serveraudtor.com.]" \
       "snippet[Snippet operations.]" \
       "snippets[List snippets.]" \
-      "sync[Sync IaaS or PaaS service hosts with termius.]" \
+      "import-ssh-config[Import hosts from user`s ssh config.]" \
+      "export-ssh-config[Export hosts from local storage to generated file.]" \
       "tags[List tags.]" \
       "settings[Configure application settings.]"
   fi
@@ -357,13 +358,17 @@ _termius_snippets() {
     '--column[The column(s) to include]:columns:()' \
     '--quote[When to include quotes]:quote:(all minimal none nonnumeric)'
 }
-_termius_sync() {
+_termius_import-ssh-config() {
   _arguments \
     '-h[Display help]' \
     '--help[Display help]' \
-    '--log-file[Log to this file]:filename:_files' \
-    '-c[Credential file]:filename:_files' \
-    '--credentials[Credential file]:filename:_files'
+    '--log-file[Log to this file]:filename:_files'
+}
+_termius_export-ssh-config() {
+  _arguments \
+    '-h[Display help]' \
+    '--help[Display help]' \
+    '--log-file[Log to this file]:filename:_files'
 }
 _termius_tags() {
   _arguments \

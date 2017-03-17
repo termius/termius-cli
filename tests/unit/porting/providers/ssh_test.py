@@ -3,21 +3,21 @@ import os.path
 from mock import patch, MagicMock
 from six import StringIO
 from nose.tools import eq_
-from termius.sync.providers.ssh import SSHService
+from termius.porting.providers.ssh.provider import SSHPortingProvider
 from termius.core.models.terminal import (
     Host, SshConfig, Identity, SshKey
 )
 
 
-@patch('termius.sync.providers.ssh.Path')
+@patch('termius.porting.providers.ssh.provider.Path')
 def test_empty_sshconfig(mockpath):
     mockpath.return_value.open.return_value.__enter__.return_value = StringIO()
-    service = SSHService(None, '')
-    ssh_hosts = service.hosts()
+    service = SSHPortingProvider(None, '')
+    ssh_hosts = service.provider_hosts()
     eq_(ssh_hosts, [])
 
 
-@patch('termius.sync.providers.ssh.Path')
+@patch('termius.porting.providers.ssh.provider.Path')
 def test_single_sshconfig(mockpath):
     mockpath.return_value.open.return_value.__enter__.return_value = StringIO(
         """
@@ -30,8 +30,8 @@ Host firstone
     StrictHostKeyChecking no
         """
     )
-    service = SSHService(None, '')
-    ssh_hosts = service.hosts()
+    service = SSHPortingProvider(None, '')
+    ssh_hosts = service.provider_hosts()
     eq_(ssh_hosts, [
         Host(
             label='firstone',
@@ -51,7 +51,7 @@ Host firstone
     ])
 
 
-@patch('termius.sync.providers.ssh.Path')
+@patch('termius.porting.providers.ssh.provider.Path')
 def test_single_sshconfig_with_fnmatch(mockpath):
     mockpath.return_value.open.return_value.__enter__.return_value = StringIO(
         """
@@ -63,8 +63,8 @@ Host firstone
     User ubuntu
         """
     )
-    service = SSHService(None, '')
-    ssh_hosts = service.hosts()
+    service = SSHPortingProvider(None, '')
+    ssh_hosts = service.provider_hosts()
     eq_(ssh_hosts, [
         Host(
             label='firstone',
@@ -84,8 +84,9 @@ Host firstone
     ])
 
 
-@patch('termius.sync.providers.ssh.Path')
-def test_single_sshconfig_with_keys(mockpath):
+@patch('termius.porting.providers.ssh.provider.Path')
+@patch('termius.porting.providers.ssh.adapter.Path')
+def test_single_sshconfig_with_keys(path_in_providers, path_in_adapters):
     sshconfig_content = """
 Host firstone
     HostName localhost
@@ -99,10 +100,11 @@ Host firstone
         '~/.ssh/id_rsa': private_key_content
     })
 
-    mockpath.side_effect = fake_files.generate_path_obj
+    path_in_providers.side_effect = fake_files.generate_path_obj
+    path_in_adapters.side_effect = fake_files.generate_path_obj
 
-    service = SSHService(None, '')
-    ssh_hosts = service.hosts()
+    service = SSHPortingProvider(None, '')
+    ssh_hosts = service.provider_hosts()
     eq_(ssh_hosts, [
         Host(
             label='firstone',
@@ -126,18 +128,18 @@ Host firstone
 
 
 class FakePathsObj(object):
-
     def __init__(self, **kwargs):
         self.files = {
             os.path.expanduser(i): content
             for i, content in kwargs.items()
-        }
+            }
 
     def generate_path_obj(self, path):
         mock = MagicMock()
         mock.name = os.path.basename(path)
         path = os.path.expanduser(path)
         mock.is_file.return_value = path in self.files
-        mock.open.return_value.__enter__.side_effect = lambda: StringIO(self.files[path])
+        mock.open.return_value.__enter__.side_effect = lambda: StringIO(
+            self.files[path])
         mock.read_text.side_effect = lambda: self.files[path]
         return mock

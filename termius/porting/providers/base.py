@@ -2,44 +2,36 @@
 """Acquire SaaS and IaaS hosts."""
 import abc
 import six
+
+from ...core.commands.mixins import SshConfigMergerMixin
 from ...core.models.terminal import Host, SshKey
 
 
 @six.add_metaclass(abc.ABCMeta)
-class BaseSyncService(object):
+class BasePortingProvider(SshConfigMergerMixin):
     """Base class for acquiring SaaS and IaaS hosts into storage."""
 
     def __init__(self, storage, crendetial):
         """Construct new instance for providing hosts from SaaS and IaaS."""
-        self.crendetial = crendetial
         self.storage = storage
+        self.crendetial = crendetial
 
     @abc.abstractmethod
-    def hosts(self):
-        """Override to return host instances."""
+    def provider_hosts(self):
+        """Override to return host instances from provider."""
 
-    def sync(self):
-        """Sync storage content and the Service hosts."""
-        service_hosts = self.hosts()
+    @abc.abstractmethod
+    def export_hosts(self):
+        """Export hosts to provider format."""
+
+    def import_hosts(self):
+        """Import hosts from provider and save it in local storage."""
+        hosts_to_import = self.provider_hosts()
+
         with self.storage:
-            for i in service_hosts:
-                updated_i = self.assign_existed_host_ids(i)
-                self.storage.save(updated_i)
-
-    def assign_existed_host_ids(self, new_host):
-        """Assign to new host existed host id to update it."""
-        existed_host = self.get_existed_host(new_host)
-        if not existed_host:
-            return new_host
-        new_host.id = existed_host.id
-        new_host.ssh_config.id = existed_host.ssh_config.id
-        existed_identity = existed_host.ssh_config.identity
-        if not (existed_identity and existed_identity.is_visible):
-            new_host.ssh_config.identity.id = existed_identity.id
-        if new_host.ssh_config.identity.ssh_key:
-            self.assign_ssh_key_ids(new_host.ssh_config.identity.ssh_key)
-
-        return new_host
+            for host in hosts_to_import:
+                if not self.get_existed_host(host):
+                    self.storage.save(host)
 
     def assign_ssh_key_ids(self, new_ssh_key):
         """Assign to new ssh key existed ssh key id to update it."""

@@ -25,7 +25,8 @@ requires = [
 
 # pylint: disable=invalid-name
 handlers = [
-    'sync = termius.sync.commands:SyncCommand',
+    'import-ssh-config = termius.porting.commands:SSHImportCommand',
+    'export-ssh-config = termius.porting.commands:SSHExportCommand',
     'login = termius.account.commands:LoginCommand',
     'logout = termius.account.commands:LogoutCommand',
     'settings = termius.account.commands:SettingsCommand',

@@ -4,7 +4,7 @@ from operator import attrgetter
 from cached_property import cached_property
 from ..core.commands import DetailCommand, ListCommand
 from ..core.commands.single import RequiredOptions
-from ..core.commands.mixins import SshConfigPrepareMixin, GroupStackGetterMixin
+from ..core.commands.mixins import GroupStackGetterMixin
 from ..core.storage.strategies import RelatedGetStrategy
 from ..core.models.terminal import Host, Group, TagHost
 from .taghost import TagListArgs
@@ -75,7 +75,7 @@ class HostCommand(DetailCommand):
         return instance
 
 
-class HostsCommand(SshConfigPrepareMixin, GroupStackGetterMixin, ListCommand):
+class HostsCommand(GroupStackGetterMixin, ListCommand):
     """Manage host objects."""
 
     model_class = Host

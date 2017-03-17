@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Module with init command."""
 
 from argparse import Namespace
@@ -7,7 +8,7 @@ import six
 from termius.account.commands import LoginCommand
 from termius.cloud.commands import PullCommand, PushCommand
 from termius.core.commands import AbstractCommand
-from termius.sync.commands import SyncCommand
+from termius.porting.commands import SSHImportCommand
 
 
 class InitCommand(AbstractCommand):
@@ -34,9 +35,7 @@ class InitCommand(AbstractCommand):
         return Namespace(
             log_file=parsed_args.log_file,
             username=username,
-            password=password,
-            service='ssh',
-            credentials=None
+            password=password
         )
 
     def login(self, parsed_args):
@@ -49,9 +48,9 @@ class InitCommand(AbstractCommand):
         command = PullCommand(self.app, self.app_args, self.cmd_name)
         command.take_action(parsed_args)
 
-    def sync_ssh(self, parsed_args):
+    def import_ssh(self, parsed_args):
         """Wrapper for sync command."""
-        command = SyncCommand(self.app, self.app_args, self.cmd_name)
+        command = SSHImportCommand(self.app, self.app_args, self.cmd_name)
         command.take_action(parsed_args)
 
     def push(self, parsed_args):
@@ -73,8 +72,8 @@ class InitCommand(AbstractCommand):
         self.login(namespace)
         self.log.info('\nPull your data from termius cloud...')
         self.pull(namespace)
-        self.log.info('\nSync local storage with your ~/.ssh/config...')
-        self.sync_ssh(namespace)
+        self.log.info('\nImport ssh config...')
+        self.import_ssh(namespace)
         self.log.info('\nPush local data to termius cloud...')
         self.push(namespace)
 
