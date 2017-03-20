@@ -39,7 +39,6 @@ class SSHConfigHostAdapter(SshConfigMergerMixin):
 
     def adapt_instance_to_ssh_config_host(self, host_instance):
         """Convert app host to ssh config host."""
-        host_instance.ssh_config.identity.is_visible = True
         ssh_config = self.get_merged_ssh_config(host_instance)
 
         adapted = {
