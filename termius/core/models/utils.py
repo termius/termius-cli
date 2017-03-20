@@ -62,5 +62,5 @@ class Merger(object):
 def merge_field(left, right, field):
     """Merge field of right instance to left one."""
     left_field = getattr(left, field)
-    if left_field is None:
+    if not left_field:
         setattr(left, field, getattr(right, field))
