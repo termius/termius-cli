@@ -15,6 +15,7 @@ class BasePortingProvider(SshConfigMergerMixin):
         """Construct new instance for providing hosts from SaaS and IaaS."""
         self.storage = storage
         self.crendetial = crendetial
+        self.skipped_hosts = []
 
     @abc.abstractmethod
     def provider_hosts(self):
@@ -32,6 +33,8 @@ class BasePortingProvider(SshConfigMergerMixin):
             for host in hosts_to_import:
                 if not self.get_existed_host(host):
                     self.storage.save(host)
+                else:
+                    self.skipped_hosts.append(host.label)
 
     def assign_ssh_key_ids(self, new_ssh_key):
         """Assign to new ssh key existed ssh key id to update it."""

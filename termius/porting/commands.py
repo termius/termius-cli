@@ -20,7 +20,19 @@ class SSHImportCommand(AbstractCommand):
         provider = SSHPortingProvider(storage=self.storage, crendetial=None)
         provider.import_hosts()
 
-        self.log.info('Import hosts from ~/.ssh/config to local storage.')
+        if len(provider.skipped_hosts):
+            for alias in provider.skipped_hosts:
+                self.log.info(
+                    'Host %s already exists, skip...' % alias
+                )
+
+            self.log.info(
+                '\nImport completed, part of the hosts was ignored.'
+            )
+        else:
+            self.log.info(
+                'Import hosts from ~/.ssh/config to local storage.'
+            )
 
 
 class SSHExportCommand(AbstractCommand):
