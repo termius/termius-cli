@@ -24,6 +24,7 @@ _termius() {
       "identities[List ssh identities.]" \
       "identity[identity operations.]" \
       "info[Display host or group connection arguments.]" \
+      "info[Initialize termius cli.]" \
       "key[Ssh key operations.]" \
       "keys[List ssh keys.]" \
       "login[Authenticate on termius.com.]" \
@@ -34,7 +35,8 @@ _termius() {
       "push[Send local changes to serveraudtor.com.]" \
       "snippet[Snippet operations.]" \
       "snippets[List snippets.]" \
-      "sync[Sync IaaS or PaaS service hosts with termius.]" \
+      "import-ssh-config[Import hosts from user`s ssh config.]" \
+      "export-ssh-config[Export hosts from local storage to generated file.]" \
       "tags[List tags.]" \
       "settings[Configure application settings.]"
   fi
@@ -125,7 +127,7 @@ _termius_groups() {
 }
 _termius_help() {
   _arguments \
-    '1:command:(complete connect fullclean group groups help host hosts identities identity info key keys login logout pfrule pfrules pull push snippet snippets sync tags)' \
+    '1:command:(complete connect fullclean group groups help host hosts identities identity info init key keys login logout pfrule pfrules pull push snippet snippets sync tags)' \
     '-h[Display help]' \
     '--help[Display help]'
 }
@@ -320,6 +322,16 @@ _termius_push() {
     '-p[Password]:isnotsecure:()' \
     '--password[Password]:isnotsecure:()'
 }
+_termius_init() {
+  _arguments \
+    '-h[Display help]' \
+    '--help[Display help]' \
+    '--log-file[Log to this file]:filename:_files' \
+    '-u[Username]:username:()' \
+    '--username[Username]:username:()' \
+    '-p[Password]:isnotsecure:()' \
+    '--password[Password]:isnotsecure:()'
+}
 _termius_snippet() {
   _arguments \
     '-h[Display help]' \
@@ -346,13 +358,17 @@ _termius_snippets() {
     '--column[The column(s) to include]:columns:()' \
     '--quote[When to include quotes]:quote:(all minimal none nonnumeric)'
 }
-_termius_sync() {
+_termius_import-ssh-config() {
   _arguments \
     '-h[Display help]' \
     '--help[Display help]' \
-    '--log-file[Log to this file]:filename:_files' \
-    '-c[Credential file]:filename:_files' \
-    '--credentials[Credential file]:filename:_files'
+    '--log-file[Log to this file]:filename:_files'
+}
+_termius_export-ssh-config() {
+  _arguments \
+    '-h[Display help]' \
+    '--help[Display help]' \
+    '--log-file[Log to this file]:filename:_files'
 }
 _termius_tags() {
   _arguments \

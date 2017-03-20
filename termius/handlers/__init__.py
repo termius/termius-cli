@@ -9,3 +9,4 @@ from .ssh_key import SshKeyCommand, SshKeysCommand  # noqa
 from .tag import TagsCommand  # noqa
 from .info import InfoCommand  # noqa
 from .connect import ConnectCommand  # noqa
+from .init import InitCommand # noqa

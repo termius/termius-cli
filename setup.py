@@ -25,7 +25,8 @@ requires = [
 
 # pylint: disable=invalid-name
 handlers = [
-    'sync = termius.sync.commands:SyncCommand',
+    'import-ssh-config = termius.porting.commands:SSHImportCommand',
+    'export-ssh-config = termius.porting.commands:SSHExportCommand',
     'login = termius.account.commands:LoginCommand',
     'logout = termius.account.commands:LogoutCommand',
     'settings = termius.account.commands:SettingsCommand',
@@ -47,7 +48,8 @@ handlers = [
     'tags = termius.handlers:TagsCommand',
     'info = termius.handlers:InfoCommand',
     'connect = termius.handlers:ConnectCommand',
-    'crypto = termius.cloud.commands:CryptoCommand'
+    'crypto = termius.cloud.commands:CryptoCommand',
+    'init = termius.handlers:InitCommand'
 ]
 
 
