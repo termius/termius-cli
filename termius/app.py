@@ -32,7 +32,7 @@ class TermiusApp(App):
     def __init__(self):
         """Construct new CLI application."""
         super(TermiusApp, self).__init__(
-            description='Termius app',
+            description='Termius - crossplatform SSH and Telnet client',
             version=__version__,
             command_manager=CommandManager('termius.handlers'),
         )

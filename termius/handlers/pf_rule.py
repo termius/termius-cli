@@ -10,7 +10,7 @@ from ..core.models.terminal import Host, PFRule
 
 
 class PFRuleCommand(DetailCommand):
-    """Operate with port forwarding rule object."""
+    """operate with port forwarding rule object"""
 
     model_class = PFRule
     required_options = RequiredOptions(create=('host', 'binding', 'pf_type'))
@@ -74,7 +74,7 @@ class PFRuleCommand(DetailCommand):
 
 
 class PFRulesCommand(ListCommand):
-    """Manage port forwarding rule objects."""
+    """list port forwarding rule objects"""
 
     model_class = PFRule
 

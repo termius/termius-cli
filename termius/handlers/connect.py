@@ -11,7 +11,7 @@ from ..formatters.mixins import SshCommandFormatterMixin
 
 class ConnectCommand(SshCommandFormatterMixin, SshConfigMergerMixin,
                      GetRelationMixin, AbstractCommand):
-    """Connect to specific host."""
+    """connect to specific host"""
 
     get_strategy = RelatedGetStrategy
 

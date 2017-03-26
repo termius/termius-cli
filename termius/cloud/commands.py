@@ -49,7 +49,7 @@ class CloudSynchronizationCommand(AbstractCommand):
 
 
 class PushCommand(CloudSynchronizationCommand):
-    """Push data to Termius cloud."""
+    """push data to Termius Cloud"""
 
     get_strategy = RelatedGetStrategy
     save_strategy = SyncSaveStrategy
@@ -66,7 +66,7 @@ class PushCommand(CloudSynchronizationCommand):
 
 
 class PullCommand(CloudSynchronizationCommand):
-    """Pull data from Termius cloud."""
+    """pull data from Termius Cloud"""
 
     save_strategy = SyncSaveStrategy
 
@@ -78,7 +78,7 @@ class PullCommand(CloudSynchronizationCommand):
 
 
 class FullCleanCommand(CloudSynchronizationCommand):
-    """Pull, delete all data and push to Termius cloud."""
+    """remove user data from Termius Cloud"""
 
     get_strategy = RelatedGetStrategy
     save_strategy = SyncSaveStrategy
@@ -104,7 +104,7 @@ class FullCleanCommand(CloudSynchronizationCommand):
 
 
 class CryptoCommand(CloudSynchronizationCommand):
-    """Command for crypting and decrypting text."""
+    """encrypt and decrypt text"""
 
     def extend_parser(self, parser):
         """Add more arguments to parser."""

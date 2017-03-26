@@ -12,7 +12,7 @@ from .ssh_config import SshConfigArgs
 
 
 class HostCommand(DetailCommand):
-    """Operate with Host object."""
+    """operate with host object"""
 
     model_class = Host
     required_options = RequiredOptions(create=('address',))
@@ -76,7 +76,7 @@ class HostCommand(DetailCommand):
 
 
 class HostsCommand(GroupStackGetterMixin, ListCommand):
-    """Manage host objects."""
+    """list host objects"""
 
     model_class = Host
     get_strategy = RelatedGetStrategy

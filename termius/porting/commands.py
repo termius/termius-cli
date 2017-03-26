@@ -10,7 +10,7 @@ from ..core.commands import AbstractCommand
 
 
 class SSHImportCommand(AbstractCommand):
-    """Import hosts from user`s ssh config."""
+    """import hosts from user`s ssh config"""
 
     save_strategy = RelatedSaveStrategy
     get_strategy = RelatedGetStrategy
@@ -36,7 +36,7 @@ class SSHImportCommand(AbstractCommand):
 
 
 class SSHExportCommand(AbstractCommand):
-    """Export hosts from local storage to generated file."""
+    """export hosts from local storage to file"""
 
     get_strategy = RelatedGetStrategy
 

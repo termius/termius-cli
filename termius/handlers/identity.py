@@ -10,7 +10,7 @@ from .ssh_key import SshKeyGeneratorMixin
 
 
 class IdentityCommand(SshKeyGeneratorMixin, DetailCommand):
-    """Operate with identity object."""
+    """operate with identity object"""
 
     model_class = Identity
 
@@ -71,7 +71,7 @@ class IdentityCommand(SshKeyGeneratorMixin, DetailCommand):
 
 
 class IdentitiesCommand(ListCommand):
-    """Manage identity objects."""
+    """list identity objects"""
 
     model_class = Identity
 

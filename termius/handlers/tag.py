@@ -6,7 +6,7 @@ from ..core.models.terminal import Tag
 
 
 class TagsCommand(GetObjectsMixin, InstanceOperationMixin, ListCommand):
-    """Manage tag objects."""
+    """list tag objects"""
 
     model_class = Tag
 

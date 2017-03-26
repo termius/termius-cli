@@ -6,7 +6,7 @@ from ..core.models.terminal import Snippet
 
 
 class SnippetCommand(DetailCommand):
-    """Operate with Group object."""
+    """operate with snippet object"""
 
     model_class = Snippet
     required_options = RequiredOptions(create=('script',))
@@ -21,6 +21,6 @@ class SnippetCommand(DetailCommand):
 
 
 class SnippetsCommand(ListCommand):
-    """Manage snippet objects."""
+    """list snippet objects"""
 
     model_class = Snippet

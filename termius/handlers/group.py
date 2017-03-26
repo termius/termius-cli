@@ -12,7 +12,7 @@ from .ssh_config import SshConfigArgs
 
 
 class GroupCommand(GroupStackGetterMixin, DetailCommand):
-    """Operate with Group object."""
+    """operate with group object"""
 
     model_class = Group
 
@@ -63,7 +63,7 @@ class GroupCommand(GroupStackGetterMixin, DetailCommand):
 
 
 class GroupsCommand(SshConfigPrepareMixin, ListCommand):
-    """Manage group objects."""
+    """list group objects"""
 
     model_class = Group
     get_strategy = RelatedGetStrategy

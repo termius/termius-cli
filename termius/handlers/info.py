@@ -12,7 +12,7 @@ from ..core.models.terminal import Group, Host, SshConfig
 
 class InfoCommand(SshConfigMergerMixin, GetRelationMixin,
                   ShowOne, AbstractCommand):
-    """Show info about host or group."""
+    """display info about host or group"""
 
     get_strategy = RelatedGetStrategy
     model_class = SshConfig

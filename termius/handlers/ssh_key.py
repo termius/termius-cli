@@ -34,7 +34,7 @@ class SshKeyGeneratorMixin(object):
 
 
 class SshKeyCommand(SshKeyGeneratorMixin, DetailCommand):
-    """Operate with Host object."""
+    """operate with Host object"""
 
     model_class = SshKey
     required_options = RequiredOptions(create=('identity_file', 'label'))
@@ -67,6 +67,6 @@ class SshKeyCommand(SshKeyGeneratorMixin, DetailCommand):
 
 
 class SshKeysCommand(ListCommand):
-    """Manage ssh key objects."""
+    """list ssh key objects"""
 
     model_class = SshKey

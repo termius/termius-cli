@@ -12,7 +12,7 @@ from termius.porting.commands import SSHImportCommand
 
 
 class InitCommand(AbstractCommand):
-    """Initialize termius cli."""
+    """initialize Termius CLI"""
 
     # pylint: disable=no-self-use
     def prompt_username(self):
