@@ -62,7 +62,7 @@ class PushCommand(CloudSynchronizationCommand):
         except (configparser.NoSectionError, configparser.NoOptionError):
             self.log.error('Call pull at first.')
         else:
-            self.log.info('Push data to Termius cloud.')
+            self.log.info('Data delivered successfully')
 
 
 class PullCommand(CloudSynchronizationCommand):
@@ -74,7 +74,7 @@ class PullCommand(CloudSynchronizationCommand):
         """Pull updated remote instances."""
         api_controller.get_settings()
         api_controller.get_bulk()
-        self.log.info('Pull data from Termius cloud.')
+        self.log.info('Data successfully collected')
 
 
 class FullCleanCommand(CloudSynchronizationCommand):

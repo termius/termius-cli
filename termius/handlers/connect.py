@@ -20,16 +20,16 @@ class ConnectCommand(SshCommandFormatterMixin, SshConfigMergerMixin,
         parser.add_argument(
             '-H', '--host', const=Host,
             dest='model', action='store_const', default=Host,
-            help='Connect to host or start portforwarding rule.'
+            help='connect to host or start portforwarding rule'
         )
         parser.add_argument(
             '-R', '--pfrule', const=PFRule,
             dest='model', action='store_const', default=Host,
-            help='Connect to host or start portforwarding rule.'
+            help='connect to host or start portforwarding rule'
         )
         parser.add_argument(
             'entry', metavar='ID or NAME',
-            help='Connect to host or start portforwarding rule.'
+            help='connect to host or start portforwarding rule'
         )
         return parser
 

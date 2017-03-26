@@ -21,12 +21,12 @@ class BaseAccountCommand(AbstractCommand):
 
 
 class LoginCommand(BaseAccountCommand):
-    """sign into Termius Cloud"""
+    """Sign into Termius cloud."""
 
     # pylint: disable=no-self-use
     def prompt_username(self):
         """Ask username prompt."""
-        return six.moves.input("Termius's username: ")
+        return six.moves.input("Username: ")
 
     # pylint: disable=no-self-use
     def prompt_authy_token(self):
@@ -49,21 +49,21 @@ class LoginCommand(BaseAccountCommand):
             except AuthyTokenIssue:
                 authy_token = self.prompt_authy_token()
                 self.manager.login(username, password, authy_token=authy_token)
-        self.log.info('Sign into Termius cloud.')
+        self.log.info('\nSigned in successfully')
 
 
 class LogoutCommand(BaseAccountCommand):
-    """sign out Termius Cloud"""
+    """Sign out Termius cloud."""
 
     def take_action(self, _):
         """Process CLI call."""
         with on_clean_when_logout(self, self.manager):
             self.manager.logout()
-        self.log.info('Sign out Termius cloud.')
+        self.log.info('Signed out')
 
 
 class SettingsCommand(BaseAccountCommand):
-    """update account settings"""
+    """Update account settings."""
 
     def extend_parser(self, parser):
         """Add more arguments to parser."""
