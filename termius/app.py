@@ -11,6 +11,7 @@ from cliff.app import App
 from cliff.commandmanager import CommandManager
 
 from termius.core.analytics import Analytics
+from termius.core.commands.help import HelpCommand
 from . import __version__
 from .core.signals import (
     post_create_instance,
@@ -41,6 +42,8 @@ class TermiusApp(App):
         self.directory_path = Path(expanduser('~/.{}/'.format(self.NAME)))
         if not self.directory_path.is_dir():
             self.directory_path.mkdir(parents=True)
+
+        self.command_manager.add_command('help', HelpCommand)
 
     def configure_logging(self):
         """Change logging level for request package."""
