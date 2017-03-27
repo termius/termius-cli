@@ -21,7 +21,7 @@ class BaseAccountCommand(AbstractCommand):
 
 
 class LoginCommand(BaseAccountCommand):
-    """Sign into Termius cloud."""
+    """sign into Termius Cloud"""
 
     # pylint: disable=no-self-use
     def prompt_username(self):
@@ -53,7 +53,7 @@ class LoginCommand(BaseAccountCommand):
 
 
 class LogoutCommand(BaseAccountCommand):
-    """Sign out Termius cloud."""
+    """sign out Termius Cloud"""
 
     def take_action(self, _):
         """Process CLI call."""
@@ -63,7 +63,7 @@ class LogoutCommand(BaseAccountCommand):
 
 
 class SettingsCommand(BaseAccountCommand):
-    """Update account settings."""
+    """update account settings"""
 
     def extend_parser(self, parser):
         """Add more arguments to parser."""

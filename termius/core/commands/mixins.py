@@ -218,15 +218,15 @@ class InstanceOperationMixin(ArgModelSerializerMixin, object):
 
     def log_create(self, entry):
         """Log creating new model entry."""
-        self._general_log(entry, 'Create object.')
+        self._general_log(entry, 'Entry created.')
 
     def log_update(self, entry):
         """Log updating model entry."""
-        self._general_log(entry, 'Update object.')
+        self._general_log(entry, 'Entry updated.')
 
     def log_delete(self, entry):
         """Log deleting model entry."""
-        self._general_log(entry, 'Delete object.')
+        self._general_log(entry, 'Entry deleted.')
 
     def _general_log(self, entry, message):
         self.app.stdout.write('{}\n'.format(entry.id))

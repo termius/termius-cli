@@ -42,19 +42,19 @@ class IdentityCommand(SshKeyGeneratorMixin, DetailCommand):
         """Add more arguments to parser."""
         parser.add_argument(
             '-u', '--username',
-            metavar='USERNAME', help="Username of host's user."
+            metavar='USERNAME', help="username for SSH authorization"
         )
         parser.add_argument(
             '-p', '--password',
-            metavar='PASSWORD', help="Password of Host's user."
+            metavar='PASSWORD', help="password for SSH authorization"
         )
         parser.add_argument(
             '-i', '--identity-file',
-            metavar='PRIVATE_KEY', help='Private key.'
+            metavar='PRIVATE_KEY', help='private key'
         )
         parser.add_argument(
             '-k', '--ssh-key',
-            metavar='SSH_KEY', help="Serveraduitor's ssh key's name or id."
+            metavar='SSH_KEY', help="ssh key name or id"
         )
         return parser
 

@@ -15,7 +15,7 @@ class SnippetCommand(DetailCommand):
         """Add more arguments to parser."""
         parser.add_argument(
             '-s', '--script', metavar='SCRIPT',
-            help='Shell Script for snippet.'
+            help='shell script for snippet'
         )
         return parser
 

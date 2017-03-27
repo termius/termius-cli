@@ -16,7 +16,7 @@ class SshFormatter(SshCommandFormatterMixin, SingleFormatter):
         group.add_argument(
             '--address',
             action='store',
-            help='Use passed address for ssh command',
+            help='use passed address for ssh command',
         )
 
     def emit_one(self, column_names, data, stdout, parsed_args):

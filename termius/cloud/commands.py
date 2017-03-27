@@ -119,7 +119,13 @@ class CryptoCommand(CloudSynchronizationCommand):
             action='store_const', const='encrypt',
             dest='operation'
         )
-        parser.add_argument('text', nargs=1, metavar='TEXT', action='store')
+        parser.add_argument(
+            'text',
+            nargs=1,
+            metavar='TEXT',
+            action='store',
+            help='string data'
+        )
         return parser
 
     def process_sync(self, api_controller):

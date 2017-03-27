@@ -43,7 +43,7 @@ class SshKeyCommand(SshKeyGeneratorMixin, DetailCommand):
         """Add more arguments to parser."""
         parser.add_argument(
             '-i', '--identity-file',
-            metavar='PRIVATE_KEY', help='Private key.'
+            metavar='PRIVATE_KEY', help='private key'
         )
         return parser
 

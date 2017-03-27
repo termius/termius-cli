@@ -37,15 +37,15 @@ class HostCommand(DetailCommand):
         parser.add_argument(
             '-t', '--tag', metavar='TAG_NAME',
             action='append', default=[], dest='tags',
-            help='Specify the tag(s) for host, can be repeated'
+            help='specify the tag(s) for host, can be repeated'
         )
         parser.add_argument(
             '-g', '--group', metavar='GROUP_ID or GROUP_NAME',
-            help='Move hosts to this group.'
+            help='move hosts to this group'
         )
         parser.add_argument(
             '-a', '--address',
-            metavar='ADDRESS', help='Address of host.'
+            metavar='ADDRESS', help='address of host'
         )
 
         self.ssh_config_args.add_agrs(parser)
@@ -91,11 +91,11 @@ class HostsCommand(GroupStackGetterMixin, ListCommand):
         parser.add_argument(
             '-t', '--tag', metavar='TAG_NAME',
             action='append', default=[], dest='tags',
-            help=('Specify the tag(s) for host, can be repeated')
+            help='specify the tag(s) for host, can be repeated'
         )
         parser.add_argument(
             '-g', '--group', metavar='GROUP_ID or GROUP_NAME',
-            help=('List hosts in group (default is current group).')
+            help=('list hosts in group (current group by default)')
         )
         return parser
 

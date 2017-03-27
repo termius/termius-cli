@@ -55,9 +55,10 @@ class HelpCommand(BaseHelpCommand):
             except ValueError:
                 # Did not find an exact match
                 cmd = parsed_args.cmd[0]
-                fuzzy_matches = [k[0] for k in self.app.command_manager
-                                 if k[0].startswith(cmd)
-                                 ]
+                fuzzy_matches = [
+                    k[0] for k in self.app.command_manager
+                    if k[0].startswith(cmd)
+                ]
                 if not fuzzy_matches:
                     raise
                 self.app.stdout.write('Command "%s" matches:\n' % cmd)

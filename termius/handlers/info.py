@@ -27,16 +27,16 @@ class InfoCommand(SshConfigMergerMixin, GetRelationMixin,
         parser.add_argument(
             '-G', '--group', dest='entry_type',
             action='store_const', const=Group, default=Host,
-            help='Show info about group.'
+            help='show info about group'
         )
         parser.add_argument(
             '-H', '--host', dest='entry_type',
             action='store_const', const=Host, default=Host,
-            help='Show info about host.'
+            help='show info about host'
         )
         parser.add_argument(
             '-M', '--no-merge', action='store_true',
-            help='Do not merge configs.'
+            help='do not merge configs'
         )
         parser.add_argument('id_or_name', metavar='ID or NAME')
         return parser

@@ -37,7 +37,7 @@ class GroupCommand(GroupStackGetterMixin, DetailCommand):
         """Add more arguments to parser."""
         parser.add_argument(
             '-g', '--parent-group',
-            metavar='PARENT_GROUP', help="Parent group's id or name."
+            metavar='PARENT_GROUP', help="parent group id or name"
         )
         self.ssh_config_args.add_agrs(parser)
         return parser
@@ -72,12 +72,12 @@ class GroupsCommand(SshConfigPrepareMixin, ListCommand):
         """Add more arguments to parser."""
         parser.add_argument(
             '-r', '--recursive', action='store_true',
-            help=('List groups of current group '
+            help=('list groups of current group '
                   '(default is current group) recursively.')
         )
         parser.add_argument(
             'group', nargs='?', metavar='GROUP_ID or GROUP_NAME',
-            help='List groups in this group.'
+            help='list groups in this group'
         )
         return parser
 

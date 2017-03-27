@@ -14,11 +14,11 @@ class TagsCommand(GetObjectsMixin, InstanceOperationMixin, ListCommand):
         """Add more arguments to parser."""
         parser.add_argument(
             '-d', '--delete',
-            action='store_true', help='Delete tags.'
+            action='store_true', help='delete tags'
         )
         parser.add_argument(
             'tags', nargs='*', metavar='TAG_ID or TAG_NAME',
-            help='List infos about this tags.'
+            help='list info about this tags'
         )
         return parser
 
