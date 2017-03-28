@@ -21,12 +21,12 @@ class BaseAccountCommand(AbstractCommand):
 
 
 class LoginCommand(BaseAccountCommand):
-    """sign into Termius Cloud"""
+    """sign into the Termius Cloud"""
 
     # pylint: disable=no-self-use
     def prompt_username(self):
         """Ask username prompt."""
-        return six.moves.input("Username: ")
+        return six.moves.input('Username: ')
 
     # pylint: disable=no-self-use
     def prompt_authy_token(self):
@@ -53,7 +53,7 @@ class LoginCommand(BaseAccountCommand):
 
 
 class LogoutCommand(BaseAccountCommand):
-    """sign out Termius Cloud"""
+    """sign out of the Termius Cloud"""
 
     def take_action(self, _):
         """Process CLI call."""
@@ -63,19 +63,19 @@ class LogoutCommand(BaseAccountCommand):
 
 
 class SettingsCommand(BaseAccountCommand):
-    """update account settings"""
+    """update the account settings"""
 
     def extend_parser(self, parser):
         """Add more arguments to parser."""
         parser.add_argument(
             '--synchronize-key', action='store', type=boolean_yes_no,
             choices=(False, True), default=True,
-            help='Sync ssh keys and ssh identities or not.'
+            help='enable/disable ssh keys and identities sync'
         )
         parser.add_argument(
             '--agent-forwarding', action='store', type=boolean_yes_no,
             choices=(False, True), default=True,
-            help='Sync ssh keys and ssh identities or not.'
+            help='enable/disable agent forwarding'
         )
         return parser
 
@@ -86,7 +86,7 @@ class SettingsCommand(BaseAccountCommand):
             for k in ('synchronize_key', 'agent_forwarding')
         }
         self.manager.set_settings(settings)
-        self.log.info('Set settings.')
+        self.log.info('Settings updated')
 
 
 @contextmanager

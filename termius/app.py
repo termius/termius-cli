@@ -113,13 +113,13 @@ class TermiusApp(App):
             action='store_const',
             dest='verbose_level',
             const=0,
-            help='only display warnings and errors',
+            help='display warnings and errors only',
         )
         parser.add_argument(
             '--log-file',
             action='store',
             default=None,
-            help='record output in a designated file',
+            help='record output into a designated file',
         )
         if self.deferred_help:
             parser.add_argument(
@@ -134,7 +134,7 @@ class TermiusApp(App):
                 action=HelpAction,
                 nargs=0,
                 default=self,  # tricky
-                help="display help message",
+                help="show the help message",
             )
         parser.add_argument(
             '--debug',

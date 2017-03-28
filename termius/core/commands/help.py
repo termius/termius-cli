@@ -43,7 +43,7 @@ class HelpAction(BaseHelpAction):
 
 
 class HelpCommand(BaseHelpCommand):
-    """display command specific help message"""
+    """display the command specific help message"""
 
     def take_action(self, parsed_args):
         if parsed_args.cmd:

@@ -39,7 +39,7 @@ class AbstractCommand(PasswordPromptMixin, Command):
         """Create command line argument parser."""
         parser = super(AbstractCommand, self).get_parser(prog_name)
         parser.add_argument(
-            '--log-file', help='record output in a designated file'
+            '--log-file', help='record output to FILE'
         )
         return self.extend_parser(parser)
 

@@ -38,16 +38,16 @@ class IdentityArgs(SshKeyGeneratorMixin, ArgModelSerializerMixin, object):
     def add_args(self, parser):
         """Add identity args to argparser."""
         parser.add_argument(
-            '-u', '--username', metavar='SSH_USERNAME',
-            help='username for SSH authorization'
+            '-u', '--username', metavar='USERNAME',
+            help='USERNAME for ssh authentication'
         )
         parser.add_argument(
-            '-P', '--password', metavar='SSH_PASSWORD',
-            help='password for SSH authorization'
+            '-P', '--password', metavar='PASSWORD',
+            help='PASSWORD for ssh authentication'
         )
         parser.add_argument(
-            '-i', '--identity-file', metavar='IDENTITY_FILE',
-            help=('select the private key file')
+            '-i', '--identity-file', metavar='FILE',
+            help=('select FILE as private key')
         )
         return parser
 
@@ -82,35 +82,35 @@ class SshConfigArgs(ArgModelSerializerMixin, object):
         parser.add_argument(
             '-p', '--port',
             type=int, metavar='PORT',
-            help='ssh port'
+            help='assign PORT to ssh config'
         )
         parser.add_argument(
-            '-s', '--snippet', metavar='SNIPPET_ID or SNIPPET_NAME',
-            help='snippet id or snippet name'
+            '-s', '--snippet', metavar='SNIPPET',
+            help='assign SNIPPET to ssh config'
         )
         parser.add_argument(
             '--identity',
-            metavar='IDENTITY', help="identity id or name"
+            metavar='IDENTITY', help="assign IDENTITY to ssh config"
         )
         parser.add_argument(
             '-S', '--strict-host-key-check', type=str,
             choices=('yes', 'no'),
-            help='enable/disable to force check ssh server public key'
+            help='check host public key by force (enable/disable)'
         )
         parser.add_argument(
             '--use-ssh-key', type=str,
             choices=('yes', 'no'),
-            help='enable/disable to force ssh key use'
+            help='use public key by force (enable/disable)'
         )
         parser.add_argument(
             '-k', '--keep-alive-packages',
             type=int, metavar='PACKAGES_COUNT',
-            help='ServerAliveCountMax option from ssh_config'
+            help='define ServerAliveCountMax in the ssh config'
         )
         parser.add_argument(
             '-T', '--timeout',
             type=int, metavar='SECONDS',
-            help='ServerAliveInterval option from ssh_config'
+            help='define ServerAliveInterval in the ssh config'
         )
 
         self.identity_args.add_args(parser)

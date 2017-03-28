@@ -10,7 +10,7 @@ from ..core.models.terminal import Host, PFRule
 
 
 class PFRuleCommand(DetailCommand):
-    """operate with port forwarding rule object"""
+    """work with a port forwarding rule"""
 
     model_class = PFRule
     required_options = RequiredOptions(create=('host', 'binding', 'pf_type'))
@@ -37,8 +37,8 @@ class PFRuleCommand(DetailCommand):
     def extend_parser(self, parser):
         """Add more arguments to parser."""
         parser.add_argument(
-            '-H', '--host', metavar='HOST_ID or HOST_NAME',
-            help='create port forwarding rule for this host'
+            '-H', '--host', metavar='ID or NAME',
+            help='create port forwarding rule for the host with ID or NAME'
         )
         parser.add_argument(
             '--dynamic', dest='pf_type', action='store_const',
@@ -53,7 +53,7 @@ class PFRuleCommand(DetailCommand):
             const='L', help='local port forwarding'
         )
         parser.add_argument(
-            '--binding', metavar='BINDINDS',
+            '--binding', metavar='BINDINGS',
             help=('specify binding of ports and addresses '
                   '[bind_address:]port or [bind_address:]port:host:hostport')
         )
@@ -74,7 +74,7 @@ class PFRuleCommand(DetailCommand):
 
 
 class PFRulesCommand(ListCommand):
-    """list port forwarding rule objects"""
+    """list all port forwarding rules"""
 
     model_class = PFRule
 

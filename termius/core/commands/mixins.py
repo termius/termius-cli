@@ -44,14 +44,14 @@ class GetRelationMixin(object):
     def fail_not_exist(self, model_class):
         """Raise an error about not existed instance."""
         raise ArgumentRequiredException(
-            'Not found any {} instance.'.format(model_class)
+            'Not found any {} instance.'.format(model_class.__name__.lower())
         )
 
     # pylint: disable=no-self-use
     def fail_too_many(self, model_class):
         """Raise an error about too many instances."""
         raise ArgumentRequiredException(
-            'Found too many {} instances.'.format(model_class)
+            'Found too many {} instances.'.format(model_class.__name__.lower())
         )
 
     def get_safely_instance(self, model_class, arg):

@@ -12,7 +12,7 @@ from ..core.models.terminal import Group, Host, SshConfig
 
 class InfoCommand(SshConfigMergerMixin, GetRelationMixin,
                   ShowOne, AbstractCommand):
-    """display info about host or group"""
+    """display info about a host or group"""
 
     get_strategy = RelatedGetStrategy
     model_class = SshConfig
@@ -38,7 +38,11 @@ class InfoCommand(SshConfigMergerMixin, GetRelationMixin,
             '-M', '--no-merge', action='store_true',
             help='do not merge configs'
         )
-        parser.add_argument('id_or_name', metavar='ID or NAME')
+        parser.add_argument(
+            'id_or_name',
+            metavar='ID or NAME',
+            help='display information about the group or host with ID'
+        )
         return parser
 
     # pylint: disable=unused-argument

@@ -49,7 +49,7 @@ class CloudSynchronizationCommand(AbstractCommand):
 
 
 class PushCommand(CloudSynchronizationCommand):
-    """push data to Termius Cloud"""
+    """push data to the Termius Cloud"""
 
     get_strategy = RelatedGetStrategy
     save_strategy = SyncSaveStrategy
@@ -66,7 +66,7 @@ class PushCommand(CloudSynchronizationCommand):
 
 
 class PullCommand(CloudSynchronizationCommand):
-    """pull data from Termius Cloud"""
+    """pull data from the Termius Cloud"""
 
     save_strategy = SyncSaveStrategy
 
@@ -78,7 +78,7 @@ class PullCommand(CloudSynchronizationCommand):
 
 
 class FullCleanCommand(CloudSynchronizationCommand):
-    """remove user data from Termius Cloud"""
+    """remove user data from the Termius Cloud"""
 
     get_strategy = RelatedGetStrategy
     save_strategy = SyncSaveStrategy

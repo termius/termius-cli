@@ -12,7 +12,7 @@ from .ssh_config import SshConfigArgs
 
 
 class HostCommand(DetailCommand):
-    """operate with host object"""
+    """work with a host"""
 
     model_class = Host
     required_options = RequiredOptions(create=('address',))
@@ -35,13 +35,13 @@ class HostCommand(DetailCommand):
     def extend_parser(self, parser):
         """Add more arguments to parser."""
         parser.add_argument(
-            '-t', '--tag', metavar='TAG_NAME',
+            '-t', '--tag', metavar='TAG',
             action='append', default=[], dest='tags',
-            help='specify the tag(s) for host, can be repeated'
+            help='specify the TAG(s) for a host (can be repeated)'
         )
         parser.add_argument(
-            '-g', '--group', metavar='GROUP_ID or GROUP_NAME',
-            help='move hosts to this group'
+            '-g', '--group', metavar='ID or NAME',
+            help='move the host to the group with ID or NAME'
         )
         parser.add_argument(
             '-a', '--address',
@@ -76,7 +76,7 @@ class HostCommand(DetailCommand):
 
 
 class HostsCommand(GroupStackGetterMixin, ListCommand):
-    """list host objects"""
+    """list all hosts"""
 
     model_class = Host
     get_strategy = RelatedGetStrategy
@@ -89,13 +89,14 @@ class HostsCommand(GroupStackGetterMixin, ListCommand):
     def extend_parser(self, parser):
         """Add more arguments to parser."""
         parser.add_argument(
-            '-t', '--tag', metavar='TAG_NAME',
+            '-t', '--tag', metavar='TAG',
             action='append', default=[], dest='tags',
-            help='specify the tag(s) for host, can be repeated'
+            help='specify the TAG(s) for a host (can be repeated)'
         )
         parser.add_argument(
-            '-g', '--group', metavar='GROUP_ID or GROUP_NAME',
-            help=('list hosts in group (current group by default)')
+            '-g', '--group', metavar='ID or NAME',
+            help=('list hosts in the group with ID or NAME'
+                  '(current group by default)')
         )
         return parser
 

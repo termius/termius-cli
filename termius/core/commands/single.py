@@ -63,11 +63,11 @@ class DetailCommand(GetRelationMixin, GetObjectsMixin,
         )
         parser.add_argument(
             '-L', '--label', metavar='NAME',
-            help="entry label"
+            help="name or rename the entry label NAME"
         )
         parser.add_argument(
             'entry', nargs='*', metavar='ID or NAME',
-            help='pass to edit existed entries'
+            help='select the entry with ID or NAME'
         )
         return parser
 
