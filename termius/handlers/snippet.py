@@ -6,7 +6,7 @@ from ..core.models.terminal import Snippet
 
 
 class SnippetCommand(DetailCommand):
-    """Operate with Group object."""
+    """work with snippet"""
 
     model_class = Snippet
     required_options = RequiredOptions(create=('script',))
@@ -15,12 +15,12 @@ class SnippetCommand(DetailCommand):
         """Add more arguments to parser."""
         parser.add_argument(
             '-s', '--script', metavar='SCRIPT',
-            help='Shell Script for snippet.'
+            help='shell script for snippet'
         )
         return parser
 
 
 class SnippetsCommand(ListCommand):
-    """Manage snippet objects."""
+    """list all snippets"""
 
     model_class = Snippet

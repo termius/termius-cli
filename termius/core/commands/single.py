@@ -59,15 +59,15 @@ class DetailCommand(GetRelationMixin, GetObjectsMixin,
         parser = super(DetailCommand, self).get_parser(prog_name)
         parser.add_argument(
             '-d', '--delete',
-            action='store_true', help='Delete entries.'
+            action='store_true', help='delete entries'
         )
         parser.add_argument(
             '-L', '--label', metavar='NAME',
-            help="Entry's label in Termius"
+            help="name or rename the entry label NAME"
         )
         parser.add_argument(
             'entry', nargs='*', metavar='ID or NAME',
-            help='Pass to edit exited entries.'
+            help='select the entry with ID or NAME'
         )
         return parser
 

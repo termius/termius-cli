@@ -21,12 +21,12 @@ class BaseAccountCommand(AbstractCommand):
 
 
 class LoginCommand(BaseAccountCommand):
-    """Sign into Termius cloud."""
+    """sign into the Termius Cloud"""
 
     # pylint: disable=no-self-use
     def prompt_username(self):
         """Ask username prompt."""
-        return six.moves.input("Termius's username: ")
+        return six.moves.input('Username: ')
 
     # pylint: disable=no-self-use
     def prompt_authy_token(self):
@@ -49,33 +49,33 @@ class LoginCommand(BaseAccountCommand):
             except AuthyTokenIssue:
                 authy_token = self.prompt_authy_token()
                 self.manager.login(username, password, authy_token=authy_token)
-        self.log.info('Sign into Termius cloud.')
+        self.log.info('\nSigned in successfully')
 
 
 class LogoutCommand(BaseAccountCommand):
-    """Sign out Termius cloud."""
+    """sign out of the Termius Cloud"""
 
     def take_action(self, _):
         """Process CLI call."""
         with on_clean_when_logout(self, self.manager):
             self.manager.logout()
-        self.log.info('Sign out Termius cloud.')
+        self.log.info('Signed out')
 
 
 class SettingsCommand(BaseAccountCommand):
-    """Update account settings."""
+    """update the account settings"""
 
     def extend_parser(self, parser):
         """Add more arguments to parser."""
         parser.add_argument(
             '--synchronize-key', action='store', type=boolean_yes_no,
             choices=(False, True), default=True,
-            help='Sync ssh keys and ssh identities or not.'
+            help='enable/disable ssh keys and identities sync'
         )
         parser.add_argument(
             '--agent-forwarding', action='store', type=boolean_yes_no,
             choices=(False, True), default=True,
-            help='Sync ssh keys and ssh identities or not.'
+            help='enable/disable agent forwarding'
         )
         return parser
 
@@ -86,7 +86,7 @@ class SettingsCommand(BaseAccountCommand):
             for k in ('synchronize_key', 'agent_forwarding')
         }
         self.manager.set_settings(settings)
-        self.log.info('Set settings.')
+        self.log.info('Settings updated')
 
 
 @contextmanager

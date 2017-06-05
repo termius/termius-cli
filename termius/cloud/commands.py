@@ -49,7 +49,7 @@ class CloudSynchronizationCommand(AbstractCommand):
 
 
 class PushCommand(CloudSynchronizationCommand):
-    """Push data to Termius cloud."""
+    """push data to the Termius Cloud"""
 
     get_strategy = RelatedGetStrategy
     save_strategy = SyncSaveStrategy
@@ -62,11 +62,11 @@ class PushCommand(CloudSynchronizationCommand):
         except (configparser.NoSectionError, configparser.NoOptionError):
             self.log.error('Call pull at first.')
         else:
-            self.log.info('Push data to Termius cloud.')
+            self.log.info('Data delivered successfully')
 
 
 class PullCommand(CloudSynchronizationCommand):
-    """Pull data from Termius cloud."""
+    """pull data from the Termius Cloud"""
 
     save_strategy = SyncSaveStrategy
 
@@ -74,11 +74,11 @@ class PullCommand(CloudSynchronizationCommand):
         """Pull updated remote instances."""
         api_controller.get_settings()
         api_controller.get_bulk()
-        self.log.info('Pull data from Termius cloud.')
+        self.log.info('Data successfully collected')
 
 
 class FullCleanCommand(CloudSynchronizationCommand):
-    """Pull, delete all data and push to Termius cloud."""
+    """remove user data from the Termius Cloud"""
 
     get_strategy = RelatedGetStrategy
     save_strategy = SyncSaveStrategy
@@ -104,7 +104,7 @@ class FullCleanCommand(CloudSynchronizationCommand):
 
 
 class CryptoCommand(CloudSynchronizationCommand):
-    """Command for crypting and decrypting text."""
+    """encrypt and decrypt text"""
 
     def extend_parser(self, parser):
         """Add more arguments to parser."""
@@ -119,7 +119,13 @@ class CryptoCommand(CloudSynchronizationCommand):
             action='store_const', const='encrypt',
             dest='operation'
         )
-        parser.add_argument('text', nargs=1, metavar='TEXT', action='store')
+        parser.add_argument(
+            'text',
+            nargs=1,
+            metavar='TEXT',
+            action='store',
+            help='string data'
+        )
         return parser
 
     def process_sync(self, api_controller):

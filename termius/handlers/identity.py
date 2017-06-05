@@ -10,7 +10,7 @@ from .ssh_key import SshKeyGeneratorMixin
 
 
 class IdentityCommand(SshKeyGeneratorMixin, DetailCommand):
-    """Operate with identity object."""
+    """work with an identity"""
 
     model_class = Identity
 
@@ -42,19 +42,19 @@ class IdentityCommand(SshKeyGeneratorMixin, DetailCommand):
         """Add more arguments to parser."""
         parser.add_argument(
             '-u', '--username',
-            metavar='USERNAME', help="Username of host's user."
+            metavar='USERNAME', help='username for ssh authentication'
         )
         parser.add_argument(
             '-p', '--password',
-            metavar='PASSWORD', help="Password of Host's user."
+            metavar='PASSWORD', help='password for ssh authentication'
         )
         parser.add_argument(
             '-i', '--identity-file',
-            metavar='PRIVATE_KEY', help='Private key.'
+            metavar='FILE', help='select FILE as private key'
         )
         parser.add_argument(
             '-k', '--ssh-key',
-            metavar='SSH_KEY', help="Serveraduitor's ssh key's name or id."
+            metavar='ID or NAME', help='define ssh key with ID or NAME'
         )
         return parser
 
@@ -71,7 +71,7 @@ class IdentityCommand(SshKeyGeneratorMixin, DetailCommand):
 
 
 class IdentitiesCommand(ListCommand):
-    """Manage identity objects."""
+    """list all identities"""
 
     model_class = Identity
 
