@@ -41,7 +41,7 @@ def hash_password(password):
 class API(object):
     """Class to send requests to sync cloud."""
 
-    host = 'serverauditor.com'
+    host = 'api.termius.com'
     base_url = 'https://{}/api/'.format(host)
     logger = logging.getLogger(__name__)
 
