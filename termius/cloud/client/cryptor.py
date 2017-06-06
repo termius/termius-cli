@@ -6,6 +6,7 @@ import os
 import base64
 import hashlib
 import hmac as python_hmac
+import binascii
 import operator
 
 from cached_property import cached_property
@@ -16,6 +17,11 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.backends import default_backend
 
 from ...core.utils import bord, to_bytes, to_str
+from ...core.exceptions import TermiusException
+
+
+class CryptorException(TermiusException):
+    """Raise cryptor face some problem with encrypting and decrypting."""
 
 
 class CryptoSettings(object):
@@ -105,22 +111,13 @@ class RNCryptor(CryptoSettings):
     encryptor = operator.methodcaller('encryptor')
     decryptor = operator.methodcaller('decryptor')
 
-    # pylint: disable=no-self-use
-    def pre_decrypt_data(self, data):
-        """Patch ciphertext."""
-        data = to_bytes(data)
-        return base64.b64decode(data)
-
-    # pylint: disable=no-self-use
-    def post_decrypt_data(self, data):
-        """Remove useless symbols.
-
-        Its appear over padding for AES (PKCS#7).
-        """
-        data = data[:-bord(data[-1])]
-        return to_str(data)
+    bad_encrypted_exception = CryptorException
 
     def decrypt(self, data):
+        """Decrypt data."""
+        return self.unsafe_decrypt(data)
+
+    def unsafe_decrypt(self, data):
         """Decrypt data."""
         data = self.pre_decrypt_data(data)
 
@@ -148,18 +145,21 @@ class RNCryptor(CryptoSettings):
         return self.post_decrypt_data(decrypted_data)
 
     # pylint: disable=no-self-use
-    def pre_encrypt_data(self, data):
-        """Do padding for the data for AES (PKCS#7)."""
-        data = to_bytes(data)
-
-        padder = padding.PKCS7(self.AES_BLOCK_SIZE).padder()
-        padded_data = padder.update(data) + padder.finalize()
-        return padded_data
+    def pre_decrypt_data(self, data):
+        """Patch ciphertext."""
+        try:
+            data = to_bytes(data)
+            return base64.b64decode(data)
+        except (TypeError, binascii.Error):
+            raise CryptorException('Can not decode cipher text!')
 
     # pylint: disable=no-self-use
-    def post_encrypt_data(self, data):
-        """Patch ciphertext."""
-        data = base64.b64encode(data)
+    def post_decrypt_data(self, data):
+        """Remove useless symbols.
+
+        Its appear over padding for AES (PKCS#7).
+        """
+        data = data[:-bord(data[-1])]
         return to_str(data)
 
     def encrypt(self, data):
@@ -186,6 +186,21 @@ class RNCryptor(CryptoSettings):
 
         return self.post_encrypt_data(encrypted_data)
 
+    # pylint: disable=no-self-use
+    def pre_encrypt_data(self, data):
+        """Do padding for the data for AES (PKCS#7)."""
+        data = to_bytes(data)
+
+        padder = padding.PKCS7(self.AES_BLOCK_SIZE).padder()
+        padded_data = padder.update(data) + padder.finalize()
+        return padded_data
+
+    # pylint: disable=no-self-use
+    def post_encrypt_data(self, data):
+        """Patch ciphertext."""
+        data = base64.b64encode(data)
+        return to_str(data)
+
     def _aes_encrypt(self, *args):
         return self._aes_process(self.encryptor, *args)
 
@@ -198,9 +213,3 @@ class RNCryptor(CryptoSettings):
 
     def _hmac(self, key, data):
         return python_hmac.new(key, data, hashlib.sha256).digest()
-
-
-class CryptorException(Exception):
-    """Raise cryptor face some problem with encrypting and decrypting."""
-
-    pass

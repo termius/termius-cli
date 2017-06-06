@@ -2,6 +2,7 @@
 """Module with info command."""
 from operator import attrgetter
 from cliff.show import ShowOne
+
 from ..account.managers import AccountManager
 from ..core.commands import AbstractCommand
 from ..core.commands.mixins import GetRelationMixin, SshConfigMergerMixin
@@ -11,7 +12,7 @@ from ..core.models.terminal import Group, Host, SshConfig
 
 class InfoCommand(SshConfigMergerMixin, GetRelationMixin,
                   ShowOne, AbstractCommand):
-    """Show info about host or group."""
+    """display info about a host or group"""
 
     get_strategy = RelatedGetStrategy
     model_class = SshConfig
@@ -26,18 +27,22 @@ class InfoCommand(SshConfigMergerMixin, GetRelationMixin,
         parser.add_argument(
             '-G', '--group', dest='entry_type',
             action='store_const', const=Group, default=Host,
-            help='Show info about group.'
+            help='show info about group'
         )
         parser.add_argument(
             '-H', '--host', dest='entry_type',
             action='store_const', const=Host, default=Host,
-            help='Show info about host.'
+            help='show info about host'
         )
         parser.add_argument(
             '-M', '--no-merge', action='store_true',
-            help='Do not merge configs.'
+            help='do not merge configs'
         )
-        parser.add_argument('id_or_name', metavar='ID or NAME')
+        parser.add_argument(
+            'id_or_name',
+            metavar='ID or NAME',
+            help='display information about the group or host with ID'
+        )
         return parser
 
     # pylint: disable=unused-argument

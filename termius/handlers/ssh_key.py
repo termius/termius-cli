@@ -34,7 +34,7 @@ class SshKeyGeneratorMixin(object):
 
 
 class SshKeyCommand(SshKeyGeneratorMixin, DetailCommand):
-    """Operate with Host object."""
+    """work with an ssh key"""
 
     model_class = SshKey
     required_options = RequiredOptions(create=('identity_file', 'label'))
@@ -43,7 +43,7 @@ class SshKeyCommand(SshKeyGeneratorMixin, DetailCommand):
         """Add more arguments to parser."""
         parser.add_argument(
             '-i', '--identity-file',
-            metavar='PRIVATE_KEY', help='Private key.'
+            metavar='PRIVATE_KEY', help='private key'
         )
         return parser
 
@@ -67,6 +67,6 @@ class SshKeyCommand(SshKeyGeneratorMixin, DetailCommand):
 
 
 class SshKeysCommand(ListCommand):
-    """Manage ssh key objects."""
+    """list all ssh keys"""
 
     model_class = SshKey

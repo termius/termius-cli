@@ -20,11 +20,13 @@ requires = [
     'paramiko>=1.16.0',
     'pathlib2>=2.1.0',
     'blinker>=1.4',
+    'google-measurement-protocol>=0.1.6',
 ]
 
 # pylint: disable=invalid-name
 handlers = [
-    'sync = termius.sync.commands:SyncCommand',
+    'import-ssh-config = termius.porting.commands:SSHImportCommand',
+    'export-ssh-config = termius.porting.commands:SSHExportCommand',
     'login = termius.account.commands:LoginCommand',
     'logout = termius.account.commands:LogoutCommand',
     'settings = termius.account.commands:SettingsCommand',
@@ -47,6 +49,7 @@ handlers = [
     'info = termius.handlers:InfoCommand',
     'connect = termius.handlers:ConnectCommand',
     'crypto = termius.cloud.commands:CryptoCommand',
+    'init = termius.handlers:InitCommand'
 ]
 
 

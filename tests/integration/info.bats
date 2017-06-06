@@ -35,7 +35,7 @@ setup() {
     echo ${lines[*]} >&2
     cat ~/.termius/storage | jq . >&2
     [ "$status" -eq 0 ]
-    [ "${lines[0]}" = "ssh -p 2022 -o StrictHostKeyChecking=yes -o IdentitiesOnly=no -o ServerAliveInterval=100 -o ServerAliveCountMax=20 -o ForwardAgent=yes localhost" ]
+    [ "${lines[0]}" = "ssh -p 2022 -o StrictHostKeyChecking=yes -o IdentitiesOnly=no -o ServerAliveInterval=100 -o ServerAliveCountMax=20 -o ForwardAgent=yes root@localhost" ]
 }
 
 @test "info host use ssh formatter with exta options disable agent forwarding" {
@@ -45,7 +45,7 @@ setup() {
     echo ${lines[*]} >&2
     cat ~/.termius/storage | jq . >&2
     [ "$status" -eq 0 ]
-    [ "${lines[0]}" = "ssh -p 2022 -o StrictHostKeyChecking=yes -o IdentitiesOnly=no -o ServerAliveInterval=100 -o ServerAliveCountMax=20 -o ForwardAgent=no localhost" ]
+    [ "${lines[0]}" = "ssh -p 2022 -o StrictHostKeyChecking=yes -o IdentitiesOnly=no -o ServerAliveInterval=100 -o ServerAliveCountMax=20 -o ForwardAgent=no root@localhost" ]
 }
 @test "info group use default formatter" {
     group=$(termius group -L test --port 2022)
