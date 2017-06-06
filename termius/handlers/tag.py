@@ -6,7 +6,7 @@ from ..core.models.terminal import Tag
 
 
 class TagsCommand(GetObjectsMixin, InstanceOperationMixin, ListCommand):
-    """Manage tag objects."""
+    """list all tags"""
 
     model_class = Tag
 
@@ -14,11 +14,11 @@ class TagsCommand(GetObjectsMixin, InstanceOperationMixin, ListCommand):
         """Add more arguments to parser."""
         parser.add_argument(
             '-d', '--delete',
-            action='store_true', help='Delete tags.'
+            action='store_true', help='delete the selected tags'
         )
         parser.add_argument(
-            'tags', nargs='*', metavar='TAG_ID or TAG_NAME',
-            help='List infos about this tags.'
+            'tags', nargs='*', metavar='ID or NAME',
+            help='select the tag with ID or NAME and list info'
         )
         return parser
 

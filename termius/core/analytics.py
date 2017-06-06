@@ -45,4 +45,4 @@ class Analytics(object):
     @property
     def tracking_id(self):
         """Google Analytics id for termius cli application."""
-        return 'UA-56746272-3'
+        return 'UA-56746272-4'

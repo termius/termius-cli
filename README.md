@@ -10,7 +10,7 @@ Provides command line interface for cross-platform terminal Termius.
 
 ## Demo
 
-[![demo](https://asciinema.org/a/9v8xuygkowzau16y3zp19u0ov.png)](https://asciinema.org/a/9v8xuygkowzau16y3zp19u0ov?autoplay=1)
+[![asciicast](https://asciinema.org/a/bkhst46d9cukapfmtmiozve8v.png)](https://asciinema.org/a/bkhst46d9cukapfmtmiozve8v?speed=2)
 
 ## Installation
 
@@ -41,6 +41,12 @@ easy_install -U termius
 
 ## Usage
 
+Init (login, pull, import-ssh-config, push)
+
+```bash
+termius init
+```
+
 Login to termius.com
 
 ```bash
@@ -68,14 +74,19 @@ Push data to termius.com
 termius push
 ```
 
-Create hosts from ssh config
+Import hosts from ssh config
 ```bash
-termius sync ssh
+termius import-ssh-config
+```
+
+Export hosts from local storage to ./termius/sshconfig
+```bash
+termius export-ssh-config
 ```
 
 ### `termius` vs `serverauditor`
 
-#### Export
+#### Import
 A `serverauditor` user used to enter:
 
 ```bash
@@ -85,8 +96,18 @@ $ serverauditor export
 Instead of it, a `termius` user enters:
 
 ```bash
-$ termius sync ssh  # Not required password, or login
+$ termius import-ssh-config  # Not required password, or login
 $ termius push  # Send all data to the cloud
+```
+
+To prevent import of some super secure host a `termius` user
+should write special `# termius:ignore` annotation:
+
+```bash
+Host super-secure
+    # termius:ignore
+    HostName example.com
+    User secret_user
 ```
 
 If a client are not logged in, the next command logs it in:
@@ -94,7 +115,7 @@ If a client are not logged in, the next command logs it in:
 $ termius login  # One time
 ```
 
-#### Import
+#### Export
 
 A `serverauditor` user used to enter:
 
@@ -102,24 +123,12 @@ A `serverauditor` user used to enter:
 $ serverauditor import
 ```
 
-But at the moment `termius` user cannot import data to the `~/.ssh/config`
-(this feature is in the schedule).
 Instead of it, a `termius` user enters:
 
 ```bash
-$ termius pull  # Fetch all data from the cloud
-$ termius connect use-your-host-alias  # Replace 'use-your-host-alias' with the host alias in the termius database
+$ termius export-ssh-config  # Export to ./termius/sshconfig
 ```
-
-If a client are not logged in, the next command logs it in:
-```bash
-$ termius login  # One time
-```
-
 
 ## License
 
 Please see [LICENSE](https://github.com/Crystalnix/termius-cli/blob/master/LICENSE).
-
-
-

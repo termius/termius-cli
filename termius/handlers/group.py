@@ -12,7 +12,7 @@ from .ssh_config import SshConfigArgs
 
 
 class GroupCommand(GroupStackGetterMixin, DetailCommand):
-    """Operate with Group object."""
+    """work with a group"""
 
     model_class = Group
 
@@ -37,7 +37,8 @@ class GroupCommand(GroupStackGetterMixin, DetailCommand):
         """Add more arguments to parser."""
         parser.add_argument(
             '-g', '--parent-group',
-            metavar='PARENT_GROUP', help="Parent group's id or name."
+            metavar='PARENT_GROUP',
+            help='select the parent group with ID or NAME'
         )
         self.ssh_config_args.add_agrs(parser)
         return parser
@@ -63,7 +64,7 @@ class GroupCommand(GroupStackGetterMixin, DetailCommand):
 
 
 class GroupsCommand(SshConfigPrepareMixin, ListCommand):
-    """Manage group objects."""
+    """list all groups"""
 
     model_class = Group
     get_strategy = RelatedGetStrategy
@@ -72,12 +73,12 @@ class GroupsCommand(SshConfigPrepareMixin, ListCommand):
         """Add more arguments to parser."""
         parser.add_argument(
             '-r', '--recursive', action='store_true',
-            help=('List groups of current group '
+            help=('list groups of current group '
                   '(default is current group) recursively.')
         )
         parser.add_argument(
             'group', nargs='?', metavar='GROUP_ID or GROUP_NAME',
-            help='List groups in this group.'
+            help='list groups in the group with ID or NAME'
         )
         return parser
 

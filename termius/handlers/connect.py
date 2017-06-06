@@ -11,7 +11,7 @@ from ..formatters.mixins import SshCommandFormatterMixin
 
 class ConnectCommand(SshCommandFormatterMixin, SshConfigMergerMixin,
                      GetRelationMixin, AbstractCommand):
-    """Connect to specific host."""
+    """connect to a specific host with NAME or ID"""
 
     get_strategy = RelatedGetStrategy
 
@@ -20,16 +20,16 @@ class ConnectCommand(SshCommandFormatterMixin, SshConfigMergerMixin,
         parser.add_argument(
             '-H', '--host', const=Host,
             dest='model', action='store_const', default=Host,
-            help='Connect to host or start portforwarding rule.'
+            help='connect to a host'
         )
         parser.add_argument(
             '-R', '--pfrule', const=PFRule,
             dest='model', action='store_const', default=Host,
-            help='Connect to host or start portforwarding rule.'
+            help='connect to a host using a port forwarding rule'
         )
         parser.add_argument(
             'entry', metavar='ID or NAME',
-            help='Connect to host or start portforwarding rule.'
+            help='connect to the specific host'
         )
         return parser
 

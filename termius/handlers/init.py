@@ -12,12 +12,13 @@ from termius.porting.commands import SSHImportCommand
 
 
 class InitCommand(AbstractCommand):
-    """Initialize termius cli."""
+    """initialize the Termius CLI"""
 
     # pylint: disable=no-self-use
     def prompt_username(self):
         """Ask username prompt."""
-        return six.moves.input("Termius's username: ")
+        self.log.info('Please enter your Termius credentials\n')
+        return six.moves.input("Username: ")
 
     # pylint: disable=no-self-use
     def prompt_authy_token(self):
@@ -60,7 +61,7 @@ class InitCommand(AbstractCommand):
 
     def take_action(self, parsed_args):
         """Process command call."""
-        self.log.info('Initialize Termius CLI...\n')
+        self.log.info('Initializing Termius CLI...\n')
 
         username = parsed_args.username or self.prompt_username()
         password = parsed_args.password or self.prompt_password()
@@ -70,11 +71,11 @@ class InitCommand(AbstractCommand):
         )
 
         self.login(namespace)
-        self.log.info('\nPull your data from termius cloud...')
+        self.log.info('\nCollecting data from the Termius Cloud...')
         self.pull(namespace)
-        self.log.info('\nImport ssh config...')
+        self.log.info('\nImporting ~/.ssh/config...')
         self.import_ssh(namespace)
-        self.log.info('\nPush local data to termius cloud...')
+        self.log.info('\nPushing data to the Termius Cloud...')
         self.push(namespace)
 
         self.log.info('\nTermius CLI successfully initialized.')

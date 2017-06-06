@@ -20,7 +20,7 @@ class PasswordPromptMixin(object):
     # pylint: disable=no-self-use
     def prompt_password(self):
         """Ask user to enter password in secure way."""
-        return getpass.getpass('Termius password:')
+        return getpass.getpass('Password:')
 
 
 class GetRelationMixin(object):
@@ -44,14 +44,14 @@ class GetRelationMixin(object):
     def fail_not_exist(self, model_class):
         """Raise an error about not existed instance."""
         raise ArgumentRequiredException(
-            'Not found any {} instance.'.format(model_class)
+            'Not found any {} instance.'.format(model_class.__name__.lower())
         )
 
     # pylint: disable=no-self-use
     def fail_too_many(self, model_class):
         """Raise an error about too many instances."""
         raise ArgumentRequiredException(
-            'Found too many {} instances.'.format(model_class)
+            'Found too many {} instances.'.format(model_class.__name__.lower())
         )
 
     def get_safely_instance(self, model_class, arg):
@@ -218,15 +218,15 @@ class InstanceOperationMixin(ArgModelSerializerMixin, object):
 
     def log_create(self, entry):
         """Log creating new model entry."""
-        self._general_log(entry, 'Create object.')
+        self._general_log(entry, 'Entry created.')
 
     def log_update(self, entry):
         """Log updating model entry."""
-        self._general_log(entry, 'Update object.')
+        self._general_log(entry, 'Entry updated.')
 
     def log_delete(self, entry):
         """Log deleting model entry."""
-        self._general_log(entry, 'Delete object.')
+        self._general_log(entry, 'Entry deleted.')
 
     def _general_log(self, entry, message):
         self.app.stdout.write('{}\n'.format(entry.id))

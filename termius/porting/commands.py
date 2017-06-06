@@ -10,7 +10,7 @@ from ..core.commands import AbstractCommand
 
 
 class SSHImportCommand(AbstractCommand):
-    """Import hosts from user`s ssh config."""
+    """import the local ssh config file"""
 
     save_strategy = RelatedSaveStrategy
     get_strategy = RelatedGetStrategy
@@ -27,16 +27,16 @@ class SSHImportCommand(AbstractCommand):
                 )
 
             self.log.info(
-                '\nImport completed, part of the hosts was ignored.'
+                '\nImport completed, part of the hosts was ignored'
             )
         else:
             self.log.info(
-                'Import hosts from ~/.ssh/config to local storage.'
+                'Import hosts from ~/.ssh/config to local storage'
             )
 
 
 class SSHExportCommand(AbstractCommand):
-    """Export hosts from local storage to generated file."""
+    """export hosts from the local storage to a file"""
 
     get_strategy = RelatedGetStrategy
 
