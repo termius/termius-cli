@@ -25,25 +25,16 @@ class AbstractModel(dict):
         """Return list of fields for application usage."""
         return cls._fields().keys()
 
-    @classmethod
-    def _validate_attr(cls, name):
-        if name not in cls.allowed_fields():
-            raise AttributeError
-
     def __getattr__(self, name):
         """Get field from self."""
-        self._validate_attr(name)
-        default = self._fields()[name].default
-        return self.get(name, default)
+        return self.get(name, None)
 
     def __setattr__(self, name, value):
         """Set field to self."""
-        self._validate_attr(name)
         self[name] = value
 
     def __delattr__(self, name):
         """Delete key from self."""
-        self._validate_attr(name)
         del self[name]
 
     def copy(self):
@@ -59,7 +50,7 @@ class AbstractModel(dict):
     # pylint: disable=unused-argument
     def __deepcopy__(self, requesteddeepcopy):
         """Wrap dict.deepcopy into model."""
-        return type(self)(copy.deepcopy(super(AbstractModel, self)))
+        return type(self)(copy.deepcopy(dict(self)))
 
 
 class RemoteInstance(AbstractModel):
@@ -140,6 +131,8 @@ class DeleteSets(AbstractModel):
         'host_set': Field(list, False, None),
         'taghost_set': Field(list, False, None),
         'pfrule_set': Field(list, False, None),
+        'knownhost_set': Field(list, False, None),
+        'telnetconfig_set': Field(list, False, None)
     }
     set_name = 'delete_sets'
     default_field_value = list
