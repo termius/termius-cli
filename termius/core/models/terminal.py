@@ -101,10 +101,10 @@ class SshConfig(Model):
 
     def __setattr__(self, name, value):
         """Set attribute, but patch value before assign."""
-        self._validate_attr(name)
-        patch_method = 'patch_' + name
-        if hasattr(self, patch_method):
-            value = getattr(self, patch_method)(value)
+        patch_method = getattr(self, 'patch_' + name)
+        if patch_method:
+            value = patch_method(value)
+
         self[name] = value
 
     # pylint: disable=no-self-use

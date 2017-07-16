@@ -36,7 +36,7 @@ class ConnectCommand(SshCommandFormatterMixin, SshConfigMergerMixin,
     def take_action(self, parsed_args):
         """Process CLI call."""
         instance = self.get_instance(parsed_args)
-        host = getattr(instance, 'host', instance)
+        host = instance.host if instance.host else instance
         ssh_config = self.get_merged_ssh_config(host)
         self.call_ssh_command(ssh_config, host, instance)
         return
