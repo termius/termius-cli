@@ -59,7 +59,7 @@ class BulkTransformerTest(StrategyCase):
                     'group': None,
                     'ssh_config': 'sshconfig_set/{}'.format(ssh_config.id),
                     'local_id': host.id,
-                    'address': '',
+                    'address': None,
                     'interaction_date': host.interaction_date,
                 }
             ],
@@ -84,10 +84,10 @@ class BulkTransformerTest(StrategyCase):
             'last_synced': '',
             'sshkeycrypt_set': [
                 {
-                    'public_key': '',
-                    'private_key': '',
+                    'public_key': None,
+                    'private_key': None,
                     'local_id': ssh_key.id,
-                    'passphrase': '',
+                    'passphrase': None,
                     'label': payload['sshkeycrypt_set'][0]['label']
                 }
             ],
@@ -98,12 +98,12 @@ class BulkTransformerTest(StrategyCase):
             'delete_sets': {},
             'identity_set': [
                 {
-                    'username': '',
-                    'is_visible': False,
+                    'username': None,
+                    'is_visible': None,
                     'ssh_key': 'sshkeycrypt_set/{}'.format(ssh_key.id),
                     'label': payload['identity_set'][0]['label'],
                     'local_id': identity.id,
-                    'password': ''
+                    'password': None
                 }
             ]
         })
@@ -140,7 +140,7 @@ class BulkTransformerTest(StrategyCase):
                     'group': None,
                     'ssh_config': 'sshconfig_set/{}'.format(ssh_config.id),
                     'local_id': host.id,
-                    'address': '',
+                    'address': None,
                     'interaction_date': host.interaction_date,
                 }
             ],
@@ -185,7 +185,7 @@ class BulkTransformerTest(StrategyCase):
                 'id': id,
                 'label': i,
                 'interaction_date': '',
-                'address': '',
+                'address': None,
                 'group': None,
                 'ssh_config': None,
             }
@@ -218,7 +218,7 @@ class BulkTransformerTest(StrategyCase):
                 'id': i.remote_instance.id,
                 'label': label,
                 'interaction_date': '',
-                'address': '',
+                'address': None,
                 'group': None,
                 'ssh_config': None,
             }

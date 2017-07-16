@@ -9,7 +9,7 @@ cli_command_name = 'termius'
 
 # pylint: disable=invalid-name
 requires = [
-    'cliff>=1.15',
+    'cliff==2.7.0',
     'stevedore>=1.10.0',
     'requests>=2.7.0',
     'cryptography>=1.3.1',
