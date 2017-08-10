@@ -80,17 +80,19 @@ class ApplicationStorage(object):
         """Process transaction closing and sync driver."""
         self.driver.sync()
 
-    def save(self, model):
+    def save(self, original_model):
         """Save model to storage.
 
         Will return model with id and saved mapped fields Model
         instances with ids.
         """
-        model = self.strategies.saver.save(model)
+        model = self.strategies.saver.save(original_model)
         if getattr(model, model.id_name):
             saved_model = self.update(model)
         else:
             saved_model = self.create(model)
+            original_model.id = model.id
+
         return saved_model
 
     def create(self, model):
