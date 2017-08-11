@@ -200,7 +200,6 @@ class RelatedStrategyCase(StrategyCase):
 
         saved_group = self.storage.get(Group, id=saved_host.group)
         self.assertIsNotNone(saved_group.id)
-
         saved_sshconfig = self.storage.get(SshConfig, id=saved_host.ssh_config)
         self.assertIsNotNone(saved_sshconfig.id)
         self.assertIsInstance(saved_sshconfig.identity, Identity)
@@ -219,8 +218,26 @@ class RelatedStrategyCase(StrategyCase):
         self.assertIsNotNone(saved_sshkey.id)
 
     def test_save_2_times(self):
+        groups_count_before = len(self.storage.get_all(Group))
+        keys_count_before = len(self.storage.get_all(SshKey))
+        identities_count_before = len(self.storage.get_all(Identity))
+        hosts_count_before = len(self.storage.get_all(Host))
+
         for _ in range(2):
             self.test_save_strategy()
+
+        self.assertEquals(
+            groups_count_before + 1, len(self.storage.get_all(Group))
+        )
+        self.assertEquals(
+            keys_count_before + 1, len(self.storage.get_all(SshKey))
+        )
+        self.assertEquals(
+            identities_count_before + 1, len(self.storage.get_all(Identity))
+        )
+        self.assertEquals(
+            hosts_count_before + 1, len(self.storage.get_all(Host))
+        )
 
     def test_get_strategy(self):
         self.identity.ssh_key = self.sshkey
