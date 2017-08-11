@@ -27,6 +27,7 @@ requires = [
 handlers = [
     'import-ssh-config = termius.porting.commands:SSHImportCommand',
     'export-ssh-config = termius.porting.commands:SSHExportCommand',
+    'import-hosts = termius.porting.commands:ImportHostsCommand',
     'login = termius.account.commands:LoginCommand',
     'logout = termius.account.commands:LogoutCommand',
     'settings = termius.account.commands:SettingsCommand',
