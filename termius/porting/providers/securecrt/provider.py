@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Module with SecureCRT provider."""
 import logging
-import xml
+from xml.etree import ElementTree
 
 from termius.core.models.terminal import Host, SshConfig, Identity, SshKey, \
     Group
@@ -27,7 +27,7 @@ class SecureCRTPortingProvider(BasePortingProvider):
 
     def provider_hosts(self):
         """Retrieve host instances from ssh config."""
-        root = xml.etree.ElementTree.parse(self.config_source).getroot()
+        root = ElementTree.parse(self.config_source).getroot()
         hosts = []
 
         raw_hosts = SecureCRTConfigParser.parse_hosts(
@@ -45,10 +45,10 @@ class SecureCRTPortingProvider(BasePortingProvider):
 
         if identity_paths:
             try:
-                with open(identity_paths[0], 'rb') as private_key_file:
+                with open(identity_paths[0], 'r') as private_key_file:
                     private_key = private_key_file.read()
 
-                with open(identity_paths[1], 'rb') as public_key_file:
+                with open(identity_paths[1], 'r') as public_key_file:
                     public_key = public_key_file.read()
 
                 key = SshKey(
