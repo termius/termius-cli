@@ -19,7 +19,11 @@ class SecureCRTConfigParser(object):
 
         for session in sessions:
             if session.get('name') not in cls.meta_sessions:
-                parsed_hosts.append(cls.make_host(session))
+                host = cls.make_host(session)
+                if not host:
+                    continue
+
+                parsed_hosts.append(host)
 
         return parsed_hosts
 
@@ -60,18 +64,25 @@ class SecureCRTConfigParser(object):
         """Adapt SecureCRT Session to Termius host."""
         session_attrs = session.getchildren()
 
+        hostname = cls.get_element_by_name(session_attrs, 'Hostname')
+        port = cls.get_element_by_name(session_attrs, '[SSH2] Port')
+        username = cls.get_element_by_name(session_attrs, 'Username')
+
+        if not cls.check_attribute(hostname):
+            return None
+
         return {
             'label': session.get('name'),
-            'hostname': cls.get_element_by_name(
-                session_attrs, 'Hostname'
-            ).text,
-            'port': cls.get_element_by_name(
-                session_attrs, '[SSH2] Port'
-            ).text,
-            'username': cls.get_element_by_name(
-                session_attrs, 'Username'
-            ).text
+            'hostname': hostname.text,
+            'port': port.text if cls.check_attribute(port) else '22',
+            'username': username.text
+            if cls.check_attribute(username) else None
         }
+
+    @classmethod
+    def check_attribute(cls, attr):
+        """Check an attribute."""
+        return attr is not None and attr.text
 
     @classmethod
     def get_element_by_name(cls, elements, name):
