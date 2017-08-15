@@ -71,13 +71,17 @@ class SecureCRTPortingProvider(BasePortingProvider):
             )
             host.group = main_group
             ssh_config = SshConfig(
-                port=raw_host['port'],
-                identity=Identity(
+                port=raw_host['port']
+            )
+
+            if raw_host['username']:
+                identity = Identity(
                     username=raw_host.get('username'),
                     is_visible=False,
                     label=raw_host.get('username')
                 )
-            )
+
+                ssh_config.identity = identity
 
             host.ssh_config = ssh_config
 
