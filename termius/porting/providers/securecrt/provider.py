@@ -59,7 +59,7 @@ class SecureCRTPortingProvider(BasePortingProvider):
                 group_config.identity.ssh_key = key
             except IOError:
                 self.logger.info(
-                    'Cannot find SSH2 raw key %s' % identity_paths[1]
+                    'Warning: cannot find SSH2 raw key %s' % identity_paths[1]
                 )
 
         main_group.ssh_config = group_config

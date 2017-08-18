@@ -41,7 +41,7 @@ class SecureCRTConfigParser(object):
             'Identity Filename V2'
         )
 
-        if identity_filename is None:
+        if not cls.check_attribute(identity_filename):
             return None
 
         path = identity_filename.text.split('/')
