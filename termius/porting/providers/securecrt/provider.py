@@ -28,11 +28,13 @@ class SecureCRTPortingProvider(BasePortingProvider):
     def provider_hosts(self):
         """Retrieve host instances from ssh config."""
         root = ElementTree.parse(self.config_source).getroot()
+        self.logger.info('Got SecureCRT xml root...')
         hosts = []
-
+        self.logger.info('Parse SecureCRT hosts...')
         raw_hosts = SecureCRTConfigParser.parse_hosts(
             root
         )
+        self.logger.info('Parsed %i entries.' % len(raw_hosts))
         identity_paths = SecureCRTConfigParser.parse_identity(root)
         main_group = Group(label='SecureCRT')
 
@@ -44,6 +46,8 @@ class SecureCRTPortingProvider(BasePortingProvider):
         )
 
         if identity_paths:
+            self.logger.info('Found private key path: %s' % identity_paths[0])
+            self.logger.info('Found public key path: %s' % identity_paths[1])
             try:
                 with open(identity_paths[0], 'r') as private_key_file:
                     private_key = private_key_file.read()
@@ -59,7 +63,8 @@ class SecureCRTPortingProvider(BasePortingProvider):
                 group_config.identity.ssh_key = key
             except IOError:
                 self.logger.info(
-                    'Warning: cannot find SSH2 raw key %s' % identity_paths[1]
+                    'Warning: cannot import SSH2 raw key %s' %
+                    identity_paths[1]
                 )
 
         main_group.ssh_config = group_config
@@ -87,4 +92,5 @@ class SecureCRTPortingProvider(BasePortingProvider):
 
             hosts.append(host)
 
+        self.logger.info('Adapted %i entries.' % len(raw_hosts))
         return hosts

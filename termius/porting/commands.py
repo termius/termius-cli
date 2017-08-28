@@ -73,7 +73,9 @@ class ImportHostsCommand(DetailCommand):
             source=parsed_args.source, storage=self.storage, crendetial=None
         )
         provider.import_hosts()
-        self.log.info('SecureCRT hosts has been successfully exported.')
+
+        self.log.info('Skipped: %i' % len(provider.skipped_hosts))
+        self.log.info('SecureCRT hosts has been successfully imported.')
 
     def get_parser(self, prog_name):
         """Skip detail arguments."""
