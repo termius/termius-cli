@@ -44,6 +44,7 @@ class API(object):
     host = 'api.termius.com'
     base_url = 'https://{}/api/'.format(host)
     logger = logging.getLogger(__name__)
+    timeout = 180
 
     def __init__(self, username=None, apikey=None):
         """Construct new API instance."""
@@ -82,16 +83,24 @@ class API(object):
 
     def post(self, endpoint, data):
         """Send authorized post request."""
-        self.logger.debug('send post = %s', data)
-        response = requests.post(self.request_url(endpoint),
-                                 json=data, auth=self.auth)
-        self.logger.debug('get response = %s', response.text)
+        self.logger.debug('send post')
+        response = requests.post(
+            self.request_url(endpoint),
+            json=data, auth=self.auth,
+            timeout=self.timeout
+        )
+        self.logger.debug('get response = %s', response.status_code)
         assert response.status_code == 201, response.text
+
         return response.json()
 
     def get(self, endpoint):
         """Send authorized get request."""
-        response = requests.get(self.request_url(endpoint), auth=self.auth)
+        response = requests.get(
+            self.request_url(endpoint),
+            auth=self.auth,
+            timeout=self.timeout
+        )
         assert response.status_code == 200, response.text
         return response.json()
 
@@ -103,7 +112,10 @@ class API(object):
 
     def put(self, endpoint, data):
         """Send authorized put request."""
-        response = requests.put(self.request_url(endpoint),
-                                json=data, auth=self.auth)
+        response = requests.put(
+            self.request_url(endpoint),
+            json=data, auth=self.auth,
+            timeout=self.timeout
+        )
         assert response.status_code in (200, 202), response.text
         return response.json()
