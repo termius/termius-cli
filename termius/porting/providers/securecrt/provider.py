@@ -19,7 +19,8 @@ class SecureCRTPortingProvider(BasePortingProvider):
         """Contruct new service to sync ssh config."""
         super(SecureCRTPortingProvider, self).__init__(*args, **kwargs)
 
-        self.config_source = source
+        xml_root = ElementTree.parse(source).getroot()
+        self.parser = SecureCRTConfigParser(xml_root)
 
     def export_hosts(self):
         """Skip export."""
@@ -27,70 +28,77 @@ class SecureCRTPortingProvider(BasePortingProvider):
 
     def provider_hosts(self):
         """Retrieve host instances from ssh config."""
-        root = ElementTree.parse(self.config_source).getroot()
-        self.logger.info('Got SecureCRT xml root...')
-        hosts = []
-        self.logger.info('Parse SecureCRT hosts...')
-        raw_hosts = SecureCRTConfigParser.parse_hosts(
-            root
-        )
-        self.logger.info('Parsed %i entries.' % len(raw_hosts))
-        identity_paths = SecureCRTConfigParser.parse_identity(root)
-        main_group = Group(label='SecureCRT')
+        result_hosts = []
+        tree = self.parser.parse_hosts()
 
-        group_config = SshConfig(
-            identity=Identity(
-                is_visible=False,
-                label='SecureCRT'
-            )
-        )
+        root_group = Group(label='SecureCRT')
 
+        identity_paths = self.parser.parse_identity()
         if identity_paths:
             self.logger.info('Found private key path: %s' % identity_paths[0])
             self.logger.info('Found public key path: %s' % identity_paths[1])
             try:
-                with open(identity_paths[0], 'r') as private_key_file:
-                    private_key = private_key_file.read()
-
-                with open(identity_paths[1], 'r') as public_key_file:
-                    public_key = public_key_file.read()
-
-                key = SshKey(
-                    label='SecureCRT',
-                    private_key=private_key,
-                    public_key=public_key
+                key = self.create_key(identity_paths)
+                root_group.ssh_config = SshConfig(
+                    identity=Identity(
+                        ssh_key=key,
+                        label='SecureCRT',
+                        is_visible=False
+                    )
                 )
-                group_config.identity.ssh_key = key
             except IOError:
                 self.logger.info(
                     'Warning: cannot import SSH2 raw key %s' %
                     identity_paths[1]
                 )
 
-        main_group.ssh_config = group_config
+        self.create_entries_from_tree(tree, result_hosts, root_group)
+        self.logger.info('Parsed hosts %i' % len(result_hosts))
+        return result_hosts
 
-        for raw_host in raw_hosts:
-            host = Host(
-                label=raw_host['label'],
-                address=raw_host['hostname']
-            )
-            host.group = main_group
-            ssh_config = SshConfig(
-                port=raw_host['port']
-            )
+    def create_entries_from_tree(self, tree, result_hosts, parent_group=None):
+        for label, node in tree.iteritems():
+            if not isinstance(node, dict):
+                continue
 
-            if raw_host['username']:
-                identity = Identity(
-                    username=raw_host.get('username'),
-                    is_visible=False,
-                    label=raw_host.get('username')
+            if not node.get('group', None):
+                result_hosts.append(
+                    self.create_host(node, parent_group)
                 )
+            else:
+                group = Group(label=label, parent_group=parent_group)
+                self.create_entries_from_tree(node, result_hosts, group)
 
-                ssh_config.identity = identity
+    def create_host(self, raw_host, group):
+        host = Host(
+            label=raw_host['label'],
+            address=raw_host['hostname'],
+            group=group
+        )
+        host.ssh_config = SshConfig(
+            port=raw_host['port']
+        )
 
-            host.ssh_config = ssh_config
+        if raw_host['username']:
+            identity = Identity(
+                username=raw_host.get('username'),
+                is_visible=False,
+                label=raw_host.get('username')
+            )
 
-            hosts.append(host)
+            host.ssh_config.identity = identity
 
-        self.logger.info('Adapted %i entries.' % len(raw_hosts))
-        return hosts
+        return host
+
+    def create_key(self, identity_paths):
+        with open(identity_paths[0], 'r') as private_key_file:
+            private_key = private_key_file.read()
+
+        with open(identity_paths[1], 'r') as public_key_file:
+            public_key = public_key_file.read()
+
+        return SshKey(
+            label='SecureCRT',
+            private_key=private_key,
+            public_key=public_key
+        )

@@ -74,7 +74,7 @@ class ImportHostsCommand(DetailCommand):
         )
         provider.import_hosts()
 
-        self.log.info('Skipped: %i' % len(provider.skipped_hosts))
+        self.log.info('Skipped hosts %i' % len(provider.skipped_hosts))
         self.log.info('SecureCRT hosts has been successfully imported.')
 
     def get_parser(self, prog_name):
