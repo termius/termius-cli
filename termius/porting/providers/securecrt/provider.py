@@ -16,7 +16,7 @@ class SecureCRTPortingProvider(BasePortingProvider):
     logger = logging.getLogger(__name__)
 
     def __init__(self, source, *args, **kwargs):
-        """Contruct new service to sync ssh config."""
+        """Construct provider instance."""
         super(SecureCRTPortingProvider, self).__init__(*args, **kwargs)
 
         xml_root = ElementTree.parse(source).getroot()
@@ -27,7 +27,7 @@ class SecureCRTPortingProvider(BasePortingProvider):
         pass
 
     def provider_hosts(self):
-        """Retrieve host instances from ssh config."""
+        """Retrieve SecureCRT sessions from xml config."""
         result_hosts = []
         tree = self.parser.parse_hosts()
 
@@ -54,14 +54,16 @@ class SecureCRTPortingProvider(BasePortingProvider):
 
         self.create_entries_from_tree(tree, result_hosts, root_group)
         self.logger.info('Parsed hosts %i' % len(result_hosts))
+        self.logger.info('Importing...')
         return result_hosts
 
     def create_entries_from_tree(self, tree, result_hosts, parent_group=None):
-        for label, node in tree.iteritems():
+        """Create instances from groups tree."""
+        for label, node in tree.items():
             if not isinstance(node, dict):
                 continue
 
-            if not node.get('group', None):
+            if not node.get('__group', None):
                 result_hosts.append(
                     self.create_host(node, parent_group)
                 )
@@ -70,6 +72,7 @@ class SecureCRTPortingProvider(BasePortingProvider):
                 self.create_entries_from_tree(node, result_hosts, group)
 
     def create_host(self, raw_host, group):
+        """Create instances from groups tree."""
         host = Host(
             label=raw_host['label'],
             address=raw_host['hostname'],
@@ -91,10 +94,11 @@ class SecureCRTPortingProvider(BasePortingProvider):
         return host
 
     def create_key(self, identity_paths):
-        with open(identity_paths[0], 'r') as private_key_file:
+        """Create ssh key instance."""
+        with open(identity_paths[0], 'rb') as private_key_file:
             private_key = private_key_file.read()
 
-        with open(identity_paths[1], 'r') as public_key_file:
+        with open(identity_paths[1], 'rb') as public_key_file:
             public_key = public_key_file.read()
 
         return SshKey(

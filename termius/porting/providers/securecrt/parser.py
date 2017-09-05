@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Module with SecureCRT parser."""
-import collections
 from os.path import expanduser
+
 
 class SecureCRTConfigParser(object):
     """SecureCRT xml parser."""
@@ -9,6 +9,7 @@ class SecureCRTConfigParser(object):
     meta_sessions = ['Default']
 
     def __init__(self, xml):
+        """Construct parser instance."""
         self.xml = xml
         self.tree = {}
 
@@ -23,6 +24,7 @@ class SecureCRTConfigParser(object):
         return self.tree
 
     def parse_sessions(self, sessions, parent_node):
+        """Parse SecureCRT sessions."""
         for session in sessions:
             if session.get('name') not in self.meta_sessions:
                 if not self.is_session_group(session):
@@ -31,13 +33,14 @@ class SecureCRTConfigParser(object):
                         continue
                     parent_node[host['label']] = host
                 else:
-                    parent_node[session.get('name')] = {'group': True}
+                    parent_node[session.get('name')] = {'__group': True}
                     self.parse_sessions(
                         session.getchildren(),
                         parent_node[session.get('name')]
                     )
 
     def is_session_group(self, session):
+        """Check node element type"""
         return self.get_element_by_name(
             session.getchildren(), 'Hostname'
         ) is None
