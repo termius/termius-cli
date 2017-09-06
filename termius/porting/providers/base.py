@@ -31,7 +31,7 @@ class BasePortingProvider(SshConfigMergerMixin):
 
         with self.storage:
             for host in hosts_to_import:
-                if not self.get_existed_host(host):
+                if not self.is_host_exists(host):
                     self.storage.save(host)
                 else:
                     self.skipped_hosts.append(host.label)
@@ -44,10 +44,15 @@ class BasePortingProvider(SshConfigMergerMixin):
         new_ssh_key.id = existed_key.id
         return new_ssh_key
 
-    def get_existed_host(self, new_host):
+    def is_host_exists(self, new_host):
         """Retrieve exited host for new host."""
         existed_hosts = self.storage.filter(Host, label=new_host.label)
-        return existed_hosts and existed_hosts[0]
+        for host in existed_hosts:
+            if host.group and new_host.group:
+                if host.group.label == new_host.group.label:
+                    return True
+
+        return False
 
     def get_existed_key(self, new_ssh_key):
         """Retrieve exited key for new key."""
