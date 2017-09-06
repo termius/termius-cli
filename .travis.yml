@@ -3,7 +3,6 @@ python:
   - "2.7"
   - "3.4"
   - "3.5"
-  - "3.5-dev" # 3.5 development branch
 install:
   - git clone https://github.com/sstephenson/bats.git && cd bats && ./install.sh .. && cd -
   - sudo apt-get install pandoc
