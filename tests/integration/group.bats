@@ -34,7 +34,7 @@ setup() {
 
 @test "Add group to main group" {
     group=$(termius group -L 'test group' --port 2 --username 'use r name')
-    run termius group --port 22 --parent-group $group
+    run termius group --port 22 --parent-group $group -L subgroup
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'group_set') -eq 2 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 2 ]

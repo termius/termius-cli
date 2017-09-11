@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Module with different CLI commands mixins."""
 import getpass
+import os
 from operator import attrgetter
 from functools import partial
 from cached_property import cached_property
@@ -77,7 +78,7 @@ class PrepareResultMixin(object):
 
     def prepare_result(self, found_list):
         """Return tuple with data in format for Lister."""
-        fields = self.prepare_fields
+        fields = sorted(list(set(self.prepare_fields) - set(self.skip_fields)))
         getter = DefaultAttrGetter(*fields)
         return fields, [getter(i) for i in found_list]
 
@@ -187,7 +188,7 @@ class InstanceOperationMixin(ArgModelSerializerMixin, object):
             saved_instance = self.storage.save(instance)
             instance.id = saved_instance.id
             self.update_children(instance, args)
-        self.log_create()
+        self.log_create(saved_instance)
 
     def update_instance(self, args, instance):
         """Update model entry."""
@@ -196,7 +197,7 @@ class InstanceOperationMixin(ArgModelSerializerMixin, object):
             self.pre_save(instance)
             self.storage.save(instance)
             self.update_children(instance, args)
-        self.log_update()
+        self.log_update(instance)
 
     # pylint: disable=no-self-use,unused-argument
     def pre_save(self, instance):
@@ -214,21 +215,24 @@ class InstanceOperationMixin(ArgModelSerializerMixin, object):
         """Delete model entry."""
         with self.storage:
             self.storage.delete(instance)
-        self.log_delete()
+        self.log_delete(instance)
 
-    def log_create(self):
+    def log_create(self, entry):
         """Log creating new model entry."""
-        self._general_log('Entry created.')
+        self._general_log(entry, 'Entry created.')
 
-    def log_update(self):
+    def log_update(self, entry):
         """Log updating model entry."""
-        self._general_log('Entry updated.')
+        self._general_log(entry, 'Entry updated.')
 
-    def log_delete(self):
+    def log_delete(self, entry):
         """Log deleting model entry."""
-        self._general_log('Entry deleted.')
+        self._general_log(entry, 'Entry deleted.')
 
-    def _general_log(self, message):
+    def _general_log(self, entry, message):
+        if os.getenv('TERMIUS_CLI_DEBUG'):
+            self.app.stdout.write('{}\n'.format(entry.id))
+
         self.log.info(message)
 
 
