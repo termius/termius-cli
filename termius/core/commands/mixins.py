@@ -187,7 +187,7 @@ class InstanceOperationMixin(ArgModelSerializerMixin, object):
             saved_instance = self.storage.save(instance)
             instance.id = saved_instance.id
             self.update_children(instance, args)
-        self.log_create(saved_instance)
+        self.log_create()
 
     def update_instance(self, args, instance):
         """Update model entry."""
@@ -196,7 +196,7 @@ class InstanceOperationMixin(ArgModelSerializerMixin, object):
             self.pre_save(instance)
             self.storage.save(instance)
             self.update_children(instance, args)
-        self.log_update(instance)
+        self.log_update()
 
     # pylint: disable=no-self-use,unused-argument
     def pre_save(self, instance):
@@ -214,22 +214,21 @@ class InstanceOperationMixin(ArgModelSerializerMixin, object):
         """Delete model entry."""
         with self.storage:
             self.storage.delete(instance)
-        self.log_delete(instance)
+        self.log_delete()
 
-    def log_create(self, entry):
+    def log_create(self):
         """Log creating new model entry."""
-        self._general_log(entry, 'Entry created.')
+        self._general_log('Entry created.')
 
-    def log_update(self, entry):
+    def log_update(self):
         """Log updating model entry."""
-        self._general_log(entry, 'Entry updated.')
+        self._general_log('Entry updated.')
 
-    def log_delete(self, entry):
+    def log_delete(self):
         """Log deleting model entry."""
-        self._general_log(entry, 'Entry deleted.')
+        self._general_log('Entry deleted.')
 
-    def _general_log(self, entry, message):
-        self.app.stdout.write('{}\n'.format(entry.id))
+    def _general_log(self, message):
         self.log.info(message)
 
 

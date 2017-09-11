@@ -35,7 +35,7 @@ class SSHPortingProvider(BasePortingProvider):
             for host in hosts_in_storage:
                 self.export_host(
                     export_file,
-                    host['label'] or host['address'],
+                    host.get('label', host['address']),
                     self.adapter.adapt_instance_to_ssh_config_host(host)
                 )
 
