@@ -26,7 +26,7 @@ class SshKeyGeneratorMixin(object):
 
     def validate_ssh_key(self, instance):
         """Raise an error when any instances exist with same label."""
-        with_same_label = self.storage.filter(
+        with_same_label = self.command.storage.filter(
             SshKey, **{'label': instance.label, 'id.ne': instance.id}
         )
         if with_same_label:
