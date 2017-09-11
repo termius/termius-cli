@@ -6,6 +6,7 @@ from cached_property import cached_property
 from ..core.commands import DetailCommand, ListCommand
 from ..core.commands.mixins import GroupStackGetterMixin, SshConfigPrepareMixin
 from ..core.models.terminal import Group
+from ..core.commands.single import RequiredOptions
 from ..core.storage.strategies import RelatedGetStrategy
 from ..core.exceptions import InvalidArgumentException
 from .ssh_config import SshConfigArgs
@@ -15,6 +16,7 @@ class GroupCommand(GroupStackGetterMixin, DetailCommand):
     """work with a group"""
 
     model_class = Group
+    required_options = RequiredOptions(create=('label',))
 
     @cached_property
     def fields(self):

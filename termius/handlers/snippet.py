@@ -9,7 +9,7 @@ class SnippetCommand(DetailCommand):
     """work with snippet"""
 
     model_class = Snippet
-    required_options = RequiredOptions(create=('script',))
+    required_options = RequiredOptions(create=('script', 'label'))
 
     def extend_parser(self, parser):
         """Add more arguments to parser."""
