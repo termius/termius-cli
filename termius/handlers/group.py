@@ -65,7 +65,7 @@ class GroupCommand(GroupStackGetterMixin, DetailCommand):
         return instance
 
 
-class GroupsCommand(SshConfigPrepareMixin, ListCommand):
+class GroupsCommand(ListCommand):
     """list all groups"""
 
     model_class = Group
