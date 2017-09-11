@@ -4,6 +4,8 @@ import abc
 from base64 import b64decode
 import six
 from six.moves import configparser
+
+from ..core.exceptions import AuthyTokenIssue
 from ..core.api import API
 from ..core.commands import AbstractCommand
 from ..core.models.terminal import clean_order
@@ -26,6 +28,11 @@ class CloudSynchronizationCommand(AbstractCommand):
         """Do sync staff here."""
         pass
 
+    # pylint: disable=no-self-use
+    def prompt_authy_token(self):
+        """Ask authy token prompt."""
+        return six.moves.input('Authy token: ')
+
     def take_action(self, parsed_args):
         """Process CLI call."""
         encryption_salt = b64decode(self.config.get('User', 'salt'))
@@ -45,7 +52,12 @@ class CloudSynchronizationCommand(AbstractCommand):
     def validate_password(self, password):
         """Raise an error when password invalid."""
         username = self.config.get('User', 'username')
-        API().login(username, password)
+        api = API()
+        try:
+            api.login(username, password)
+        except AuthyTokenIssue:
+            authy_token = self.prompt_authy_token()
+            api.login(username, password, authy_token=authy_token)
 
 
 class PushCommand(CloudSynchronizationCommand):
