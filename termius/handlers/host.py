@@ -15,7 +15,7 @@ class HostCommand(DetailCommand):
     """work with a host"""
 
     model_class = Host
-    required_options = RequiredOptions(create=('address',))
+    required_options = RequiredOptions(create=('address', 'label'))
 
     @cached_property
     def fields(self):

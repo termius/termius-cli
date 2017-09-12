@@ -14,19 +14,19 @@ class SshKeyGeneratorMixin(object):
     """Mixin for create new ssh key from file."""
 
     # pylint: disable=no-self-use
-    def generate_ssh_key_instance(self, path):
+    def generate_ssh_key_instance(self, path, storage):
         """Generate ssh key from file."""
         private_key_path = Path(path)
         instance = SshKey(
             private_key=private_key_path.read_text(),
             label=private_key_path.name
         )
-        self.validate_ssh_key(instance)
+        self.validate_ssh_key(instance, storage)
         return instance
 
-    def validate_ssh_key(self, instance):
+    def validate_ssh_key(self, instance, storage):
         """Raise an error when any instances exist with same label."""
-        with_same_label = self.storage.filter(
+        with_same_label = storage.filter(
             SshKey, **{'label': instance.label, 'id.ne': instance.id}
         )
         if with_same_label:
@@ -63,7 +63,7 @@ class SshKeyCommand(SshKeyGeneratorMixin, DetailCommand):
 
     def validate(self, instance):
         """Raise an error when any instances exist with same label."""
-        self.validate_ssh_key(instance)
+        self.validate_ssh_key(instance, self.storage)
 
 
 class SshKeysCommand(ListCommand):
