@@ -205,15 +205,15 @@ class PFRule(Model):
         'remote_port': Field(int, False, 22),
     }
     set_name = 'pfrule_set'
-    crypto_fields = {'label', 'bound_address', 'hostname'}
+    crypto_fields = {'label', 'hostname'}
 
     binding_getter = {
-        'L': attrgetter(
+        'Local Rule': attrgetter(
             'bound_address', 'local_port', 'hostname', 'remote_port'
         ),
-        'D': attrgetter('bound_address', 'local_port'),
+        'Dynamic Rule': attrgetter('bound_address', 'local_port'),
     }
-    binding_getter['R'] = binding_getter['L']
+    binding_getter['Remote Rule'] = binding_getter['Local Rule']
 
     @property
     def binding(self):
