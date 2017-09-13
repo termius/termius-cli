@@ -24,6 +24,8 @@ class AbstractCommand(PasswordPromptMixin, Command):
     get_strategy = GetStrategy
     delete_strategy = SoftDeleteStrategy
 
+    skip_fields = ['remote_instance']
+
     def __init__(self, app, app_args, cmd_name=None):
         """Construct new command."""
         super(AbstractCommand, self).__init__(app, app_args, cmd_name)

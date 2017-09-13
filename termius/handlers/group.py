@@ -4,8 +4,9 @@ import functools
 from operator import attrgetter
 from cached_property import cached_property
 from ..core.commands import DetailCommand, ListCommand
-from ..core.commands.mixins import GroupStackGetterMixin, SshConfigPrepareMixin
+from ..core.commands.mixins import GroupStackGetterMixin
 from ..core.models.terminal import Group
+from ..core.commands.single import RequiredOptions
 from ..core.storage.strategies import RelatedGetStrategy
 from ..core.exceptions import InvalidArgumentException
 from .ssh_config import SshConfigArgs
@@ -15,6 +16,7 @@ class GroupCommand(GroupStackGetterMixin, DetailCommand):
     """work with a group"""
 
     model_class = Group
+    required_options = RequiredOptions(create=('label',))
 
     @cached_property
     def fields(self):
@@ -63,7 +65,7 @@ class GroupCommand(GroupStackGetterMixin, DetailCommand):
         return instance
 
 
-class GroupsCommand(SshConfigPrepareMixin, ListCommand):
+class GroupsCommand(ListCommand):
     """list all groups"""
 
     model_class = Group

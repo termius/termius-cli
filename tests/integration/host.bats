@@ -33,7 +33,7 @@ setup() {
 }
 
 @test "Add host to group" {
-    group=$(termius group --port 2022)
+    group=$(termius group --port 2022 -L group)
     run termius host -L test --group $group --address localhost --debug
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'host_set') -eq 1 ]
@@ -79,7 +79,7 @@ setup() {
 }
 
 @test "Update host add to group" {
-    group=$(termius group --port 2022)
+    group=$(termius group --port 2022 -L group)
     host=$(termius host --address localhost -L test)
     run termius host --group $group $host
     [ "$status" -eq 0 ]

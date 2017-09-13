@@ -29,9 +29,9 @@ class PFRuleCommand(DetailCommand):
     def binding_parsers(self):
         """Return binding parser per type abbreviation."""
         return {
-            'D': BindingParser.dynamic,
-            'L': BindingParser.local,
-            'R': BindingParser.remote,
+            'Dynamic Rule': BindingParser.dynamic,
+            'Local Rule': BindingParser.local,
+            'Remote Rule': BindingParser.remote,
         }
 
     def extend_parser(self, parser):
@@ -42,15 +42,15 @@ class PFRuleCommand(DetailCommand):
         )
         parser.add_argument(
             '--dynamic', dest='pf_type', action='store_const',
-            const='D', help='dynamic port forwarding'
+            const='Dynamic Rule', help='dynamic port forwarding'
         )
         parser.add_argument(
             '--remote', dest='pf_type', action='store_const',
-            const='R', help='remote port forwarding'
+            const='Remote Rule', help='remote port forwarding'
         )
         parser.add_argument(
             '--local', dest='pf_type', action='store_const',
-            const='L', help='local port forwarding'
+            const='Local Rule', help='local port forwarding'
         )
         parser.add_argument(
             '--binding', metavar='BINDINGS',

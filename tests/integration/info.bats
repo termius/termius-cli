@@ -81,7 +81,7 @@ setup() {
 
 @test "info host in 2 groups with visible identity" {
     termius settings --agent-forwarding yes
-    identity=$(termius identity --username user)
+    identity=$(termius identity --username user -L identity)
     grandgroup=$(termius group -L test --port 22 --identity $identity)
     group=$(termius group --parent-group $grandgroup -L test --port 2022 --username local)
     host=$(termius host --group $group --address localhost -L test --username root)
@@ -93,7 +93,7 @@ setup() {
 
 @test "info host in 2 groups with visible identity without agent forwarding" {
     termius settings --agent-forwarding no
-    identity=$(termius identity --username user)
+    identity=$(termius identity --username user -L identity)
     grandgroup=$(termius group -L test --port 22 --identity $identity)
     group=$(termius group --parent-group $grandgroup -L test --port 2022 --username local)
     host=$(termius host --group $group --address localhost -L test --username root)

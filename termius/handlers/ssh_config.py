@@ -31,7 +31,7 @@ class IdentityArgs(SshKeyGeneratorMixin, ArgModelSerializerMixin, object):
     def get_ssh_key_field(self, args):
         """Create ssh key instance from args."""
         return args.identity_file and self.generate_ssh_key_instance(
-            args.identity_file
+            args.identity_file, self.command.storage
         )
 
     # pylint: disable=no-self-use

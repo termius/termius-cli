@@ -5,6 +5,7 @@ from functools import partial
 from cached_property import cached_property
 from ..core.commands import DetailCommand, ListCommand
 from ..core.models.terminal import Identity, SshKey
+from ..core.commands.single import RequiredOptions
 from ..core.exceptions import InvalidArgumentException, DoesNotExistException
 from .ssh_key import SshKeyGeneratorMixin
 
@@ -13,6 +14,7 @@ class IdentityCommand(SshKeyGeneratorMixin, DetailCommand):
     """work with an identity"""
 
     model_class = Identity
+    required_options = RequiredOptions(create=('label',))
 
     @cached_property
     def fields(self):
@@ -34,7 +36,9 @@ class IdentityCommand(SshKeyGeneratorMixin, DetailCommand):
                 'You can not use ssh key and identity file together!'
             )
         if args.identity_file:
-            return self.generate_ssh_key_instance(args.identity_file)
+            return self.generate_ssh_key_instance(
+                args.identity_file, self.storage
+            )
         if args.ssh_key:
             return self.get_safely_instance(SshKey, args.ssh_key)
 

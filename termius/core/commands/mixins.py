@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Module with different CLI commands mixins."""
 import getpass
+import os
 from operator import attrgetter
 from functools import partial
 from cached_property import cached_property
@@ -77,7 +78,7 @@ class PrepareResultMixin(object):
 
     def prepare_result(self, found_list):
         """Return tuple with data in format for Lister."""
-        fields = self.prepare_fields
+        fields = sorted(list(set(self.prepare_fields) - set(self.skip_fields)))
         getter = DefaultAttrGetter(*fields)
         return fields, [getter(i) for i in found_list]
 
@@ -229,7 +230,9 @@ class InstanceOperationMixin(ArgModelSerializerMixin, object):
         self._general_log(entry, 'Entry deleted.')
 
     def _general_log(self, entry, message):
-        self.app.stdout.write('{}\n'.format(entry.id))
+        if os.getenv('TERMIUS_CLI_DEBUG'):
+            self.app.stdout.write('{}\n'.format(entry.id))
+
         self.log.info(message)
 
 

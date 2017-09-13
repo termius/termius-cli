@@ -38,6 +38,7 @@ setup() {
     run termius snippet --script 'cd /' $snippet
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'snippet_set') -eq 1 ]
+
     [ "$(get_model_field 'snippet_set' $snippet 'label')" = '"test"' ]
     [ "$(get_model_field 'snippet_set' $snippet 'script')" = "\"cd /\"" ]
 }
