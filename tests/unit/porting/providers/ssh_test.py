@@ -44,7 +44,9 @@ Host firstone
                 strict_host_key_check=False,
                 identity=Identity(
                     username='ubuntu',
-                    ssh_key=None
+                    ssh_key=None,
+                    label='firstone',
+                    is_visible=False
                 )
             )
         )
@@ -76,6 +78,8 @@ Host firstone
                 use_ssh_key=None,
                 strict_host_key_check=None,
                 identity=Identity(
+                    label='firstone',
+                    is_visible=False,
                     username='ubuntu',
                     ssh_key=None
                 )
@@ -116,6 +120,8 @@ Host firstone
                 use_ssh_key=None,
                 strict_host_key_check=None,
                 identity=Identity(
+                    label='firstone',
+                    is_visible=False,
                     username='ubuntu',
                     ssh_key=SshKey(
                         label='id_rsa',

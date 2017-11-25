@@ -65,7 +65,9 @@ class SSHConfigHostAdapter(SshConfigMergerMixin):
         ssh_config = SshConfig(
             identity=Identity(
                 username=parsed_host.get('user', self.default_user),
-                ssh_key=self.create_key(parsed_host)
+                ssh_key=self.create_key(parsed_host),
+                is_visible=False,
+                label=app_host.label
             )
         )
 
