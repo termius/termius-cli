@@ -102,6 +102,9 @@ class BulkTransformer(CryptoChildTransformerCreatorMixin,
         bad_encrypted_models = []
 
         for set_name, transformer in self.mapping.items():
+            if set_name == 'group_set':
+                payload[set_name] = self.sort_groups(payload[set_name])
+
             saved, to_delete = self.to_model_child_list(
                 transformer, payload[set_name]
             )
@@ -131,6 +134,24 @@ class BulkTransformer(CryptoChildTransformerCreatorMixin,
                 transformer.to_payload(i) for i in internal_model
             ]
         return payload
+
+    def sort_groups(self, groups):
+        """Sort to prevent missing parent groups."""
+        def has_parent(group):
+            return group['parent_group'] is not None
+
+        sorted_groups = [i for i in groups if not has_parent(i)]
+        not_sorted_groups = [i for i in groups if has_parent(i)]
+        added_group_id = [i['id'] for i in sorted_groups]
+
+        while not_sorted_groups:
+            for i in not_sorted_groups[:]:
+                if i['parent_group']['id'] in added_group_id:
+                    sorted_groups.append(i)
+                    added_group_id.append(i['id'])
+                    not_sorted_groups.remove(i)
+
+        return sorted_groups
 
     def to_model_child_list(self, transformer, payload):
         """Process dictionary list with tranformer.
