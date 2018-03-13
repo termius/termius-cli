@@ -76,7 +76,8 @@ class SSHPortingProvider(BasePortingProvider):
 
         host_string = '\nHost %s' % alias
 
-        for key, value in attributes.iteritems():
-            host_string += make_param(key, value)
+        for key, value in attributes.items():
+            if value:
+                host_string += make_param(key, value)
 
         export_file.write(host_string + '\n')
