@@ -40,7 +40,11 @@ class CloudSynchronizationCommand(AbstractCommand):
         password = parsed_args.password
         if password is None:
             password = self.prompt_password()
-        self.validate_password(password)
+        try:
+            self.validate_password(password)
+        except AuthyTokenIssue:
+            self.log.error('Authy token is invalid.')
+            return
         cryptor = RNCryptor()
         cryptor.password = password
         cryptor.encryption_salt = encryption_salt

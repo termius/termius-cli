@@ -280,7 +280,7 @@ class SshConfigMergerMixin(GroupStackGetterMixin, object):
         """Return first of visible identity."""
         stack = [
             i.identity for i in ssh_config_merger.get_entry_stack()
-            if i.identity.is_visible
+            if i.identity.get('is_visible')
         ]
         return (stack and stack[0]) or None
 
@@ -289,6 +289,6 @@ class SshConfigMergerMixin(GroupStackGetterMixin, object):
         """Create identity merger for passed merger."""
         stack = [
             i for i in ssh_config_merger.get_entry_stack()
-            if not i.identity.is_visible
+            if not i.identity.get('is_visible')
         ]
         return Merger(stack, 'identity', Identity())
