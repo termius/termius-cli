@@ -15,7 +15,7 @@ class SSHConfigHostAdapter(SshConfigMergerMixin):
 
     def get_instance_ssh_key_label(self, ssh_config):
         """Helper to retrieve ssh_key lable."""
-        if ssh_config['identity'] and ssh_config['identity']['ssh_key']:
+        if ssh_config['identity'] and ssh_config['identity'].get('ssh_key'):
             return ssh_config['identity']['ssh_key']['label']
 
         return None
@@ -43,7 +43,7 @@ class SSHConfigHostAdapter(SshConfigMergerMixin):
 
         adapted = {
             'hostname': host_instance['address'],
-            'user': ssh_config['identity']['username'],
+            'user': ssh_config['identity'].get('username'),
             'port': ssh_config['port'] or 22
         }
 
