@@ -14,7 +14,9 @@ class SSHConfigParser(SSHConfig):
 
         :param file_obj: a file-like object to read the config file from
         """
+        TERMIUS_GROUPS = "# termius:group"
         termius_ignore_regexp = re.compile(r'# termius:ignore')
+        termius_groups_regexp = re.compile(r'{}'.format(TERMIUS_GROUPS))
 
         host = {'host': ['*'], 'config': {}}
 
@@ -29,6 +31,10 @@ class SSHConfigParser(SSHConfig):
 
                 if ignore_comment:
                     host['config']['ignore'] = ''
+
+                groups_comment = termius_groups_regexp.match(line)
+                if groups_comment:
+                    host['group'] = line.replace(TERMIUS_GROUPS, "").strip()
 
                 continue
 

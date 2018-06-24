@@ -5,7 +5,7 @@ from os import environ
 from pathlib2 import Path
 
 from termius.core.commands.mixins import SshConfigMergerMixin
-from termius.core.models.terminal import Host, SshConfig, Identity, SshKey
+from termius.core.models.terminal import Host, SshConfig, Identity, SshKey, Group
 
 
 class SSHConfigHostAdapter(SshConfigMergerMixin):
@@ -56,7 +56,7 @@ class SSHConfigHostAdapter(SshConfigMergerMixin):
 
         return adapted
 
-    def adapt_ssh_config_host_to_instance(self, alias, parsed_host):
+    def adapt_ssh_config_host_to_instance(self, alias, parsed_host, parsed_group=None):
         """Convert parsed host to application host."""
         app_host = Host(
             label=alias,
@@ -80,5 +80,7 @@ class SSHConfigHostAdapter(SshConfigMergerMixin):
         )
 
         app_host.ssh_config = ssh_config
+        if parsed_group:
+            app_host.group = parsed_group
 
         return app_host
