@@ -52,9 +52,11 @@ class SSHPortingProvider(BasePortingProvider):
         to_import = []
         parsed_group = None
         for alias in parsed_hosts:
-            parsed_group_name = parser._config[parsed_hosts.index(alias) + 1].get("group", None)
+            parsed_group_name = parser._config[parsed_hosts.index(alias) + 1]\
+                .get("group", None)
             if parsed_group_name:
-                matching_groups = [x for x in self.storage.get_all(Group) if x['label'] == parsed_group_name]
+                matching_groups = [x for x in self.storage.get_all(Group)
+                                   if x['label'] == parsed_group_name]
                 if len(matching_groups) == 0:
                     g = Group(label=parsed_group_name)
                     self.storage.create(g)
