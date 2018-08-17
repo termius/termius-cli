@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Module for main app class."""
 import logging
-import os
 
 from os.path import expanduser
 from pathlib2 import Path
@@ -11,7 +10,6 @@ from cliff.app import App
 from cliff.commandmanager import CommandManager
 from cliff import argparse
 
-from termius.core.analytics import Analytics
 from termius.core.commands.help import HelpCommand, HelpAction
 from . import __version__
 from .core.signals import (
@@ -60,18 +58,6 @@ class TermiusApp(App):
         post_delete_instance.connect(delete_ssh_key, sender=SshKey)
 
         post_logout.connect(clean_data)
-
-    def prepare_to_run_command(self, cmd):
-        """Collect analytics if it`s not disabled."""
-        if os.getenv('NOT_COLLECT_STAT'):
-            return
-
-        self.collect_analytics(cmd)
-
-    def collect_analytics(self, cmd):
-        """Make Analytics instance and send analytics."""
-        analytics = Analytics(self, getattr(cmd, 'config', None))
-        analytics.send_analytics(cmd.cmd_name)
 
     def build_option_parser(self, description, version,
                             argparse_kwargs=None):
