@@ -68,7 +68,9 @@ class API(object):
         if authy_token is not None:
             payload['authy_token'] = authy_token
 
-        response = requests.post(self.request_url('v3/login/'), data=payload)
+        response = requests.post(
+            self.request_url('v3.1/login/'), data=payload
+        )
         if response.status_code == 487:
             raise AuthyTokenIssue(response.json)
         if response.status_code != 200:
