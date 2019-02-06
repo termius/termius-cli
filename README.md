@@ -10,7 +10,7 @@ Provides command line interface for cross-platform terminal Termius.
 
 ## Demo
 
-[![asciicast](https://asciinema.org/a/bkhst46d9cukapfmtmiozve8v.png)](https://asciinema.org/a/bkhst46d9cukapfmtmiozve8v?speed=2)
+[![asciicast](https://asciinema.org/a/6ilu50dbofnkufy2hux3ghhx4.svg)](https://asciinema.org/a/6ilu50dbofnkufy2hux3ghhx4?speed=2)
 
 ## Installation
 
