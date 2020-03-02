@@ -19,21 +19,15 @@ def bats():
 
 
 @task
-def nosetests():
-    """Run unit tests."""
-    sh('nosetests')
-
-
-@task
 def completion_tests():
     """Run integration tests for bash completion."""
-    sh('nosetests tests/integration/completion/bash/')
+    sh('pytest tests/integration/completion/bash/')
 
 
 @task
 def coverage():
     """Run test and collect coverage."""
-    sh('nosetests --with-coverage')
+    sh('pytest --cov -- tests/unit')
     sh('coverage xml')
 
 

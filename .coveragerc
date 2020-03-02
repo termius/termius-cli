@@ -1,6 +1,8 @@
 [run]
 branch = True
-include = termius/**.py
+source = termius
+include = *.py
+omit = unit/*.py
 
 [report]
 precision = 2

@@ -111,7 +111,7 @@ class SshConfig(Model):
     def transform_int(self, value):
         """Transform value to int or return None."""
         try:
-            return (value is not None and int(value)) or None
+            return int(value) if value is not None else None
         except ValueError as exception:
             return self.handle_value_error(exception)
 

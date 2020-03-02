@@ -143,9 +143,9 @@ class SoftDeleteStrategy(DeleteStrategy):
         self.set_delete_sets(delete_sets)
         return model
 
-    def remove_intersection(self, sets):
+    def remove_intersection(self, deleted_sets):
         """Remove from deleted_sets intersection with sets passed."""
         delete_sets = self.get_delete_sets()
-        for set_name, id_list in sets.items():
+        for set_name, id_list in deleted_sets.items():
             delete_sets.remove_all(set_name, id_list)
         self.set_delete_sets(delete_sets)

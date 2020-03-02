@@ -23,7 +23,7 @@ class GroupStackGenerator(object):
         return list(self.iterate_groups())
 
     def iterate_groups(self):
-        """Iterator over instances parent groups."""
+        """Iterate over instances parent groups."""
         group = self.root_group
         while group:
             yield group

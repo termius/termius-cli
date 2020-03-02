@@ -40,7 +40,7 @@ class SecureCRTConfigParser(object):
                     )
 
     def is_session_group(self, session):
-        """Check node element type"""
+        """Check node element type."""
         return self.get_element_by_name(
             session.getchildren(), 'Hostname'
         ) is None

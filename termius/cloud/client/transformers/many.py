@@ -44,13 +44,12 @@ class SupportedModelsMixin(object):
                 Host, PFRule,
                 TagHost
             )
-        else:
-            return (
-                Snippet, SshConfig,
-                Tag, Group,
-                Host, PFRule,
-                TagHost
-            )
+        return (
+            Snippet, SshConfig,
+            Tag, Group,
+            Host, PFRule,
+            TagHost
+        )
 
 
 class SoftDeleteMixin(object):
@@ -65,8 +64,7 @@ class SoftDeleteMixin(object):
         """
         if model.id:
             return self.storage.delete(model)
-        else:
-            return self.get_delete_strategy().delete(model)
+        return self.get_delete_strategy().delete(model)
 
     def delete_list(self, models):
         """Delete models from the storage and put it to deleted_set."""
@@ -164,8 +162,8 @@ class BulkTransformer(CryptoChildTransformerCreatorMixin,
         for i in payload:
             try:
                 child_model = transformer.to_model(i)
-            except DeletBadEncrypted as e:
-                bad_encrypted_models.append(e.model)
+            except DeletBadEncrypted as exception:
+                bad_encrypted_models.append(exception.model)
             else:
                 models.append(child_model)
         return models, bad_encrypted_models

@@ -35,8 +35,8 @@ class SecureCRTPortingProvider(BasePortingProvider):
 
         identity_paths = self.parser.parse_identity()
         if identity_paths:
-            self.logger.info('Found private key path: %s' % identity_paths[0])
-            self.logger.info('Found public key path: %s' % identity_paths[1])
+            self.logger.info('Found private key path: %s', identity_paths[0])
+            self.logger.info('Found public key path: %s', identity_paths[1])
             try:
                 key = self.create_key(identity_paths)
                 root_group.ssh_config = SshConfig(
@@ -48,12 +48,12 @@ class SecureCRTPortingProvider(BasePortingProvider):
                 )
             except IOError:
                 self.logger.info(
-                    'Warning: cannot import SSH2 raw key %s' %
+                    'Warning: cannot import SSH2 raw key %s',
                     identity_paths[1]
                 )
 
         self.create_entries_from_tree(tree, result_hosts, root_group)
-        self.logger.info('Parsed hosts %i' % len(result_hosts))
+        self.logger.info('Parsed hosts %i', len(result_hosts))
         self.logger.info('Importing...')
         return result_hosts
 

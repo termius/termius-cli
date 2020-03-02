@@ -30,4 +30,5 @@ class DeletBadEncrypted(TermiusException):
 
     def __init__(self, model):
         """Create new exception and keep model for reuse."""
+        super(DeletBadEncrypted, self).__init__()
         self.model = model

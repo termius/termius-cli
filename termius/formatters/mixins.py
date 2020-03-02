@@ -38,19 +38,18 @@ def format_identity_file(ssh_key_file):
     if ssh_key_file:
         safe_key_path = shlex_quote(str(ssh_key_file))
         return '-i {}'.format(safe_key_path)
-    else:
-        return ''
+    return ''
 
 
 def format_port(port):
     """Render port option."""
-    return (port and '-p {}'.format(port)) or ''
+    return '-p {}'.format(port) if port else ''
 
 
 def format_pfrule(pfrule):
     """Render port forwarding option."""
     format_str = '-{0.pf_type} {binding}'.format
-    return (pfrule and format_str(pfrule, binding=pfrule.binding)) or ''
+    return format_str(pfrule, binding=pfrule.binding) if pfrule else ''
 
 
 def format_strict_host_key(strict):
@@ -68,13 +67,13 @@ def format_use_ssh_key(use_ssh_key):
 def format_timeout(timeout):
     """Render server alive interval option."""
     format_str = '-o ServerAliveInterval={}'.format
-    return (timeout and format_str(timeout)) or ''
+    return format_str(timeout) if timeout else ''
 
 
 def format_keep_alive_packages(keep_alive_packages):
     """Render server alive count max option."""
     format_str = '-o ServerAliveCountMax={}'.format
-    return (keep_alive_packages and format_str(keep_alive_packages)) or ''
+    return format_str(keep_alive_packages) if keep_alive_packages else ''
 
 
 def format_agent_forwarding(agent_forwarding):
@@ -86,4 +85,4 @@ def format_agent_forwarding(agent_forwarding):
 def _bool_to_text(format_str, value):
     if value is None:
         return ''
-    return value and format_str('yes') or format_str('no')
+    return format_str('yes') if value else format_str('no')

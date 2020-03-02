@@ -48,7 +48,6 @@ class TermiusApp(App):
         """Change logging level for request package."""
         super(TermiusApp, self).configure_logging()
         logging.getLogger('requests').setLevel(logging.WARNING)
-        return
 
     # pylint: disable=no-self-use
     def configure_signals(self):

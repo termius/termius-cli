@@ -41,6 +41,7 @@ class IdentityCommand(SshKeyGeneratorMixin, DetailCommand):
             )
         if args.ssh_key:
             return self.get_safely_instance(SshKey, args.ssh_key)
+        return None
 
     def extend_parser(self, parser):
         """Add more arguments to parser."""

@@ -282,7 +282,7 @@ class SshConfigMergerMixin(GroupStackGetterMixin, object):
             i.identity for i in ssh_config_merger.get_entry_stack()
             if i.identity and i.identity.get('is_visible')
         ]
-        return (stack and stack[0]) or None
+        return stack[0] if stack else None
 
     # pylint: disable=no-self-use
     def get_identity_merger(self, ssh_config_merger):

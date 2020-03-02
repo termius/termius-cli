@@ -201,11 +201,11 @@ class RNCryptor(CryptoSettings):
         data = base64.b64encode(data)
         return to_str(data)
 
-    def _aes_encrypt(self, *args):
-        return self._aes_process(self.encryptor, *args)
+    def _aes_encrypt(self, *args, **kwargs):
+        return self._aes_process(self.encryptor, *args, **kwargs)
 
-    def _aes_decrypt(self, *args):
-        return self._aes_process(self.decryptor, *args)
+    def _aes_decrypt(self, *args, **kwargs):
+        return self._aes_process(self.decryptor, *args, **kwargs)
 
     def _aes_process(self, get_operation, initialization_vector, data):
         operation = get_operation(self.get_cipher(initialization_vector))
