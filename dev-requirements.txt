@@ -1,8 +1,10 @@
 mock
 nose
+pytest
+pytest-cov
 coverage
-prospector[with_pyroma]==0.12.4
-pylint==1.6.5
+prospector[with_pyroma]==1.1.6.2
+pyflakes==1.6.0
 pyroma==2.0
 paver
 bumpversion

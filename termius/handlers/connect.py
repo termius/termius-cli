@@ -39,11 +39,10 @@ class ConnectCommand(SshCommandFormatterMixin, SshConfigMergerMixin,
         host = instance.host if instance.host else instance
         ssh_config = self.get_merged_ssh_config(host)
         self.call_ssh_command(ssh_config, host, instance)
-        return
 
     def call_ssh_command(self, ssh_config, host, instance):
         """Call ssh command to connect to host."""
-        pfrule = isinstance(instance, PFRule) and instance or None
+        pfrule = instance if isinstance(instance, PFRule) else None
         command = self.ssh_config_to_command(ssh_config, host.address, pfrule)
         subprocess.call(command, shell=True)
 

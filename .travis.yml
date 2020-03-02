@@ -1,13 +1,15 @@
 language: python
 python:
   - "2.7"
-  - "3.4"
   - "3.5"
+  - "3.6"
+  - "3.7"
 install:
   - git clone https://github.com/sstephenson/bats.git && cd bats && ./install.sh .. && cd -
   - sudo apt-get install pandoc
   - pip install -U pip setuptools
-  - pip install -U . -r dev-requirements.txt
+  - pip install -r dev-requirements.txt
+  - pip install -U -e .
   - pip install codecov
 # command to run tests
 script:

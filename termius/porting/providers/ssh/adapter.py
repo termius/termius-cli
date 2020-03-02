@@ -14,7 +14,7 @@ class SSHConfigHostAdapter(SshConfigMergerMixin):
     default_user = environ.get('USER', None)
 
     def get_instance_ssh_key_label(self, ssh_config):
-        """Helper to retrieve ssh_key lable."""
+        """Retrieve the ssh_key lable."""
         if ssh_config['identity'] and ssh_config['identity'].get('ssh_key'):
             return ssh_config['identity']['ssh_key']['label']
 

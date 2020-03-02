@@ -63,8 +63,7 @@ class BulkPrimaryKeyTransformer(BulkEntryBaseTransformer):
             return None
         if model.remote_instance:
             return model.remote_instance.id
-        else:
-            return '{model.set_name}/{model.id}'.format(model=model)
+        return '{model.set_name}/{model.id}'.format(model=model)
 
     def id_from_payload(self, payload):
         """Get remote id from payload."""

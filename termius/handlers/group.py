@@ -45,12 +45,12 @@ class GroupCommand(GroupStackGetterMixin, DetailCommand):
         self.ssh_config_args.add_agrs(parser)
         return parser
 
-    def validate(self, group):
+    def validate(self, instance):
         """Raise an error when group have cyclic folding."""
-        group_id = group.id
+        group_id = instance.id
         if not group_id:
             return
-        group_stack = self.get_group_stack(group)
+        group_stack = self.get_group_stack(instance)
         not_unique = any([i.id for i in group_stack if i.id == group_id])
         if not_unique:
             raise InvalidArgumentException('Cyclic group founded!')

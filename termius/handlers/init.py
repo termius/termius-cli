@@ -12,7 +12,7 @@ from termius.porting.commands import SSHImportCommand
 
 
 class InitCommand(AbstractCommand):
-    """initialize the Termius CLI"""
+    """initialize the Termius CLI."""
 
     # pylint: disable=no-self-use
     def prompt_username(self):
@@ -40,22 +40,22 @@ class InitCommand(AbstractCommand):
         )
 
     def login(self, parsed_args):
-        """Wrapper for login command."""
+        """Wrap for login command."""
         command = LoginCommand(self.app, self.app_args, self.cmd_name)
         command.take_action(parsed_args)
 
     def pull(self, parsed_args):
-        """Wrapper for pull command."""
+        """Wrap for pull command."""
         command = PullCommand(self.app, self.app_args, self.cmd_name)
         command.take_action(parsed_args)
 
     def import_ssh(self, parsed_args):
-        """Wrapper for sync command."""
+        """Wrap for sync command."""
         command = SSHImportCommand(self.app, self.app_args, self.cmd_name)
         command.take_action(parsed_args)
 
     def push(self, parsed_args):
-        """Wrapper for push command."""
+        """Wrap for push command."""
         command = PushCommand(self.app, self.app_args, self.cmd_name)
         command.take_action(parsed_args)
 

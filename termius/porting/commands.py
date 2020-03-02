@@ -23,10 +23,10 @@ class SSHImportCommand(AbstractCommand):
         provider = SSHPortingProvider(storage=self.storage, crendetial=None)
         provider.import_hosts()
 
-        if len(provider.skipped_hosts):
+        if provider.skipped_hosts:
             for alias in provider.skipped_hosts:
                 self.log.info(
-                    'Host %s already exists, skip...' % alias
+                    'Host %s already exists, skip...', alias
                 )
 
             self.log.info(
@@ -74,11 +74,12 @@ class ImportHostsCommand(DetailCommand):
         )
         provider.import_hosts()
 
-        self.log.info('Skipped hosts %i' % len(provider.skipped_hosts))
+        self.log.info('Skipped hosts %i', len(provider.skipped_hosts))
         self.log.info('SecureCRT hosts has been successfully imported.')
 
     def get_parser(self, prog_name):
         """Skip detail arguments."""
+        # pylint: disable=bad-super-call
         return super(DetailCommand, self).get_parser(prog_name)
 
     def extend_parser(self, parser):

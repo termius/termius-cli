@@ -9,7 +9,7 @@ class Config(object):
     """Class for application config."""
 
     paths = ['{application_directory}/config']
-    write_mode = (PY2 and 'wb') or 'w'
+    write_mode = 'wb' if PY2 else 'w'
 
     def __init__(self, command, **kwargs):
         """Create new config."""

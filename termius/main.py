@@ -5,11 +5,11 @@ import sys
 from termius.app import TermiusApp
 
 
-def main(argv=sys.argv[1:]):
+def main(argv=None):
     """Process call from terminal."""
     app = TermiusApp()
 
-    return app.run(argv)
+    return app.run(argv or sys.argv[1:])
 
 
 if __name__ == '__main__':

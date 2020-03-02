@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-""""Package to keep storage id generating logic."""
+"""Package to keep storage id generating logic."""
 from uuid import uuid4
 
 

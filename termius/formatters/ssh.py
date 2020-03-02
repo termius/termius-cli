@@ -25,4 +25,3 @@ class SshFormatter(SshCommandFormatterMixin, SingleFormatter):
         address = parsed_args.address or ssh_config['address']
         ssh_key_path = ssh_config.get('ssh_key_path')
         stdout.write(self.render_command(ssh_config, address, ssh_key_path))
-        return
