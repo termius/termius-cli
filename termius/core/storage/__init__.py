@@ -211,8 +211,8 @@ class ApplicationStorage(object):
         assert identificator
 
         models = self._internal_get_all(type(model))
-        for index, model in enumerate(models):
-            if model.id == identificator:
+        for index, model_obj in enumerate(models):
+            if model_obj.id == identificator:
                 models.pop(index)
                 break
         self.driver[model.set_name] = models

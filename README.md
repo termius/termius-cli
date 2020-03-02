@@ -1,8 +1,8 @@
 # Termius CLI utility
 
-[![Build status](https://travis-ci.org/Crystalnix/termius-cli.svg?branch=master)](https://travis-ci.org/Crystalnix/termius-cli)
-[![Code Climate](https://codeclimate.com/github/Crystalnix/termius-cli/badges/gpa.svg)](https://codeclimate.com/github/Crystalnix/termius-cli)
-[![Test Coverage](https://codeclimate.com/github/Crystalnix/termius-cli/badges/coverage.svg)](https://codeclimate.com/github/Crystalnix/termius-cli/coverage)
+[![Build status](https://travis-ci.org/termius/termius-cli.svg?branch=master)](https://travis-ci.org/termius/termius-cli)
+[![Code Climate](https://codeclimate.com/github/termius/termius-cli/badges/gpa.svg)](https://codeclimate.com/github/termius/termius-cli)
+[![Test Coverage](https://codeclimate.com/github/termius/termius-cli/badges/coverage.svg)](https://codeclimate.com/github/termius/termius-cli/coverage)
 
 Provides command line interface for cross-platform terminal Termius.
 
@@ -131,4 +131,4 @@ $ termius export-ssh-config  # Export to ./termius/sshconfig
 
 ## License
 
-Please see [LICENSE](https://github.com/Crystalnix/termius-cli/blob/master/LICENSE).
+Please see [LICENSE](https://github.com/termius/termius-cli/blob/master/LICENSE).

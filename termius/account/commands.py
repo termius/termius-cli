@@ -79,10 +79,10 @@ class SettingsCommand(BaseAccountCommand):
         )
         return parser
 
-    def take_action(self, args):
+    def take_action(self, parsed_args):
         """Process CLI call."""
         settings = {
-            k: getattr(args, k)
+            k: getattr(parsed_args, k)
             for k in ('synchronize_key', 'agent_forwarding')
         }
         self.manager.set_settings(settings)

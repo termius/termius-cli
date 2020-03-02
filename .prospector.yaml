@@ -20,6 +20,7 @@ pep257:
     - D203  # 1 blank line required before
     - D213
     - D400
+    - D415
 
 pylint:
   options:
@@ -28,6 +29,10 @@ pylint:
     - fixme
   disable:
     - super-on-old-class
+    - no-self-use
+    - useless-object-inheritance
+    - consider-using-dict-comprehension
+    - keyword-arg-before-vararg
 
 pyroma:
   run: true

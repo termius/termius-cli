@@ -95,5 +95,4 @@ class DetailCommand(GetRelationMixin, GetObjectsMixin,
         """Render error message for missed required options."""
         if len(options) == 1:
             return 'Option {} is required!'.format(options[0])
-        else:
-            return 'Options {} are required!'.format(','.join(options))
+        return 'Options {} are required!'.format(','.join(options))

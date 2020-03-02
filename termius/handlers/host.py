@@ -116,7 +116,7 @@ class HostsCommand(GroupStackGetterMixin, ListCommand):
         group_stack = self.get_group_stack(parent_group)
         group_id_stack = [i.id for i in group_stack]
         filter_operation = {'group': None}
-        if len(group_id_stack) > 0:
+        if group_id_stack:
             filter_operation['group.id.rcontains'] = group_id_stack
         return self.storage.exclude(Host, any, **filter_operation)
 
