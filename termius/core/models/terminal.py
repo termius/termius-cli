@@ -31,7 +31,6 @@ class SshKey(Model):
 
     fields = {
         'label': Field(str, False, ''),
-        'passphrase': Field(str, False, ''),
         'private_key': Field(str, False, ''),
         'public_key': Field(str, False, ''),
     }
@@ -51,13 +50,12 @@ class Identity(Model):
     fields = {
         'label': Field(str, False, ''),
         'username': Field(str, False, ''),
-        'password': Field(str, False, ''),
         'is_visible': Field(str, False, False),
         'ssh_key': Field(SshKey, False, None),
     }
-    mergable_fields = {'username', 'password', 'ssh_key'}
+    mergable_fields = {'username', 'ssh_key'}
     set_name = 'identity_set'
-    crypto_fields = {'label', 'username', 'password'}
+    crypto_fields = {'label', 'username'}
 
 
 class SshConfig(Model):

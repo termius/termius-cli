@@ -102,7 +102,7 @@ class TermiusTestCase(BashCompletionTest):
         self.run_complete(
             'host -',
             '-h --help --log-file -t --tag -g --group -a --address -p '
-            '--port -s --snippet --identity -u --username -P --password '
+            '--port -s --snippet --identity -u --username '
             '-i --identity-file -d --delete -L --label -S '
             '--strict-host-key-check -T --timeout --use-ssh-key '
             '-k --keep-alive-packages'

@@ -16,7 +16,7 @@ setup() {
 }
 
 @test "Add general host" {
-    run termius host -L test --port 2022 --address localhost --username root --password password
+    run termius host -L test --port 2022 --address localhost --username root
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'host_set') -eq 1 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 1 ]
@@ -52,16 +52,16 @@ setup() {
 }
 
 @test "Add many hosts" {
-    run termius host -L test_1 --port 2022 --address 127.0.0.1 --username root --password 'pa$$word'
-    run termius host -L test_2 --port 2222 --address google.com --username root --password 'password'
-    run termius host -L test_3 --port 22 --address google.com --username root --password 'psswrd'
+    run termius host -L test_1 --port 2022 --address 127.0.0.1 --username root
+    run termius host -L test_2 --port 2222 --address google.com --username root
+    run termius host -L test_3 --port 22 --address google.com --username root
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'host_set') -eq 3 ]
 }
 
 @test "Update host" {
-    host=$(termius host -L test_3 --port 22 --address google.com --username root --password 'psswrd')
-    run termius host --address google --username ROOT --password '' $host
+    host=$(termius host -L test_3 --port 22 --address google.com --username root)
+    run termius host --address google --username ROOT $host
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'host_set') -eq 1 ]
     [ $(get_models_set_length 'sshconfig_set') -eq 1 ]
@@ -73,7 +73,6 @@ setup() {
     [ $(get_model_field 'sshconfig_set' $ssh_config 'port') -eq 22 ]
     identity=$(get_model_field 'sshconfig_set' $ssh_config 'identity')
     [ "$(get_model_field 'identity_set' $identity 'username')" = '"ROOT"' ]
-    [ "$(get_model_field 'identity_set' $identity 'password')" = '""' ]
     [ $(get_model_field 'identity_set' $identity 'is_visible') = 'false' ]
     [ $(get_model_field 'identity_set' $identity 'ssh_key') = 'null' ]
 }
@@ -98,7 +97,7 @@ setup() {
 }
 
 @test "Update host assign visible identity" {
-    identity=$(termius identity -L local --username 'ROOT' --password 'pa')
+    identity=$(termius identity -L local --username 'ROOT')
     host=$(termius host --address localhost -L 'test' --port 2 --username 'use r name')
     run termius host --identity $identity $host
     [ "$status" -eq 0 ]
@@ -115,7 +114,7 @@ setup() {
 }
 
 @test "Update host update visible identity" {
-    identity=$(termius identity -L local --username 'ROOT' --password 'pa')
+    identity=$(termius identity -L local --username 'ROOT')
     host=$(termius host -L 'test' --address local --identity $identity)
     run termius host --username 'use r name' $host
     [ "$status" -eq 0 ]
@@ -135,39 +134,39 @@ setup() {
 }
 
 @test "Update many hosts" {
-    host1=$(termius host -L test_2 --port 22 --address google.com --username root --password 'psswrd')
-    host2=$(termius host -L test_3 --port 22 --address google.com --username root --password 'psswrd')
-    run termius host -L test_3 --port 22 --address google --username root --password '' $host1 $hots2
+    host1=$(termius host -L test_2 --port 22 --address google.com --username root)
+    host2=$(termius host -L test_3 --port 22 --address google.com --username root)
+    run termius host -L test_3 --port 22 --address google --username root $host1 $hots2
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'host_set') -eq 2 ]
 }
 
 @test "Update hosts with same name" {
-    host1=$(termius host -L test_3 --port 22 --address google.com --username root --password 'psswrd')
-    host2=$(termius host -L test_3 --port 22 --address google.com --username root --password 'psswrd')
-    run termius host -L test_3 --port 22 --address google --username root --password '' 'test_3'
+    host1=$(termius host -L test_3 --port 22 --address google.com --username root)
+    host2=$(termius host -L test_3 --port 22 --address google.com --username root)
+    run termius host -L test_3 --port 22 --address google --username root 'test_3'
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'host_set') -eq 2 ]
 }
 
 @test "Delete host" {
-    host1=$(termius host -L test_3 --port 22 --address google.com --username root --password 'psswrd')
-    host2=$(termius host -L test_3 --port 22 --address google.com --username root --password 'psswrd')
+    host1=$(termius host -L test_3 --port 22 --address google.com --username root)
+    host2=$(termius host -L test_3 --port 22 --address google.com --username root)
     run termius host --delete $host1
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'host_set') -eq 1 ]
 }
 
 @test "Delete many hosts" {
-    host1=$(termius host -L test_2 --port 22 --address google.com --username root --password 'psswrd')
-    host2=$(termius host -L test_3 --port 22 --address google.com --username root --password 'psswrd')
+    host1=$(termius host -L test_2 --port 22 --address google.com --username root)
+    host2=$(termius host -L test_3 --port 22 --address google.com --username root)
     run termius host --delete $host1 $host2
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'host_set') -eq 0 ]
 }
 
 @test "Create with tag" {
-    run termius host -L test --port 2022 --address localhost --username root --password password -t A
+    run termius host -L test --port 2022 --address localhost --username root -t A
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'host_set') -eq 1 ]
     [ $(get_models_set_length 'tag_set') -eq 1 ]
@@ -177,7 +176,7 @@ setup() {
 }
 
 @test "Create with 3 tags" {
-    run termius host -L test --port 2022 --address localhost --username root --password password -t A -t B -t C
+    run termius host -L test --port 2022 --address localhost --username root -t A -t B -t C
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'host_set') -eq 1 ]
     [ $(get_models_set_length 'tag_set') -eq 3 ]
@@ -190,9 +189,9 @@ setup() {
 }
 
 @test "Create 2 hosts with 3 tags" {
-    run termius host -L test --port 2022 --address localhost --username root --password password -t A -t B -t C
+    run termius host -L test --port 2022 --address localhost --username root -t A -t B -t C
     host1=${lines[1]}
-    run termius host -L test --port 2022 --address localhost --username root --password password -t A -t B -t C
+    run termius host -L test --port 2022 --address localhost --username root -t A -t B -t C
     [ "$status" -eq 0 ]
     host2=${lines[1]}
     ! [ $host1 -eq $host2 ]
@@ -209,7 +208,7 @@ setup() {
 }
 
 @test "Update host with 3 same tags" {
-    host=$(termius host -L test --port 2022 --address localhost --username root --password password -t A -t B -t C)
+    host=$(termius host -L test --port 2022 --address localhost --username root -t A -t B -t C)
     run termius host -t A -t B -t C $host
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'host_set') -eq 1 ]
@@ -222,8 +221,8 @@ setup() {
 }
 
 @test "Update host with 3 diff tags" {
-    host=$(termius host -L test --port 2022 --address localhost --username root --password password -t A -t B -t C)
-    run termius host -L test --port 2022 --address localhost --username root --password password -t D -t E -t F $host
+    host=$(termius host -L test --port 2022 --address localhost --username root -t A -t B -t C)
+    run termius host -L test --port 2022 --address localhost --username root -t D -t E -t F $host
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'host_set') -eq 1 ]
     [ $(get_models_set_length 'tag_set') -eq 6 ]
