@@ -26,7 +26,6 @@ class CloudSynchronizationCommand(AbstractCommand):
     @abc.abstractmethod
     def process_sync(self, api_controller):
         """Do sync staff here."""
-        pass
 
     # pylint: disable=no-self-use
     def prompt_authy_token(self):
@@ -146,7 +145,6 @@ class CryptoCommand(CloudSynchronizationCommand):
 
     def process_sync(self, api_controller):
         """Do sync staff here."""
-        pass
 
     def take_action(self, parsed_args):
         """Process decrypt and encrypt text."""

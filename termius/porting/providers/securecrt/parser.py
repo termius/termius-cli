@@ -15,9 +15,7 @@ class SecureCRTConfigParser(object):
 
     def parse_hosts(self):
         """Parse SecureCRT Sessions."""
-        sessions = self.get_element_by_name(
-            self.xml.getchildren(), 'Sessions'
-        ).getchildren()
+        sessions = list(self.get_element_by_name(list(self.xml), 'Sessions'))
 
         self.parse_sessions(sessions, self.tree)
 
@@ -35,26 +33,22 @@ class SecureCRTConfigParser(object):
                 else:
                     parent_node[session.get('name')] = {'__group': True}
                     self.parse_sessions(
-                        session.getchildren(),
+                        list(session),
                         parent_node[session.get('name')]
                     )
 
     def is_session_group(self, session):
         """Check node element type."""
-        return self.get_element_by_name(
-            session.getchildren(), 'Hostname'
-        ) is None
+        return self.get_element_by_name(list(session), 'Hostname') is None
 
     def parse_identity(self):
         """Parse SecureCRT SSH2 raw key."""
-        identity = self.get_element_by_name(
-            self.xml.getchildren(), 'SSH2'
-        )
+        identity = self.get_element_by_name(list(self.xml), 'SSH2')
         if identity is None:
             return None
 
         identity_filename = self.get_element_by_name(
-            identity.getchildren(),
+            list(identity),
             'Identity Filename V2'
         )
 
@@ -78,7 +72,7 @@ class SecureCRTConfigParser(object):
 
     def make_host(self, session):
         """Adapt SecureCRT Session to Termius host."""
-        session_attrs = session.getchildren()
+        session_attrs = list(session)
 
         hostname = self.get_element_by_name(session_attrs, 'Hostname')
         port = self.get_element_by_name(session_attrs, '[SSH2] Port')

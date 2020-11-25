@@ -12,7 +12,7 @@ class SshCommandFormatterMixin(object):
         """Generate ssh command call."""
         identity = ssh_config.get('identity', dict())
         username = identity.get('username', '')
-        return ' '.join([i for i in[
+        return ' '.join([i for i in [
             'ssh',
             format_port(ssh_config['port']),
             format_identity_file(ssh_key_file),

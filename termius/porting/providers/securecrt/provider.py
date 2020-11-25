@@ -24,7 +24,6 @@ class SecureCRTPortingProvider(BasePortingProvider):
 
     def export_hosts(self):
         """Skip export."""
-        pass
 
     def provider_hosts(self):
         """Retrieve SecureCRT sessions from xml config."""

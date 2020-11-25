@@ -202,14 +202,12 @@ class InstanceOperationMixin(ArgModelSerializerMixin, object):
     # pylint: disable=no-self-use,unused-argument
     def pre_save(self, instance):
         """Patch instance fields before saving."""
-        pass
 
     def update_children(self, instance, args):
         """Update children of instance.
 
         It's called while create and update instance.
         """
-        pass
 
     def delete_instance(self, instance):
         """Delete model entry."""
@@ -230,10 +228,10 @@ class InstanceOperationMixin(ArgModelSerializerMixin, object):
         self._general_log(entry, 'Entry deleted.')
 
     def _general_log(self, entry, message):
+        self.log.info(message)
+
         if os.getenv('TERMIUS_CLI_DEBUG'):
             self.app.stdout.write('{}\n'.format(entry.id))
-
-        self.log.info(message)
 
 
 class GroupStackGetterMixin(object):
