@@ -1,10 +1,11 @@
+# Copyright (c) 2020 Termius Corporation.
+# requirements/dev/common.txt
+
 mock
 nose
 pytest
 pytest-cov
 coverage
-prospector[with_pyroma]==1.1.6.2
-pyflakes==1.6.0
 pyroma==2.0
 paver
 bumpversion

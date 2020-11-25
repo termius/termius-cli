@@ -1,0 +1,7 @@
+# Copyright (c) 2020 Termius Corporation.
+# requirements/dev/3.5.txt
+
+-r common.txt
+prospector[with_pyroma]==1.1.6.2
+pyflakes==1.6.0
+cryptography==3.0
