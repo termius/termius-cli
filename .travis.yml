@@ -10,10 +10,7 @@ install:
   - git clone https://github.com/sstephenson/bats.git && cd bats && ./install.sh .. && cd -
   - sudo apt-get install pandoc
   - pip install -U pip setuptools
-  - if [ ${TRAVIS_PYTHON_VERSION} = 2.7 ]; then pip install -r requirements/dev/2.7.txt; fi
-  - if [ ${TRAVIS_PYTHON_VERSION} = 3.5 ]; then pip install -r requirements/dev/3.5.txt; fi
-  - if [ ${TRAVIS_PYTHON_VERSION} = 3.6 ]; then pip install -r requirements/dev/3.6.txt; fi
-  - if [ ${TRAVIS_PYTHON_VERSION} >= 3.7 ]; then pip install -r requirements/dev/latest.txt; fi
+  - pip install -r dev-requirements.txt
   - pip install -U -e .
   - pip install codecov
 # command to run tests
