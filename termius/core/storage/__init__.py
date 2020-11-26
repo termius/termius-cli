@@ -238,6 +238,6 @@ class ApplicationStorage(object):
     def _validate_the_single_model(self, founded_models):
         if not founded_models:
             raise DoesNotExistException
-        elif len(founded_models) != 1:
+        if len(founded_models) != 1:
             raise TooManyEntriesException
         return founded_models[0]
