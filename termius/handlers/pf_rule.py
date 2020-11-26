@@ -82,8 +82,6 @@ class PFRulesCommand(ListCommand):
 class InvalidBinding(InvalidArgumentException):
     """Raise it when binding can not be parsed."""
 
-    pass
-
 
 class BindingParser(object):
     """Binding string parser.

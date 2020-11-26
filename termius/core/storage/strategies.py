@@ -112,7 +112,6 @@ class DeleteStrategy(Strategy):
 
     def remove_intersection(self, deleted_sets):
         """Confirm delete (Need to create more suitable description)."""
-        pass
 
 
 class SoftDeleteStrategy(DeleteStrategy):

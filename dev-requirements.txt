@@ -1,12 +1,25 @@
+# Copyright (c) 2020 Termius Corporation.
+# dev-requirements.txt
+
 mock
 nose
-pytest
 pytest-cov
 coverage
-prospector[with_pyroma]==1.1.6.2
-pyflakes==1.6.0
 pyroma==2.0
 paver
 bumpversion
 pypandoc
 pygments
+
+pytest; python_version != "3.5"
+pytest>=4.6; python_version == "3.5"
+
+prospector[with_pyroma]==1.3; python_version >= "3.7"
+prospector[with_pyroma]==1.2; python_version == "3.6"
+prospector[with_pyroma]==1.1.6.2; python_version <= "3.5"
+
+pyflakes==2.2.0; python_version >= "3.7"
+pyflakes==1.6.0; python_version < "3.7"
+
+cryptography==3.0; python_version == "3.5"
+cryptography==2.9; python_version == "2.7"

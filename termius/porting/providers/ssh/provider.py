@@ -19,7 +19,7 @@ class SSHPortingProvider(BasePortingProvider):
     export_path = expanduser('~/.termius/sshconfig')
 
     # pylint: disable=anomalous-backslash-in-string
-    allowed_host_re = re.compile('[?*\[\]]')
+    allowed_host_re = re.compile('[?*\[\]]')  # noqa
     default_port = 22
 
     def __init__(self, *args, **kwargs):

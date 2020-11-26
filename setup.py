@@ -68,7 +68,7 @@ setup(
     version=__version__,
     license='BSD',
     author='Termius Corporation',
-    author_email='hello@termius.com.com',
+    author_email='hello@termius.com',
     url='https://github.com/termius/termius-cli',
     description='Termius ssh-config utility.',
     long_description=get_long_description(),
