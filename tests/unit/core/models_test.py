@@ -17,7 +17,7 @@ class ModelsTest(TestCase):
         model_classes = (
             Host, Group, Tag,
             SshKey, Identity, SshConfig,
-            Group, Host, PFRule
+            PFRule
         )
         for model_class in model_classes:
             instance = model_class()
@@ -52,3 +52,26 @@ class ModelsTest(TestCase):
         driver = mocked.return_value
         driver.__setitem__.assert_called_with(model.set_name, stored_models)
         driver.sync.assert_called_with()
+
+    def test_allowed_fields(self):
+        expected_allowed_fields = {
+            Host: ['label', 'address', 'group', 'ssh_config',
+                   'interaction_date', 'id', 'remote_instance'],
+            Group: ['label', 'ssh_config', 'parent_group', 'id',
+                    'remote_instance'],
+            Tag: ['label', 'id', 'remote_instance'],
+            SshKey: ['label', 'passphrase', 'private_key',
+                     'public_key', 'id', 'remote_instance'],
+            Identity: ['label', 'username', 'password', 'is_visible',
+                       'ssh_key', 'id', 'remote_instance'],
+            SshConfig: ['port', 'identity', 'startup_snippet',
+                        'strict_host_key_check', 'use_ssh_key', 'timeout',
+                        'keep_alive_packages', 'is_forward_ports', 'font_size',
+                        'color_scheme', 'charset', 'cursor_blink', 'id',
+                        'remote_instance'],
+            PFRule: ['label', 'host', 'pf_type', 'bound_address', 'local_port',
+                     'hostname', 'remote_port', 'id', 'remote_instance']
+        }
+
+        for model_class, expected_fields in expected_allowed_fields.items():
+            assert sorted(model_class.allowed_fields()) == sorted(expected_fields)
