@@ -44,7 +44,7 @@ setup() {
 }
 
 @test "Update group assign visible identity" {
-    identity=$(termius identity -L local --username 'ROOT' --password 'pa')
+    identity=$(termius identity -L local --username 'ROOT')
     group=$(termius group -L 'test group' --port 2 --username 'use r name')
     run termius group --identity $identity $group
     [ "$status" -eq 0 ]
@@ -60,7 +60,7 @@ setup() {
 }
 
 @test "Update group update visible identity" {
-    identity=$(termius identity -L local --username 'ROOT' --password 'pa')
+    identity=$(termius identity -L local --username 'ROOT')
     group=$(termius group -L 'test group' --identity $identity)
     run termius group --username 'use r name' $group
     [ "$status" -eq 0 ]

@@ -20,7 +20,7 @@ class IdentityCommand(SshKeyGeneratorMixin, DetailCommand):
     def fields(self):
         """Return dictionary of args serializers to models field."""
         _fields = {
-            i: attrgetter(i) for i in ('label', 'username', 'password')
+            i: attrgetter(i) for i in ('label', 'username')
         }
         _fields['ssh_key'] = self.get_ssh_key_field
         _fields['is_visible'] = partial(truth)
@@ -48,10 +48,6 @@ class IdentityCommand(SshKeyGeneratorMixin, DetailCommand):
         parser.add_argument(
             '-u', '--username',
             metavar='USERNAME', help='username for ssh authentication'
-        )
-        parser.add_argument(
-            '-p', '--password',
-            metavar='PASSWORD', help='password for ssh authentication'
         )
         parser.add_argument(
             '-i', '--identity-file',
