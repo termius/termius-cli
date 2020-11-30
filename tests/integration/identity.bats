@@ -30,7 +30,7 @@ teardown() {
 }
 
 @test "Add general identity" {
-    run termius identity -L local --username 'ROOT' --password 'pa'
+    run termius identity -L local --username 'ROOT'
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'identity_set') -eq 1 ]
     identity=${lines[1]}
@@ -55,36 +55,35 @@ teardown() {
 }
 
 @test "Update identity" {
-    identity=$(termius identity -L local --username 'ROOT' --password 'pa')
-    run termius identity --password 'ps' $identity
+    identity=$(termius identity -L local --username 'ROOT')
+    run termius identity $identity
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'identity_set') -eq 1 ]
     [ "$(get_model_field 'identity_set' $identity 'label')" = '"local"' ]
     [ "$(get_model_field 'identity_set' $identity 'username')" = '"ROOT"' ]
-    [ "$(get_model_field 'identity_set' $identity 'password')" = '"ps"' ]
     [ $(get_model_field 'identity_set' $identity 'is_visible') = 'true' ]
     [ $(get_model_field 'identity_set' $identity 'ssh_key') = 'null' ]
 }
 
 @test "Update many identities" {
-    identity1=$(termius identity -L local --username 'ROOT' --password 'pa')
-    identity2=$(termius identity -L local --username 'ROOT' --password 'pa')
-    run termius identity -L local --username 'ROOT' --password 'pa' $identity1 $identity2
+    identity1=$(termius identity -L local --username 'ROOT')
+    identity2=$(termius identity -L local --username 'ROOT')
+    run termius identity -L local --username 'ROOT' $identity1 $identity2
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'identity_set') -eq 2 ]
 }
 
 @test "Delete identity" {
-    identity1=$(termius identity -L local --username 'ROOT' --password 'pa')
-    identity2=$(termius identity -L local --username 'ROOT' --password 'pa')
+    identity1=$(termius identity -L local --username 'ROOT')
+    identity2=$(termius identity -L local --username 'ROOT')
     run termius identity --delete $identity2
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'identity_set') -eq 1 ]
 }
 
 @test "Delete many identities" {
-    identity1=$(termius identity -L local --username 'ROOT' --password 'pa')
-    identity2=$(termius identity -L local --username 'ROOT' --password 'pa')
+    identity1=$(termius identity -L local --username 'ROOT')
+    identity2=$(termius identity -L local --username 'ROOT')
     run termius identity --delete $identity1 $identity2
     [ "$status" -eq 0 ]
     [ $(get_models_set_length 'identity_set') -eq 0 ]

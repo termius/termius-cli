@@ -82,13 +82,21 @@ class Model(AbstractModel):
         # The simplest way to make lint not raise
         #   access-member-before-definition
         self.remote_instance = None
-        super(Model, self).__init__(*args, **kwargs)
+
+        # Do not store extra fields for security reason
+        fields = self.__filter_fields(kwargs)
+        super(Model, self).__init__(*args, **fields)
+
         is_need_to_patch_remote = (
             self.remote_instance and
             not isinstance(self.remote_instance, RemoteInstance)
         )
         if is_need_to_patch_remote:
             self.remote_instance = RemoteInstance(self.remote_instance)
+
+    @classmethod
+    def __filter_fields(cls, fields):
+        return {k: v for k, v in fields.items() if k in cls.allowed_fields()}
 
     @classmethod
     def fk_field_names(cls):

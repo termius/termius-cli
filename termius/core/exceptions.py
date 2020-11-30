@@ -32,3 +32,7 @@ class OptionNotSetException(TermiusException):
 
 class AuthyTokenIssue(TermiusException):
     """Raise it when API error caused by `authy_token`."""
+
+
+class OutdatedVersion(TermiusException):
+    """Raise it when API error caused by 490 HTTP status code."""

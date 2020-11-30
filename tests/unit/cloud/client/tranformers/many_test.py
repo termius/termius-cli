@@ -87,7 +87,6 @@ class BulkTransformerTest(StrategyCase):
                     'public_key': None,
                     'private_key': None,
                     'local_id': ssh_key.id,
-                    'passphrase': None,
                     'label': payload['sshkeycrypt_set'][0]['label']
                 }
             ],
@@ -102,8 +101,7 @@ class BulkTransformerTest(StrategyCase):
                     'is_visible': None,
                     'ssh_key': 'sshkeycrypt_set/{}'.format(ssh_key.id),
                     'label': payload['identity_set'][0]['label'],
-                    'local_id': identity.id,
-                    'password': None
+                    'local_id': identity.id
                 }
             ]
         })

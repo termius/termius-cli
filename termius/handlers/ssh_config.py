@@ -22,7 +22,7 @@ class IdentityArgs(SshKeyGeneratorMixin, ArgModelSerializerMixin, object):
     def fields(self):
         """Return dictionary of args serializers to models field."""
         _fields = {
-            i: attrgetter(i) for i in ('username', 'password')
+            i: attrgetter(i) for i in ('username',)
         }
         _fields['ssh_key'] = self.get_ssh_key_field
         _fields['is_visible'] = partial(not_)

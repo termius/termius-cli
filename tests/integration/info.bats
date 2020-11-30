@@ -17,19 +17,19 @@ setup() {
 }
 
 @test "info host use default formatter" {
-    host=$(termius host -L test --port 2022 --address localhost --username root --password password)
+    host=$(termius host -L test --port 2022 --address localhost --username root)
     run termius info $host
     [ "$status" -eq 0 ]
 }
 
 @test "info host use ssh formatter" {
-    host=$(termius host -L test --port 2022 --address localhost --username root --password password)
+    host=$(termius host -L test --port 2022 --address localhost --username root)
     run termius info $host -f ssh
     [ "$status" -eq 0 ]
 }
 
 @test "info host use ssh formatter with exta options" {
-    host=$(termius host -L test --strict-host-key-check yes --keep-alive-packages 20 --timeout 100 --use-ssh-key no --port 2022 --address localhost --username root --password password)
+    host=$(termius host -L test --strict-host-key-check yes --keep-alive-packages 20 --timeout 100 --use-ssh-key no --port 2022 --address localhost --username root)
     termius settings --agent-forwarding yes
     run termius info $host -f ssh
     echo ${lines[*]} >&2
@@ -39,7 +39,7 @@ setup() {
 }
 
 @test "info host use ssh formatter with exta options disable agent forwarding" {
-    host=$(termius host -L test --strict-host-key-check yes --keep-alive-packages 20 --timeout 100 --use-ssh-key no --port 2022 --address localhost --username root --password password)
+    host=$(termius host -L test --strict-host-key-check yes --keep-alive-packages 20 --timeout 100 --use-ssh-key no --port 2022 --address localhost --username root)
     termius settings --agent-forwarding no
     run termius info $host -f ssh
     echo ${lines[*]} >&2
@@ -110,7 +110,7 @@ setup() {
 }
 
 @test "info group not existed" {
-    host=$(termius host -L test --port 2022 --address localhost --username root --password password)
+    host=$(termius host -L test --port 2022 --address localhost --username root)
     run termius info --group $host
     [ "$status" -eq 1 ]
 }
