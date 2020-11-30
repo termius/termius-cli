@@ -5,7 +5,7 @@ import hashlib
 import six
 import requests
 from requests.auth import AuthBase
-from .exceptions import AuthyTokenIssue
+from .exceptions import AuthyTokenIssue, OutdatedVersion
 
 
 # pylint: disable=too-few-public-methods
@@ -68,20 +68,33 @@ class API(object):
         if authy_token is not None:
             payload['authy_token'] = authy_token
 
-        response = requests.post(
-            self.request_url('v3.1/login/'), data=payload
-        )
-        if response.status_code == 487:
-            raise AuthyTokenIssue(response.json)
-        if response.status_code != 200:
-            self.logger.warning('Can not login!\nResponse %s', response.text)
-
-        assert response.status_code == 200
+        response = requests.post(self.request_url('v3.1/login/'), data=payload)
+        self.__check_login_response(response)
 
         response_payload = response.json()
         apikey = response_payload['token']
         self.set_auth(email, apikey)
         return response_payload
+
+    def __check_login_response(self, response):
+        if response.status_code == 487:
+            raise AuthyTokenIssue(response.json)
+
+        if response.status_code != 200:
+            self.logger.warning('Can not login!')
+
+        self.__check_response(response, (200,))
+
+    @staticmethod
+    def __check_response(response, success_statuses=None):
+        if response.status_code == 490:
+            raise OutdatedVersion(
+                'The current version of Termius CLI is '
+                'incompatible with new Termius encryption algorithms.'
+            )
+
+        success_statuses = success_statuses or (200, 201, 202, 204)
+        assert response.status_code in success_statuses, response.text
 
     def post(self, endpoint, data):
         """Send authorized post request."""
@@ -92,7 +105,7 @@ class API(object):
             timeout=self.timeout
         )
         self.logger.debug('get response = %s', response.status_code)
-        assert response.status_code == 201, response.text
+        self.__check_response(response, (201,))
 
         return response.json()
 
@@ -103,13 +116,13 @@ class API(object):
             auth=self.auth,
             timeout=self.timeout
         )
-        assert response.status_code == 200, response.text
+        self.__check_response(response, (200,))
         return response.json()
 
     def delete(self, endpoint):
         """Send authorized delete request."""
         response = requests.delete(self.request_url(endpoint), auth=self.auth)
-        assert response.status_code in (200, 204)
+        self.__check_response(response, (200, 204))
         return response.json()
 
     def put(self, endpoint, data):
@@ -119,5 +132,5 @@ class API(object):
             json=data, auth=self.auth,
             timeout=self.timeout
         )
-        assert response.status_code in (200, 202), response.text
+        self.__check_response(response, (200, 202))
         return response.json()
