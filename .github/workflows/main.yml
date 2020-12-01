@@ -1,0 +1,35 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9]
+    env:
+      TERMIUS_CLI_DEBUG: True
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-verion }}
+        uses: actions/checkout@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          git clone https://github.com/sstephenson/bats.git && cd bats && ./install.sh .. && cd -
+          sudo apt-get install pandoc
+          pip install -U pip setuptools
+          pip install -r dev-requirements.txt
+          pip install codecov
+      - name: Build
+        run: pip install -U -e .
+      - name: Run lint
+        run: PATH=~/.local/bin:$PATH paver lint
+      - name: Run coverage
+        run: PATH=~/.local/bin:$PATH paver coverage
+      - name: Run bats
+        run: PATH=~/.local/bin:$PWD/bin:$PATH paver bats
+      - name: Run codecov
+        run: PATH=~/.local/bin:$PATH codecov
