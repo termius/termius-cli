@@ -20,6 +20,3 @@ prospector[with_pyroma]==1.1.6.2; python_version <= "3.5"
 
 pyflakes==2.2.0; python_version >= "3.7"
 pyflakes==1.6.0; python_version < "3.7"
-
-cryptography==3.0; python_version == "3.5"
-cryptography==2.9; python_version == "2.7"
