@@ -14,7 +14,7 @@ requires = [
     'requests>=2.7.0',
     'cryptography>=1.3.1; python_version >= "3.6"',
     'cryptography==3.0; python_version == "3.5"',
-    'cryptography==2.9; python_version == "2.7"',
+    'cryptography==3.2; python_version == "2.7"',
     'six>=1.10.0',
     'ndg-httpsclient>=0.4.0',
     'pyopenssl>=0.15.1; python_version >= "3.6"',
