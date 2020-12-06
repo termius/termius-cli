@@ -2,7 +2,16 @@
 # -*- coding: utf-8 -*-
 """Entrypoint for CLI tool."""
 import sys
+import os
+import warnings
 from termius.app import TermiusApp
+
+
+if os.getenv('TERMIUS_CLI_DEBUG'):
+    warnings.filterwarnings(
+        'ignore', r'Python 2 is no longer supported by the Python core team. ',
+        UserWarning, r'termius'
+    )
 
 
 def main(argv=None):
