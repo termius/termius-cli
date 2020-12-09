@@ -84,6 +84,9 @@ Export hosts from local storage to ./termius/sshconfig
 termius export-ssh-config
 ```
 
+## Reference Docs
+https://docs.contour.so/termius/termius-cli/getting-started
+
 ### `termius` vs `serverauditor`
 
 #### Import
