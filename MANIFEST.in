@@ -2,3 +2,5 @@ include AUTHORS
 include README.md
 include LICENSE
 include setup.py
+include contrib/completion/bash/termius
+include contrib/completion/zsh/_termius
