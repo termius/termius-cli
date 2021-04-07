@@ -22,7 +22,15 @@ $ brew install termius
 
 **Note**: By default, the command above installs Bash and zsh completions.
 
-For Linux users, there is a `bootstrap.sh` script. Usage:
+For Linux users, there is a [Linuxbrew](http://linuxbrew.sh/) formula. Usage:
+
+```bash
+$ brew install termius
+```
+
+**Note**: By default, the command above installs Bash and zsh completions.
+
+Or you can use the `bootstrap.sh` script. Usage:
 
 ```bash
 $ curl -sSL https://raw.githubusercontent.com/Crystalnix/termius-cli/master/bootstrap.sh | bash
