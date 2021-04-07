@@ -35,7 +35,7 @@ _termius() {
       "push[Send local changes to serveraudtor.com.]" \
       "snippet[Snippet operations.]" \
       "snippets[List snippets.]" \
-      "import-ssh-config[Import hosts from user`s ssh config.]" \
+      "import-ssh-config[Import hosts from user's ssh config.]" \
       "export-ssh-config[Export hosts from local storage to generated file.]" \
       "tags[List tags.]" \
       "settings[Configure application settings.]"
