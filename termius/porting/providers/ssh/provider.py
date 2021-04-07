@@ -5,7 +5,7 @@ import re
 from os.path import expanduser
 from pathlib2 import Path
 
-from termius.core.models.terminal import Host
+from termius.core.models.terminal import Host, Group
 
 from ..base import BasePortingProvider
 from .parser import SSHConfigParser
@@ -50,8 +50,20 @@ class SSHPortingProvider(BasePortingProvider):
         ]
 
         to_import = []
-
+        parsed_group = None
         for alias in parsed_hosts:
+            parsed_group_name = parser._config[parsed_hosts.index(alias) + 1]\
+                .get("group", None)
+            if parsed_group_name:
+                matching_groups = [x for x in self.storage.get_all(Group)
+                                   if x['label'] == parsed_group_name]
+                if len(matching_groups) == 0:
+                    g = Group(label=parsed_group_name)
+                    self.storage.create(g)
+                    matching_groups = [g]
+
+                item = matching_groups.pop()
+                parsed_group = Group(**item)
             parsed_host = parser.lookup(alias)
 
             if 'ignore' in parsed_host:
@@ -59,7 +71,7 @@ class SSHPortingProvider(BasePortingProvider):
 
             to_import.append(
                 self.adapter.adapt_ssh_config_host_to_instance(
-                    alias, parsed_host
+                    alias, parsed_host, parsed_group
                 )
             )
 
